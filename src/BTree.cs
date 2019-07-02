@@ -135,6 +135,21 @@ namespace Interview
         //          5  7   4       <---
         //            / \
         //           8   9         <---
+        public IList<int> RightSideView2(TreeNode root)
+        {
+            if(root==null)
+                return null;
+
+            var ll = new List<IList<int>>();
+            levelHelp(ll,root,0);
+            var ret = new List<int>();
+            foreach(var layer in ll){
+                ret.Add(layer.Last());
+            }
+
+            return ret;
+        }
+        
         public IList<int> RightSideView(TreeNode root)
         {
             var ret = new List<int>();

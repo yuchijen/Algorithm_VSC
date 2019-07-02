@@ -598,6 +598,69 @@ namespace Interview
             return map;
         }
 
+        //by Hunrey Liu
+        public String alienOrderBFS(String[] words) {
+            if (words.Length == 0) return "";
+            var map = new Dictionary<char, HashSet<char>>();
+            var indegree = new Dictionary<char, int>();
+            
+            //Map<Character, Integer> indegree = new HashMap<>();
+
+            foreach(String word in words) {
+                foreach (char c in word) {
+                    indegree.Add(c, 0);
+                }
+            }
+            for (int i = 0; i < words.Length - 1; i++) 
+            {
+                String curr = words[i];
+                String next = words[i+1];
+                addDependency(curr, next, words, indegree, map);
+            }
+            Queue<char> queue = new Queue<char>();
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in indegree.Keys) {
+                if (indegree[c] == 0) {
+                    queue.Enqueue(c);
+                }
+            }
+            while (queue.Count>0) {
+                char curr = queue.Dequeue();
+                sb.Append(curr);
+                HashSet<char> child = map[curr];
+                if (child != null) {
+                    foreach (char node in child) {
+                        indegree.Add(node, indegree[node]-1);
+                        if (indegree[node] == 0) {
+                            queue.Enqueue(node);
+                        }
+                    }
+                }
+            }
+            return sb.Length == indegree.Count ? sb.ToString() : "";
+        }
+    private void addDependency(String curr, String next, String[] words, Dictionary<char, int> indegree,
+                               Dictionary<char, HashSet<char>> map) {
+        int len = Math.Min(curr.Length, next.Length);
+        for (int i = 0; i < len; i++) {
+            char c1 = curr[i];
+            char c2 = next[i];
+            if (c1 != c2) {                
+                if (!map.ContainsKey(c1)) {
+                    map.Add(c1, new HashSet<char>());
+                }
+                if (!map[c1].Add(c2)) {
+                    break;
+                }
+                indegree[c2]+=1;
+                //indegree.Add(c2, indegree[c2] + 1);
+                break;
+            }
+        }
+    }
+
+
+
 
         //44. Wildcard Matching  (DFS not passed yet)
         //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
