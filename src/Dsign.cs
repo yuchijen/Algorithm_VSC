@@ -9,13 +9,50 @@ namespace Interview
 {
     public class Dsign
     {
-        
+        //703. Kth Largest Element in a Stream
+        //Design a class to find the kth largest element in a stream. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+        //Your KthLargest class will have a constructor which accepts an integer k and an integer array nums, which contains initial elements from the stream. For each call to the method KthLargest.add, return the element representing the kth largest element in the stream.
+        //Example: int k = 3;  int[] arr = [4,5,8,2];
+        // KthLargest kthLargest = new KthLargest(3, arr);
+        // kthLargest.add(3);   // returns 4
+        // kthLargest.add(5);   // returns 5
+        // kthLargest.add(10);  // returns 5
+        // kthLargest.add(9);   // returns 8
+        // kthLargest.add(4);   // returns 8
+        // Note: 
+        // You may assume that nums' length ≥ k-1 and k ≥ 1
+        public class KthLargest
+        {
+            List<int> pq;
+            int kth;
+            public KthLargest(int k, int[] nums)
+            {
+                pq= new List<int>();
+                for(int i=0; i< k && i<nums.Length; i++)                
+                    pq.Add(nums[i]);
+
+                pq.Sort();    
+                kth= k;
+            }
+
+            public int Add(int val)
+            {
+                pq.Add(val);
+                pq.Sort();
+                if(pq.Count > kth){
+                    pq.RemoveAt(0);
+                }   
+                return pq[0];                
+            }
+        }
+
+
         //(google) flip game: flip 2 cards , if the same get point, if not flip them back. 
         // design shuffle method (uniformly )
         // setup board method, play method, with lock the board,  int play(int i1, int j1, int i2, int j2)
         // follow up : 1.if board is big and how to deal with lock and performance? 
         //separete baord into small pieces, and lock small piece instead of lock whole
-		//2.what is 2 cards are in different piece and might have dead lock , wait for each other to release
+        //2.what is 2 cards are in different piece and might have dead lock , wait for each other to release
         //set timpout or retry schema to release resource.
         public class FlipGame
         {
@@ -31,7 +68,18 @@ namespace Interview
                 board = new int[capLen, capLen];
                 num = capLen * capLen;
             }
-            
+
+            public void shuffleArray(int[] nums)
+            {
+                var rd = new Random();
+                for(int i=0; i< nums.Length; i++){
+                    int rdIdx = rd.Next(i,nums.Length);
+                    int temp = nums[rdIdx];
+                    nums[rdIdx] = nums[i];
+                    nums[i] = temp;
+                }
+            }
+
             //return list of random number in num
             public List<int> shuffle(int num)
             {
@@ -40,13 +88,13 @@ namespace Interview
                     ret.Add(i);
 
                 var rd = new Random();
-                
-                for (int i=0; i<num; i++)
+
+                for (int i = 0; i < num; i++)
                 {
                     int rdNum = rd.Next(i, num);
                     int temp = ret[i];
                     ret[i] = ret[rdNum];
-                    ret[rdNum] = temp;                    
+                    ret[rdNum] = temp;
                 }
 
                 return ret;
@@ -61,7 +109,7 @@ namespace Interview
                 return 2;
             }
         }
-        
+
 
         //211. Add and Search Word - Data structure design
         //Example:
@@ -202,7 +250,7 @@ namespace Interview
             // after assign level to each one, if any item still in level 0, which means they are not in any category or root, return null 
             if (unsorted.Any((g) => g.Level == 0))
                 return null;
-            
+
             var sorted = unsorted.OrderBy((g) => g.Level).ThenBy((g) => g.Name).ToList();
             return sorted;
         }
@@ -268,7 +316,7 @@ namespace Interview
             return ret;
         }
 
-        
+
         //348. Design a Tic-tac-toe game that is played between two players on a n x n grid.
         //You may assume the following rules:
         //A move is guaranteed to be valid and is placed on an empty block.
@@ -289,7 +337,7 @@ namespace Interview
 
             int isWin(char t, int i, int j)
             {
-                if (checkVerticle(t,j) || checkHarizonal(t, i) || checkDiag(t))
+                if (checkVerticle(t, j) || checkHarizonal(t, i) || checkDiag(t))
                     return t == 'X' ? 1 : 2;
 
                 return 0;
@@ -308,7 +356,7 @@ namespace Interview
             {
                 for (int k = 0; k < len; k++)
                 {
-                    if (board[i,k] != t)
+                    if (board[i, k] != t)
                         return false;
                 }
                 return true;
@@ -322,7 +370,7 @@ namespace Interview
                 }
                 for (int k = 0; k < len; k++)
                 {
-                    if(board[k,len-1-k] ==t)
+                    if (board[k, len - 1 - k] == t)
                         return false;
                 }
                 return true;
@@ -337,7 +385,7 @@ namespace Interview
                     int result = isWin(move, i, j);
                     if (result == 1)
                         Console.Write("player 1 wins");
-                    else if(result == 2)
+                    else if (result == 2)
                         Console.Write("player 2 wins");
                 }
             }
@@ -368,7 +416,7 @@ namespace Interview
                 if (i == len - 1 - j)
                     RDarr += add;
 
-                if (Harr.Any(item=> Math.Abs(item) == len) || Varr.Any(item => Math.Abs(item) == len) || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
+                if (Harr.Any(item => Math.Abs(item) == len) || Varr.Any(item => Math.Abs(item) == len) || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
                     return player;
                 else
                     return 0;
@@ -600,7 +648,7 @@ namespace Interview
 
         public string goBack()
         {
-            if(list!=null && list.Count > 0)
+            if (list != null && list.Count > 0)
             {
                 curIdx--;
                 return list[curIdx];
@@ -609,9 +657,9 @@ namespace Interview
         }
         public string goForward()
         {
-            if (list != null && list.Count > 0 && curIdx < list.Count -1)
+            if (list != null && list.Count > 0 && curIdx < list.Count - 1)
             {
-                curIdx++; 
+                curIdx++;
                 return list[curIdx];
             }
             return null;
@@ -769,7 +817,7 @@ namespace Interview
                 count++;
 
                 if (count > cap)
-                {                    
+                {
                     map.Remove(removeTail());
                     count--;
                 }
@@ -907,7 +955,7 @@ namespace Interview
             //    Console.WriteLine(x); 
 
             Console.WriteLine("waiting for long run thread feedback...");
-            
+
             Console.WriteLine("done!");
         }
 
@@ -918,13 +966,13 @@ namespace Interview
             var tasks = new List<Task<string>>();
 
             for (int i = 0; i < cnt; i++)
-            {   
-                tasks.Add( Task.Run(() => longRunTask(i)));
+            {
+                tasks.Add(Task.Run(() => longRunTask(i)));
                 //Console.WriteLine(result);
             }
             ret = (await Task.WhenAll(tasks)).ToList();
 
-            
+
             return ret;
         }
 
@@ -932,24 +980,24 @@ namespace Interview
         async Task<List<string>> runMultipleTasksAwaitAsync(int cnt)
         {
             var ret = new List<string>();
-            for(int i =0; i< cnt; i++)
+            for (int i = 0; i < cnt; i++)
             {
                 //var result = await longRunTask(i);
                 var result = await Task.Run(() => longRunTask(i));
                 ret.Add(result);
             }
 
-            return ret; 
+            return ret;
         }
 
-        private  string longRunTask(int i)
+        private string longRunTask(int i)
         {
             //await Task.Delay(2000);
             Thread.Sleep(2000);
-            return i+" finished";
+            return i + " finished";
         }
 
-       
+
 
     }
 

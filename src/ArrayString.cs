@@ -8,7 +8,70 @@ namespace Interview
 {
     public class ArrayString
     {
-    
+        public int solution01(int N, string S)
+        {
+            if (N == 0)
+                return 0;
+
+            string[] siteSet = S.Split(' ');
+            var occupySites = new List<string>[N];
+
+            for (int i = 0; i < siteSet.Length; i++)
+            {
+                if (string.IsNullOrEmpty(siteSet[i]))
+                    continue;
+
+                var row = Int32.Parse(Regex.Match(siteSet[i], @"\d+").Value);
+                if (row > N)
+                    continue;
+                if (occupySites[row - 1] == null)
+                    occupySites[row - 1] = new List<string>() { };
+
+                occupySites[row - 1].Add(siteSet[i].Last().ToString());
+            }
+            int ret = 0;
+            foreach (var row in occupySites)
+            {
+                if (row == null)
+                {
+                    ret += 3;
+                    continue;
+                }
+                var rowStr = string.Join("", row);
+                if (Regex.IsMatch(rowStr, @"[^ABC]"))
+                    ret += 1;
+                if (Regex.IsMatch(rowStr, @"[^H-K]"))
+                    ret += 1;
+                if (Regex.IsMatch(rowStr, @"[^DEF]") || Regex.IsMatch(rowStr, @"[^EFG]"))
+                    ret += 1;
+            }
+            return ret;
+        }
+
+
+        //442. Find All Duplicates in an Array (in-space , not easy)
+        //Given an array of integers, 1 ≤ a[i] ≤ n (n = size of array), some elements appear twice and others appear once.
+        //Find all the elements that appear twice in this array.
+        //Could you do it without extra space and in O(n) runtime?
+        //Example:Input:[4,3,2,7,8,2,3,1]
+        //Output:[2,3]
+        public IList<int> FindDuplicates(int[] nums)
+        {
+            List<int> ret = new List<int>();
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                int pos = Math.Abs(nums[i]) - 1;
+
+                if (nums[pos] < 0)
+                    ret.Add(Math.Abs(nums[i]));
+                else
+                    nums[pos] = -nums[pos];
+            }
+            return ret;
+        }
+
+
         //443. String Compression
         //Input: ["a","a","b","b","c","c","c"]
         //Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
@@ -26,7 +89,7 @@ namespace Interview
                 chars[cur++] = chars[i];
                 if (j - i == 1)
                     continue;
-                for (int c=0; c < (j - i).ToString().Length; c++) 
+                for (int c = 0; c < (j - i).ToString().Length; c++)
                     chars[cur++] = (j - i).ToString()[c];
             }
             return cur;
@@ -87,7 +150,7 @@ namespace Interview
             var map = new Dictionary<int, int>();
             Array.Sort(num);
             //1,1,2,2,2,3,4
-            for(int i=0; i<num.Length; i++)
+            for (int i = 0; i < num.Length; i++)
             {
                 if (map.ContainsKey(num[i]))
                     map[num[i]] += 1;
@@ -96,7 +159,7 @@ namespace Interview
             }
             var ret = new int[num.Length];
             int idx = 0;
-            foreach(var item in map.OrderByDescending(kv => (kv.Value)))
+            foreach (var item in map.OrderByDescending(kv => (kv.Value)))
             {
                 for (int j = 0; j < item.Value; j++)
                 {
@@ -104,9 +167,9 @@ namespace Interview
                     idx++;
                 }
             }
-            foreach(var ii in ret)
+            foreach (var ii in ret)
                 Console.Write(ii + ",");
-          
+
             return ret;
         }
 
@@ -135,7 +198,7 @@ namespace Interview
                         stIdx = tempIdx;
                         maxLen = cnt;
                     }
-                        
+
                     idx1++;
                     idx2++;
                 }
@@ -177,7 +240,7 @@ namespace Interview
 
             var ret = new List<int>();
             var kList = new List<int>();
-            for(int i=0; i<k; i++)
+            for (int i = 0; i < k; i++)
             {
                 kList.Add(nums[i]);
             }
@@ -189,7 +252,7 @@ namespace Interview
                 kList.Remove(nums[stIdx - 1]);
                 if (nums[stIdx + k - 1] > ret.Last()) //if this cur new item greater than previous max, add it
                 {
-                    ret.Add(nums[stIdx + k - 1]);                    
+                    ret.Add(nums[stIdx + k - 1]);
                     kList.Add(nums[stIdx + k - 1]);
                     //kList.Sort();
                     continue;
@@ -199,7 +262,7 @@ namespace Interview
                 kList.Sort();
                 ret.Add(kList.Last());
             }
-            return ret.ToArray() ;
+            return ret.ToArray();
         }
 
         //986. Interval List Intersections
@@ -215,16 +278,16 @@ namespace Interview
                 return null;
             var ret = new List<Interval>();
 
-            for(int i=0; i< A.Length; i++)
+            for (int i = 0; i < A.Length; i++)
             {
-                for(int j =0; j<B.Length; j++)
+                for (int j = 0; j < B.Length; j++)
                 {
                     if (A[i].end < B[j].start)
                         break;
                     else if (A[i].start > B[j].end)
                         continue;
                     else
-                        ret.Add(new Interval(Math.Max(A[i].start, B[j].start), Math.Min(A[i].end, B[j].end)));                    
+                        ret.Add(new Interval(Math.Max(A[i].start, B[j].start), Math.Min(A[i].end, B[j].end)));
                 }
             }
             return ret.ToArray();
@@ -242,7 +305,8 @@ namespace Interview
 
             int i = 0, j = 0;
 
-            while (i < A.Length && j < B.Length){
+            while (i < A.Length && j < B.Length)
+            {
                 if (A[i].end < B[j].start)
                     i++;
                 else if (A[i].start > B[j].end)
@@ -259,26 +323,29 @@ namespace Interview
             return ret.ToArray();
         }
 
-        
+
         //487. Max Consecutive Ones II
         //Find the max length of consecutive ones with one flip (0 => 1)
         //e.g. 11101001 ->  max = 5, if flip first 0 to 1
-        int findMaxConsecutiveOnes(int[] nums){
-            int ret=0, leftCnt=0, rightCnt = 0;
+        int findMaxConsecutiveOnes(int[] nums)
+        {
+            int ret = 0, leftCnt = 0, rightCnt = 0;
 
-            for(int i=0; i<nums.Length; i++){
-                if(nums[i]==1)
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] == 1)
                     rightCnt++;
-                if(nums[i]==0){
-                    ret = Math.Max(ret, leftCnt+rightCnt);
+                if (nums[i] == 0)
+                {
+                    ret = Math.Max(ret, leftCnt + rightCnt);
                     leftCnt = rightCnt;
-                    rightCnt=0;
+                    rightCnt = 0;
                 }
             }
-            if(rightCnt!=0)
-                ret = Math.Max(ret, leftCnt+rightCnt);                
-            
-            return ret+1;  //plus flip 0 
+            if (rightCnt != 0)
+                ret = Math.Max(ret, leftCnt + rightCnt);
+
+            return ret + 1;  //plus flip 0 
         }
         // Follow up:
         // What if K (>=0) flips is allowed? 
@@ -287,24 +354,28 @@ namespace Interview
         // 3. In the code, I treat l as the previous slot of the window to get rid of +1 or -1.
         // 4. Note that the queue technique can deal with input stream, if it is not a fixed vector.
         // 5. But a long or long long or other big_integer is needed to track the ans, since it may be very large without MOD 1e9+7.
-        int findMaxConsecutiveOnes(int[] nums, int K) {
+        int findMaxConsecutiveOnes(int[] nums, int K)
+        {
             int l = -1, n = nums.Length;
-            var que = new Queue<int>() ;
-    
+            var que = new Queue<int>();
+
             int ans = 0;
-            for (int i = 0; i < n; i++) {
-                if (nums[i] == 0) {
+            for (int i = 0; i < n; i++)
+            {
+                if (nums[i] == 0)
+                {
                     que.Enqueue(i);
                 }
-                if (que.Count > K) {                   
-                    l =que.Dequeue();
+                if (que.Count > K)
+                {
+                    l = que.Dequeue();
                 }
                 ans = Math.Max(ans, i - l);
             }
             return ans;
         }
 
-    
+
         //189. Rotate Array
         //Given an array, rotate the array to the right by k steps, where k is non-negative.
         //Example 1:Input: [1,2,3,4,5,6,7]        and k = 3
@@ -338,8 +409,8 @@ namespace Interview
         {
             if (nums == null || nums.Length == 0 || (k %= nums.Length) == 0)
                 return;
-            reverseParial(nums, 0, nums.Length- k - 1);
-            reverseParial(nums, nums.Length - k, nums.Length-1);
+            reverseParial(nums, 0, nums.Length - k - 1);
+            reverseParial(nums, nums.Length - k, nums.Length - 1);
             reverseParial(nums, 0, nums.Length - 1);
         }
 
@@ -361,8 +432,9 @@ namespace Interview
         // The order of output does not matter.
         // Example 1: Input: s: "cbaebabacd" p: "abc"
         // Output: [0, 6]
-        public IList<int> FindAnagrams(string s, string p) {
-                               var ret = new List<int>();
+        public IList<int> FindAnagrams(string s, string p)
+        {
+            var ret = new List<int>();
             if (string.IsNullOrEmpty(s) || s.Length < p.Length)
                 return ret;
 
@@ -372,10 +444,10 @@ namespace Interview
             var arrP = new int[26];
             var arrS = new int[26];
 
-            for(int i=0; i< p.Length; i++)
+            for (int i = 0; i < p.Length; i++)
                 arrP[p[i] - 'a']++;
-            
-            for(int i = 0; i < n; i++)
+
+            for (int i = 0; i < n; i++)
             {
                 if (i >= l)
                     arrS[s[i - l] - 'a']--;
@@ -383,9 +455,9 @@ namespace Interview
                 if (arrP.SequenceEqual(arrS))
                     ret.Add(i - l + 1);
             }
-            return ret;    
-        }        
-        
+            return ret;
+        }
+
 
         //31. Next Permutation
         //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
@@ -447,13 +519,13 @@ namespace Interview
 
         //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
         List<int> inAnotInB(int[] A, int[] B)
-        {            
+        {
             var hs = new HashSet<int>();
             foreach (var x in B)
                 hs.Add(x);
 
             var ret = new List<int>();
-            foreach(var a in A)
+            foreach (var a in A)
             {
                 if (!hs.Contains(a))
                     ret.Add(a); ;
@@ -482,11 +554,11 @@ namespace Interview
 
             string ret = "";
             int len = k;
-            for(int i=0; i< num.Length; i++)
+            for (int i = 0; i < num.Length; i++)
             {
-                while(ret.Length>0 && k>0 && (num[i]-ret.Last()) < 0)
+                while (ret.Length > 0 && k > 0 && (num[i] - ret.Last()) < 0)
                 {
-                    ret=ret.Remove(ret.Length - 1);
+                    ret = ret.Remove(ret.Length - 1);
                     k--;
                 }
                 ret += num[i];
@@ -495,7 +567,7 @@ namespace Interview
             if (k > 0)
                 ret = ret.Substring(0, num.Length - len);
 
-            while (ret.Length >0 && ret[0] == '0')
+            while (ret.Length > 0 && ret[0] == '0')
             {
                 ret = ret.Remove(0, 1);
             }
@@ -522,14 +594,14 @@ namespace Interview
         //Output: 2
         public int StrStr(string haystack, string needle)
         {
-            if (haystack==null || needle==null || needle.Length > haystack.Length)
+            if (haystack == null || needle == null || needle.Length > haystack.Length)
                 return -1;
             if (haystack.Equals(needle))
                 return 0;
             for (int i = 0; i <= haystack.Length - needle.Length; i++)
             {
                 if (needle == haystack.Substring(i, needle.Length))
-                    return i;                
+                    return i;
             }
             return -1;
         }
@@ -653,20 +725,21 @@ namespace Interview
 
             //var set = new HashSet<int>();
             var dMap = new Dictionary<int, List<int>>();
-            for (int i=0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 if (!dMap.ContainsKey(nums[i]))
                     dMap.Add(nums[i], new List<int>() { i });
                 else
-                    dMap[nums[i]].Add(i);                
+                    dMap[nums[i]].Add(i);
             }
 
-            foreach(var pair in dMap)
+            foreach (var pair in dMap)
             {
                 if (pair.Value.Count <= 1)
                     continue;
-                else {
-                    for(int i = 0; i< pair.Value.Count-1; i++)
+                else
+                {
+                    for (int i = 0; i < pair.Value.Count - 1; i++)
                     {
                         if (pair.Value[i + 1] - pair.Value[i] == k)
                             return true;
@@ -693,7 +766,7 @@ namespace Interview
             int min = nums.Min();
             int diff = t + 1;
             var map = new Dictionary<long, int>(); // record bucket idx as key , nums[i] as value
-            for(int i = 0;i < nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 long bucketIdx = ((long)nums[i] - (long)min) / diff;
 
@@ -701,15 +774,15 @@ namespace Interview
                 if (map.ContainsKey(bucketIdx))
                     return true;
                 //adjacent bucket might have value in range too, so check left and right neighbors
-                if (map.ContainsKey(bucketIdx + 1)&& Math.Abs(map[bucketIdx + 1] - nums[i]) <= t)
-                        return true;                    
-                if (map.ContainsKey(bucketIdx - 1)&& Math.Abs(map[bucketIdx - 1] - nums[i]) <= t)
-                        return true;
+                if (map.ContainsKey(bucketIdx + 1) && Math.Abs(map[bucketIdx + 1] - nums[i]) <= t)
+                    return true;
+                if (map.ContainsKey(bucketIdx - 1) && Math.Abs(map[bucketIdx - 1] - nums[i]) <= t)
+                    return true;
 
                 map.Add(bucketIdx, nums[i]);
                 if (i >= k)
                 {
-                    map.Remove(((long)nums[i-k]- (long)min)/diff);
+                    map.Remove(((long)nums[i - k] - (long)min) / diff);
                 }
             }
             return false;
@@ -1026,7 +1099,7 @@ namespace Interview
         {
             if (intervals == null || intervals.Length == 0)
                 return 0;
-            
+
             int len = intervals.Length;
             int[] starts = new int[len];
             int[] ends = new int[len];
@@ -1094,7 +1167,7 @@ namespace Interview
             if (intervals.Length == 1)
                 return true;
 
-            Array.Sort(intervals, (Interval a, Interval b) => { return a.start.CompareTo(b.start);});
+            Array.Sort(intervals, (Interval a, Interval b) => { return a.start.CompareTo(b.start); });
 
             for (int i = 1; i < intervals.Length; i++)
             {
@@ -1144,6 +1217,95 @@ namespace Interview
         }
 
 
+        //Flexe onsite: merge 2 people's time schedule and filter out both available time by given time frame 
+        public List<Interval2> AvialbleTime(List<Interval2> c1, List<Interval2> c2, float start, float end, float duration)
+        {
+            var ret = new List<Interval2>();
+            if (c1 == null && c2 == null)
+                return ret;
+
+            var merged = MergeTakenTime(c1, c2, start, end);
+            var curAvialbelSt = start;
+            var finalENd = end;
+            // find available time 
+            for (int i = 0; i < merged.Count; i++)
+            {
+                if (curAvialbelSt < merged[i].start && merged[i].start - curAvialbelSt >= duration)
+                {
+                    ret.Add(new Interval2(curAvialbelSt, merged[i].start));
+                    curAvialbelSt = merged[i].end;
+                }
+            }
+            if (ret.Count == 0)
+                return ret;
+            if (finalENd > ret.Last().end)
+                ret.Add(new Interval2(curAvialbelSt, finalENd));
+            else
+                ret.Last().end = finalENd;
+            
+            return ret;
+        }
+
+        public IList<Interval2> MergeTakenTime(IList<Interval2> c1, IList<Interval2> c2, float start, float end)
+        {
+            List<Interval2> ret = new List<Interval2>();
+
+            if (c1 == null || c1.Count == 0)
+                return c2;
+            if (c2 == null || c2.Count == 0)
+                return c1;
+
+            c1 = c1.OrderBy(x => x.start).ToList();
+            c2 = c2.OrderBy(x => x.start).ToList();
+
+            float curStart = Math.Min(c1[0].start, c2[0].start);
+            float curEnd = Math.Max(c1[0].end, c2[0].end);
+
+            int minLen = Math.Min(c1.Count, c2.Count);
+            for (int i = 1; i < minLen; i++)
+            {
+                if (start > Math.Min(c1[i].start, c2[i].start))
+                    continue;
+                if (end < Math.Max(c1[i].end, c2[i].end))
+                    break;
+
+                if (Math.Min(c1[i].start, c2[i].start) <= curEnd)
+                    curEnd = Math.Max(curEnd, Math.Max(c1[i].end, c2[i].end));
+                else
+                {
+                    ret.Add(new Interval2(curStart, curEnd));
+                    curEnd = Math.Max(c1[i].end, c2[i].end);
+                    curStart = Math.Min(c1[i].start, c2[i].start);
+                }
+            }
+            ret.Add(new Interval2(curStart, curEnd));
+
+            if (c1.Count > minLen)
+            {
+                for (int i = minLen; i < c1.Count; i++)
+                    if (c1[i].start >= ret.Last().end)
+                        ret.Add(c1[i]);
+            }
+            if (c2.Count > minLen)
+            {
+                for (int i = minLen; i < c2.Count; i++)
+                {
+                    if (c2[i].start >= ret.Last().end)
+                        ret.Add(c2[i]);
+                }
+            }
+            return ret;
+        }
+
+        public class Interval2
+        {
+            public float start;
+            public float end;
+            public Interval2() { start = 0; end = 0; }
+            public Interval2(float s, float e) { start = s; end = e; }
+        }
+
+
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -1187,7 +1349,7 @@ namespace Interview
         //Given two binary strings, return their sum (also a binary string).
         // For example,        a = "11"  b = "1", return "100".
         public string AddBinary(string a, string b)
-        {            
+        {
             if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
                 return "0";
             if (string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b))
@@ -1298,36 +1460,7 @@ namespace Interview
         //Given an array of strings, group anagrams together.
         //For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
         //Return:
-        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]
-        public IList<IList<string>> GroupAnagrams(string[] strs)
-        {
-            List<IList<string>> ret = new List<IList<string>>();
-            List<string> list = new List<string>();
-            for (int i = 0; i < strs.Length; i++)
-            {
-                list.Add(new String(strs[i].OrderBy(c => c).ToArray()));
-            }
-
-            var map = new Dictionary<string, List<int>>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (!map.ContainsKey(list[i]))
-                    map.Add(list[i], new List<int>() { i });
-                else
-                    map[list[i]].Add(i);
-            }
-            
-            foreach (var pair in map)
-            {
-                ret.Add(new List<string>());
-                for (int i = 0; i < pair.Value.Count; i++)
-                {
-                    ret.ElementAt(ret.Count - 1).Add(strs[pair.Value[i]]);
-                }
-            }
-
-            return ret;
-        }
+        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]        
         public IList<List<string>> GroupAnagrams2(string[] strs)
         {
             var ret = new List<IList<string>>();
@@ -1340,13 +1473,10 @@ namespace Interview
                 var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
 
                 if (!map.ContainsKey(keyStr))
-                {
                     map.Add(keyStr, new List<string>() { strs[i] });
-                }
                 else
-                {
                     map[keyStr].Add(strs[i]);
-                }
+
             }
             return map.Values.ToList();
         }
@@ -1487,14 +1617,14 @@ namespace Interview
                 return "";
             if (s.Length == 1)
                 return s;
-            
+
             for (int i = 0; i < s.Length - 1; i++)
             {
                 maxCheck(s, i, i);
                 maxCheck(s, i, i + 1);
             }
             return s.Substring(startIdx, maxLen);
-        }        
+        }
         void maxCheck(string s, int st, int ed)
         {
             while (st >= 0 && ed < s.Length && s[st] == s[ed])
@@ -1640,7 +1770,7 @@ namespace Interview
             return ret;
         }
 
-        
+
         //277. Find the Celebrity
         //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may 
         //exist one celebrity. The definition of a celebrity is that all the other n - 1 people know 
@@ -1876,7 +2006,7 @@ namespace Interview
             return ret;
         }
 
-        //26. Remove Duplicates from Sorted Array  
+        //26. Remove Duplicates from Sorted Array  (zillow)
         //do it in-space and put duplicate to tail, return non-repeated length
         public int RemoveDuplicates(int[] nums)
         {
@@ -2418,7 +2548,7 @@ namespace Interview
             return ret;
         }
 
-        
+
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 
@@ -2460,6 +2590,31 @@ namespace Interview
         // O(nlog(m))  n is total numbers m is how many rows  
 
 
+        public int LengthOfLongestSubstring2(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+            int max = 0;
+            var map = new HashSet<int>();
+            int left = 0;
+            int i = 0;
+            while (i < s.Length)
+            {
+                if (!map.Contains(s[i]))
+                {
+                    map.Add(s[i]);
+                    i++;
+                    max = Math.Max(max, map.Count);
+                }
+                else
+                {
+                    map.Remove(s[left]);
+                    left++;
+                }
+            }
+            return max;
+        }
+
         //3. Longest Substring Without Repeating Characters
         //Examples:  Given "abcabcbb", the answer is "abc", which the length is 3.
         //Given "bbbbb", the answer is "b", with the length of 1.
@@ -2490,6 +2645,7 @@ namespace Interview
             }
             return max;
         }
+
 
         //54. Spiral Matrix
         //Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
@@ -2616,7 +2772,7 @@ namespace Interview
             }
             return curmax;
         }
-        
+
 
         //leetcode 201705 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
@@ -2683,30 +2839,31 @@ namespace Interview
         //取得最佳分割点即可。不过，最后别忘了将交易两次的获利和只交易一次的最大获利相比较，并取最大值（left_max[prices.size() - 1]或者right_max[0]）。        
         //原文：https://blog.csdn.net/magicbean2/article/details/71045903 
         //space : O(n)
-        public int MaxProfit3(int[] prices){
-            if(prices.Length <= 1)
+        public int MaxProfit3(int[] prices)
+        {
+            if (prices.Length <= 1)
                 return 0;
             var left_max = new int[prices.Length];
             var right_max = new int[prices.Length];
             int lowest_price = prices[0];
-            for(int i = 1; i < prices.Length; ++i)
+            for (int i = 1; i < prices.Length; ++i)
             {
-                if(prices[i] < lowest_price)
+                if (prices[i] < lowest_price)
                     lowest_price = prices[i];
                 left_max[i] = Math.Max(left_max[i - 1], prices[i] - lowest_price);
             }
             int highest_price = prices[prices.Length - 1];
-            for(int i = prices.Length - 2; i >= 0; --i)
+            for (int i = prices.Length - 2; i >= 0; --i)
             {
-                if(prices[i] > highest_price)
+                if (prices[i] > highest_price)
                     highest_price = prices[i];
                 right_max[i] = Math.Max(right_max[i + 1], highest_price - prices[i]);
             }
             int max_profit = 0;
-            for(int i = 0; i < prices.Length - 1; ++i)
+            for (int i = 0; i < prices.Length - 1; ++i)
             {
                 int sum_price = left_max[i] + right_max[i];
-                if(max_profit < sum_price)
+                if (max_profit < sum_price)
                     max_profit = sum_price;
             }
             return Math.Max(max_profit, right_max[0]);
@@ -2753,7 +2910,7 @@ namespace Interview
                 dist = (x * x) + (y * y);
             }
         }
-        
+
 
         //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
         //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，
@@ -2766,44 +2923,44 @@ namespace Interview
                 return ret;
 
             forward = forward.OrderBy((x) => x[1]).ToList();
-            returning = returning.OrderBy((r)=>r[1]).ToList();
+            returning = returning.OrderBy((r) => r[1]).ToList();
 
             int i = 0;
             int j = returning.Count - 1;
             int min = int.MaxValue;
             int targetSum = int.MinValue;
-            while(i < forward.Count && j >= 0)
-            {                
-                    int curSum = forward[i][1] + returning[j][1];
-                    if (target - curSum > 0)
+            while (i < forward.Count && j >= 0)
+            {
+                int curSum = forward[i][1] + returning[j][1];
+                if (target - curSum > 0)
+                {
+                    i++;
+                    if (target - curSum < min)
                     {
-                        i++;
-                        if(target - curSum < min)
-                        {
-                            min = target - curSum;
-                            targetSum = curSum;
-                        }
+                        min = target - curSum;
+                        targetSum = curSum;
                     }
-                    else
+                }
+                else
+                {
+                    j--;
+                    if (curSum - target < min)
                     {
-                        j--;
-                        if (curSum - target < min)
-                        {
-                            min = curSum - target;
-                            targetSum = curSum;
-                        }
-                    }                
+                        min = curSum - target;
+                        targetSum = curSum;
+                    }
+                }
             }
             //already find out closet sum value (max) , then go to and index combination
             //var fMap = new Dictionary<int, int>();
             //use 2 sum skill
             var rMap = new Dictionary<int, int>();
-            foreach(var r in returning)
-                rMap.Add(r[1],r[0]);
-                        
-            for(int idx = 0; idx < forward.Count; idx++)
+            foreach (var r in returning)
+                rMap.Add(r[1], r[0]);
+
+            for (int idx = 0; idx < forward.Count; idx++)
             {
-                if(rMap.ContainsKey(targetSum - forward[idx][1]))
+                if (rMap.ContainsKey(targetSum - forward[idx][1]))
                 {
                     ret.Add(new List<int>() { forward[idx][0], rMap[targetSum - forward[idx][1]] });
                 }
@@ -2896,12 +3053,13 @@ namespace Interview
         //[-2, 0, 3]
         //Follow up:
         //Could you solve it in O(n^2) runtime?
-        int threeSumSmaller(int[] nums, int target) {
+        int threeSumSmaller(int[] nums, int target)
+        {
             if (nums == null || nums.Length == 0)
                 return 0;
             Array.Sort(nums);
             int ret = 0;
-            for(int i =0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 int j = i + 1;
                 int k = nums.Length - 1;
@@ -2910,17 +3068,19 @@ namespace Interview
                     continue;
                 while (j < k)
                 {
-                    if (nums[i] + nums[j] + nums[k] < target){
+                    if (nums[i] + nums[j] + nums[k] < target)
+                    {
                         ret++;
-                        j++;                        
+                        j++;
                         while (nums[j] == nums[j - 1])
-                            j++;                        
+                            j++;
                     }
-                    else {
+                    else
+                    {
                         k--;
                         while (nums[k] == nums[k + 1])
                             k--;
-                    }                        
+                    }
                 }
             }
             return ret;
@@ -2962,7 +3122,7 @@ namespace Interview
 
             for (int i = 0; i < nums.Length; ++i)
             {
-                res ^= (i+min) ^ nums[i];
+                res ^= (i + min) ^ nums[i];
             }
             res ^= (min + nums.Length);
             return res;

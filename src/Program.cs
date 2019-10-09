@@ -13,7 +13,7 @@ namespace Interview
 
             var asa = new ArrayString();
             var dp = new DynamicProgramming();
-
+            asa.solution01(2,"1A 2F 1C");
             asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
 
             //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
@@ -144,7 +144,7 @@ namespace Interview
 
             dfs.KillProcess(new List<int> { 1, 3, 10, 5 }, new List<int> { 3, 0, 5, 3 }, 5);
 
-            asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
+            //asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
             asa.Compress("AAABBCCCCCCAAAAA");
             asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2});
             asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });

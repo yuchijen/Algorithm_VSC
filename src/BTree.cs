@@ -43,19 +43,19 @@ namespace Interview
         //根据展开后形成的链表的顺序分析出是使用先序遍历，那么只要是数的遍历就有递归和非递归的两种方法来求解，这里我们也用两种方法来求解。首先来看递归版本的，思路是先利用DFS的思路找到最左子节点，然后回到其父节点，把其父节点和右子节点断开，将原左子结点连上父节点的右子节点上，然后再把原右子节点连到新右子节点的右子节点上，然后再回到上一父节点做相同操作
         public void Flatten(TreeNode root)
         {
-            if (root==null)
+            if (root == null)
                 return;
-            if (root.left!=null)
+            if (root.left != null)
                 Flatten(root.left);
-            if (root.right!=null)
+            if (root.right != null)
                 Flatten(root.right);
             TreeNode tmp = root.right;
             root.right = root.left;
             root.left = null;
-            while (root.right!=null)
+            while (root.right != null)
                 root = root.right;
             root.right = tmp;
-            
+
         }
 
 
@@ -114,15 +114,15 @@ namespace Interview
         }
 
         //100. Same Tree
-        public bool IsSameTree(TreeNode p, TreeNode q) 
+        public bool IsSameTree(TreeNode p, TreeNode q)
         {
-            if(q==null || p==null)
-                return p==q;
-        
-            if(p.val!=q.val)
+            if (q == null || p == null)
+                return p == q;
+
+            if (p.val != q.val)
                 return false;
-        
-            return IsSameTree(p.left,q.left)&&IsSameTree(p.right,q.right);
+
+            return IsSameTree(p.left, q.left) && IsSameTree(p.right, q.right);
         }
 
         //199. Binary Tree Right Side View    (FB)
@@ -137,19 +137,20 @@ namespace Interview
         //           8   9         <---
         public IList<int> RightSideView2(TreeNode root)
         {
-            if(root==null)
+            if (root == null)
                 return null;
 
             var ll = new List<IList<int>>();
-            levelHelp(ll,root,0);
+            levelHelp(ll, root, 0);
             var ret = new List<int>();
-            foreach(var layer in ll){
+            foreach (var layer in ll)
+            {
                 ret.Add(layer.Last());
             }
 
             return ret;
         }
-        
+
         public IList<int> RightSideView(TreeNode root)
         {
             var ret = new List<int>();
@@ -164,7 +165,7 @@ namespace Interview
                 return;
             if (ret.Count == depth)
             {
-                ret.Add(root.val);                
+                ret.Add(root.val);
             }
             DFSRightSideView(depth + 1, root.right, ret);
             DFSRightSideView(depth + 1, root.left, ret);
@@ -195,7 +196,7 @@ namespace Interview
             if (root == null)
                 return 0;
 
-            return SumOfLeftLeavesHelper(root, false);            
+            return SumOfLeftLeavesHelper(root, false);
         }
 
         int SumOfLeftLeavesHelper(TreeNode node, bool left)
@@ -203,7 +204,7 @@ namespace Interview
             if (node == null)
                 return 0;
             int sum = 0;
-            
+
             if (left && node.left == null && node.right == null)
                 sum += node.val;
 
@@ -230,7 +231,7 @@ namespace Interview
 
             return IsBalanced(root.left) && IsBalanced(root.right);
         }
-       
+
         //105. Construct Binary Tree from Preorder and Inorder Traversal
         //Given preorder and inorder traversal of a tree, construct the binary tree.
         //Note:You may assume that duplicates do not exist in the tree.
@@ -259,7 +260,7 @@ namespace Interview
             int pivValue = preorder[preStart];
 
             int inOrderPivIdx = Array.FindIndex(inorder, v => v == pivValue);
-            
+
             var rootNode = new TreeNode(pivValue);
             rootNode.left = buildTreeHelper(preorder, preStart + 1, preStart + (inOrderPivIdx - inStart), inorder, inStart, inOrderPivIdx - 1);
             rootNode.right = buildTreeHelper(preorder, preStart + (inOrderPivIdx - inStart) + 1, preEnd, inorder, inOrderPivIdx + 1, inEnd);
@@ -276,7 +277,7 @@ namespace Interview
                 return null;
 
             TreeNode successor = null;
-            while(root!=null)
+            while (root != null)
             {
 
                 if (root.val > p.val)
@@ -286,7 +287,7 @@ namespace Interview
                 }
                 else
                     root = root.right;
-                
+
             }
             return successor;
         }
@@ -300,9 +301,9 @@ namespace Interview
             Stack<TreeNode> st = new Stack<TreeNode>();
             bool isFoundNode = false;
 
-            while (root != null || st.Count!=0)
+            while (root != null || st.Count != 0)
             {
-                if(root!=null)
+                if (root != null)
                 {
                     var rootPt = root;
                     st.Push(rootPt);
@@ -313,15 +314,16 @@ namespace Interview
                     root = st.Pop();
                     if (isFoundNode)  //found p in previous round, this node from stack should be successor
                         return root;
-                    if(p == root)
+                    if (p == root)
                         isFoundNode = true;
-                    
+
                     root = root.right;
                 }
             }
             return null;
         }
 
+        
         public TreeNode inorderSuccessorBTree2(TreeNode root, TreeNode p)
         {
             if (root == null || p == null)
@@ -329,10 +331,10 @@ namespace Interview
             var st = new Stack<TreeNode>();
             saveLeftSubTree(root, st);
 
-            while(st.Count>0)
+            while (st.Count > 0)
             {
                 var curNode = st.Pop();
-                if (curNode!=null && curNode == p)
+                if (curNode != null && curNode == p)
                 {
                     if (st.Count > 0)
                         return st.Pop();
@@ -397,7 +399,7 @@ namespace Interview
             /** @return whether we have a next smallest number */
             public bool HasNext()
             {
-                return st.Count != 0;                    
+                return st.Count != 0;
             }
 
             /** @return the next smallest number */
@@ -406,8 +408,8 @@ namespace Interview
                 if (st.Count > 0)
                 {
                     TreeNode curNode = st.Pop();
-                    
-                    if(curNode.right!=null)
+
+                    if (curNode.right != null)
                     {
                         saveLeftTreeToStack(curNode.right, st);
                     }
@@ -497,17 +499,17 @@ namespace Interview
             var bound = new int[2] { int.MaxValue, int.MinValue };
             verticalOrder2Helper(root, 0, map, bound);
 
-            for(int j = bound[0]; j <= bound[1]; j++)
+            for (int j = bound[0]; j <= bound[1]; j++)
             {
                 ret.Add(map[j]);
             }
             return ret;
         }
-        void verticalOrder2Helper(TreeNode node, int col, Dictionary<int,List<int>> map, int[] bound)
+        void verticalOrder2Helper(TreeNode node, int col, Dictionary<int, List<int>> map, int[] bound)
         {
             if (node == null)
                 return;
-            
+
             bound[0] = Math.Min(col, bound[0]);
             bound[1] = Math.Max(col, bound[1]);
 
@@ -643,6 +645,71 @@ namespace Interview
         }
 
 
+        //112. Path Sum
+        //Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+        //Note: A leaf is a node with no children.
+        public bool HasPathSum(TreeNode root, int sum)
+        {
+            if (root == null)
+                return false;
+
+            if (root.left == null && root.right == null && root.val == sum)
+                return true;
+            return HasPathSum(root.left, sum - root.val) || HasPathSum(root.right, sum - root.val);
+        }
+
+        //113. Path Sum II
+        //Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+        //Note: A leaf is a node with no children.
+        public IList<IList<int>> PathSum2(TreeNode root, int sum)
+        {
+            var ret = new List<IList<int>>();
+            if (root == null)
+                return ret;
+
+            pathHelper(root, ret, sum, new List<int>());
+            return ret;
+        }
+        void pathHelper(TreeNode node, List<IList<int>> ret, int sum, List<int> curList)
+        {
+            if (node == null)
+                return;
+            curList.Add(node.val);
+         
+            if (node.left == null && node.right == null && curList.Sum() == sum)
+            {
+                ret.Add(new List<int>(curList));
+                curList.RemoveAt(curList.Count - 1);
+                return;
+            }
+            pathHelper(node.left, ret, sum, curList);
+            pathHelper(node.right, ret, sum, curList);
+            curList.RemoveAt(curList.Count - 1);
+        }
+
+
+        //783. Minimum Distance Between BST Nodes 
+        public int MinDiffInBST(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+
+            var ret = new int[1] { int.MaxValue };
+            minDiffHelper(root, int.MinValue, int.MaxValue, ret);
+            return ret[0];
+        }
+        void minDiffHelper(TreeNode node, int low, int high, int[] res)
+        {
+            if (node == null)
+                return;
+            if (low != int.MinValue)
+                res[0] = Math.Min(res[0], node.val - low);
+            if (high != int.MaxValue)
+                res[0] = Math.Min(res[0], high - node.val);
+            minDiffHelper(node.left, low, node.val, res);
+            minDiffHelper(node.right, node.val, high, res);
+        }
+
         //Amazon: is b-tree mirror
         public bool IsMirror(TreeNode node)
         {
@@ -666,6 +733,7 @@ namespace Interview
             return findDistOfAncestor(croot, node1, 0) + findDistOfAncestor(croot, node2, 0);
 
         }
+
         int findDistOfAncestor(TreeNode root, TreeNode node1, int depth)
         {
             if (root == null)
@@ -693,6 +761,8 @@ namespace Interview
 
             return null;
         }
+
+
         bool isCover(TreeNode root, TreeNode node1)
         {
             if (root == null)
@@ -827,15 +897,15 @@ namespace Interview
             return 1 + Math.Max(MaxDepth(root.left), MaxDepth(root.right));
         }
 
-        public int MaxDepthWithHashTable(TreeNode root, Dictionary<TreeNode,int> map)
+        public int MaxDepthWithHashTable(TreeNode root, Dictionary<TreeNode, int> map)
         {
             if (root == null)
                 return 0;
 
             if (map.ContainsKey(root))
                 return map[root];
-            
-            int dep=  1 + Math.Max(MaxDepthWithHashTable(root.left,map), MaxDepthWithHashTable(root.right,map));
+
+            int dep = 1 + Math.Max(MaxDepthWithHashTable(root.left, map), MaxDepthWithHashTable(root.right, map));
             map.Add(root, dep);
             return dep;
         }
@@ -887,7 +957,7 @@ namespace Interview
         {
             if (root == null)
                 return;
-            
+
             while (root != null)
             {
                 TreeLinkNode curNode = root;
@@ -945,7 +1015,8 @@ namespace Interview
         //guaranteed that the new value does not exist in the original BST.
         //Note that there may exist multiple valid ways for the insertion, as long as the tree remains 
         //a BST after insertion.You can return any of them.
-        TreeNode insertIntoBST(TreeNode root, int val) {
+        TreeNode insertIntoBST(TreeNode root, int val)
+        {
             if (root == null)
                 return new TreeNode(val);
 
@@ -1070,7 +1141,7 @@ namespace Interview
 
             TreeNode left = LowestCommonAncestor2(root.left, p, q);
             TreeNode right = LowestCommonAncestor2(root.right, p, q);
-            
+
             if (left == null)
                 return right;
             else if (right == null)
@@ -1104,16 +1175,18 @@ namespace Interview
 
             var st = new Stack<TreeNode>();
 
-            while(root!=null || st.Count>0){
+            while (root != null || st.Count > 0)
+            {
 
-                if(root!=null){
+                if (root != null)
+                {
                     st.Push(root);
-                    root= root.left;
+                    root = root.left;
                 }
 
             }
 
-            putLeftNodeToStack(root,st);
+            putLeftNodeToStack(root, st);
             int prev = int.MinValue;
 
             while (st.Count > 0)

@@ -32,13 +32,113 @@ namespace Interview
 
     public class LinkedList
     {
+        //142. Linked List Cycle II
+        //Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+        //To represent a cycle in the given linked list, we use an integer pos which represents the position (0-indexed) in the linked list where tail connects to. If pos is -1, then there is no cycle in the linked list.
+        //Note: Do not modify the linked list.
+        //因为快指针每次走2，慢指针每次走1，快指针走的距离是慢指针的两倍。而快指针又比慢指针多走了一圈。所以head到环的起点+环的起点到他们相遇的点的距离 与 环一圈的距离相等。
+        //现在重新开始，head运行到环起点 和 相遇点到环起点 的距离也是相等的，相当于他们同时减掉了 环的起点到他们相遇的点的距离
+        // meet position: pt2 = "distanace from head to circle start" + 1 circle + some extra step
+        // meet position: pt1 = "distanace from head to circle start" +            some extra step       
+        // pt1 pt2 are in the same position, so 1 circle distance = "distanace from head to circle start" + some extra step 
+        public ListNode DetectCycle(ListNode head)
+        {
+            if (head == null || head.next == null)
+                return null;
+
+            ListNode ptr = head;
+            ListNode ptr2 = head;
+
+            while (ptr2 != null && ptr2.next != null)
+            {
+                ptr = ptr.next;
+                ptr2 = ptr2.next.next;
+                //meet at same node, looking for cycle start node, 
+                if (ptr == ptr2)
+                {
+                    ListNode pre = head;
+                    while (pre != ptr)
+                    {
+                        pre = pre.next;
+                        ptr = ptr.next;
+                    }
+                    return ptr;
+                }
+            }
+            return null;
+
+        }
+
+        //19. Remove Nth Node From End of List
+        //Given a linked list, remove the n-th node from the end of list and return its head.
+        //Example:Given linked list: 1->2->3->4->5, and n = 2.
+        //After removing the second node from the end, the linked list becomes 1->2->3->5.
+        public ListNode RemoveNthFromEnd(ListNode head, int n)
+        {
+            if (n < 1)
+                return null;
+            ListNode pt1 = head;
+            ListNode pt2 = head;
+
+            while (pt1 != null && pt1.next != null)
+            {
+                if (n <= 0)
+                    pt2 = pt2.next;
+                else
+                    n = n - 1;
+
+                pt1 = pt1.next;
+            }
+            if (n == 1)
+                return head.next;
+            else if (n > 1)
+                return null;
+            else
+            {
+                if (pt2.next != null)
+                    pt2.next = pt2.next.next;
+                else
+                    pt2.next = null;
+
+                return head;
+            }
+        }
+
+        public ListNode RemoveNthFromEnd2(ListNode head, int n)
+        {
+            if (head == null)
+                return null;
+
+            var ptr = head;
+            var ptr2 = head;
+            int total = 0;
+            while (ptr != null)
+            {
+                total += 1;
+                ptr = ptr.next;
+            }
+            if (total == n)
+                return head.next;
+
+            int step = total - n - 1;
+            while (step > 0)
+            {
+                ptr2 = ptr2.next;
+                step -= 1;
+            }
+            if (ptr2 == null || ptr2.next == null)
+                return null;
+            ptr2.next = ptr2.next.next;
+            return head;
+        }
+
         //FB phone screen: reverse partial linkedlist between 2 duplicated values) input only contains 1 duplicate pair
         //e.g.  1,10,4,7,8,10,5 =>  1,10,8,7,4,10,5   (reverse elements between 2 10s)
         public ListNode PartialReverse(ListNode head)
         {
             if (head == null)
                 return null;
-           
+
             var ptrs = findStEndPtr(head);
             ListNode stPtr = ptrs[0];
             ListNode endPtr = ptrs[1];
@@ -46,7 +146,7 @@ namespace Interview
             //start reserse 
             var stack = new Stack<int>();
             var midStPtr = stPtr.next;
-            while (midStPtr !=endPtr)
+            while (midStPtr != endPtr)
             {
                 stack.Push(midStPtr.val);
                 midStPtr = midStPtr.next;
@@ -145,7 +245,7 @@ namespace Interview
             while (ptrEnd != null && ptrEnd.next != null)
                 ptrEnd = ptrEnd.next;
 
-            while(ptrStart!= ptrEnd)
+            while (ptrStart != ptrEnd)
             {
                 if (ptrStart.val == 1)//swap with end
                 {
@@ -169,7 +269,7 @@ namespace Interview
             if (l2 == null)
                 return l1;
             var preHead = new ListNode(-1);
-            
+
             var cur = preHead;
 
             while (l1 != null && l2 != null)
@@ -247,17 +347,21 @@ namespace Interview
         //  1->3->4,
         //  2->6
         //]        Output: 1->1->2->3->4->4->5->6
+        // 类似merge sort，每次将所有的list两两之间合并，直到所有list合并成一个。如果用迭代而非递归，则空间复杂度为O(1)。时间复杂度：
+        // 2n * k/2 + 4n * k/4 + ... + (2^x)n * k/(2^x) = nk * x
+        // k/(2^x) = 1 -> 2^x = k -> x = log2(k)
+        // 所以时间复杂度为O(nk log(k))
         public ListNode MergeKLists(ListNode[] lists)
         {
             if (lists == null || lists.Length == 0)
                 return null;
             int st = 0;
-            int end = lists.Length-1;
+            int end = lists.Length - 1;
 
             while (end > 0)
             {
                 st = 0;
-                while(st < end)
+                while (st < end)
                 {
                     lists[st] = MergeTwoLists(lists[st], lists[end]);
                     st++;
@@ -267,6 +371,38 @@ namespace Interview
             return lists[0];
         }
 
+
+        //这种解法利用了最小堆这种数据结构，我们首先把k个链表的首元素都加入最小堆中，它们会自动排好序。
+        //然后我们每次取出最小的那个元素加入我们最终结果的链表中，然后把取出元素的下一个元素再加入堆中，
+        //下次仍从堆中取出最小的元素做相同的操作，以此类推，直到堆中没有元素了，此时k个链表也合并为了一个链表，返回首节点即可
+        public ListNode MergeKListsPQ(ListNode[] lists)
+        {
+            if(lists==null || lists.Length==0)
+                return null;
+            var pq =new  List<ListNode>();            
+            for(int i=0; i< lists.Length; i++){
+                pq.Add(lists[i]);
+            }
+            if(pq.Count==0)
+                return null;
+            var ptr = new ListNode(-1);
+            var cur = ptr;
+            pq.Sort((x,y)=>x.val -y.val);
+
+            while(pq.Count>0){
+                var node = pq[0];
+                pq.RemoveAt(0);    
+                if(node==null)
+                    continue;                
+                cur.next = node;
+                cur= cur.next;
+                if(cur.next!=null){
+                    pq.Add(cur.next);
+                    pq.Sort((x,y)=>x.val -y.val);        
+                }                
+            }
+            return ptr.next;
+        }
 
         //328. Odd Even Linked List
         //Given a singly linked list, group all odd nodes together followed by the even nodes. 
@@ -350,7 +486,7 @@ namespace Interview
                 //retPtr = retPtr.next;
             }
 
-            return head; 
+            return head;
         }
 
         //space complex O(1);
@@ -360,7 +496,7 @@ namespace Interview
                 return null;
             var new_h = head;
 
-            while(head!= null && head.next!=null)
+            while (head != null && head.next != null)
             {
                 var cur = head.next;
                 head.next = head.next.next;
@@ -439,16 +575,16 @@ namespace Interview
 
                 int digit = (l1Val + l2Val + carry) % 10;
                 carry = (l1Val + l2Val + carry) / 10;
-                
+
                 ptr.next = new ListNode(digit);
                 ptr = ptr.next;
-                
+
                 if (l1 != null)
                     l1 = l1.next;
                 if (l2 != null)
                     l2 = l2.next;
             }
-            if (carry >0)
+            if (carry > 0)
                 ptr.next = new ListNode(carry);
 
             return pre.next;
