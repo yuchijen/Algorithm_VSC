@@ -8,6 +8,34 @@ namespace Interview
 {
     public class HashTable
     {
+        //347 Top K Frequent Elements
+        //Given a non-empty array of integers, return the k most frequent elements.
+        // Example 1: Input: nums = [1,1,1,2,2,3], k = 2, Output: [1,2]
+        // Example 2: Input: nums = [1], k = 1 Output: [1]
+        public IList<int> TopKFrequent(int[] nums, int k) {
+            if(nums==null ||nums.Count()==0|| nums.Count() <k)
+                return null;
+
+            var map = new Dictionary<int, int>();
+            foreach(var x in nums){
+                if(map.ContainsKey(x))
+                    map[x]++;
+                else
+                    map.Add(x,1);    
+            }
+            List<KeyValuePair<int, int>> myList = map.ToList();
+
+            myList.Sort((kv1,kv2)=>{
+                return kv2.Value.CompareTo(kv1.Value);
+            });
+
+            var ret = new List<int>();
+            for(int i=0; i<k;i++)
+                ret.Add(myList.ElementAt(i).Key);
+
+            return ret;    
+        }
+
         //36. Valid Sudoku, sudoku validator ,if a passed string containing all 81 numbers of the puzzle 
         //is a valid solution, false otherwise
         //note: The Sudoku board could be partially filled, where empty cells are filled

@@ -173,6 +173,9 @@ namespace Interview
 
 
         //543. Diameter of Binary Tree(Recur)
+        //Given a binary tree, you need to compute the length of the diameter of the tree. 
+        //The diameter of a binary tree is the length of the longest path between any two nodes 
+        //in a tree. This path may or may not pass through the root.
         public int DiameterOfBinaryTree(TreeNode root)
         {
             if (root == null)
@@ -180,10 +183,22 @@ namespace Interview
 
             int res = MaxDepth(root.left) + MaxDepth(root.right);
             return Math.Max(res, Math.Max(DiameterOfBinaryTree(root.left), DiameterOfBinaryTree(root.right)));
-
         }
 
+        public int DiameterOfBTreeWithMap(TreeNode root, Dictionary<TreeNode, int> map)
+        {
+            if (root == null)
+                return 0;
+            if(map.ContainsKey(root))
+                return map[root];
 
+            int res = MaxDepth(root.left) + MaxDepth(root.right);
+            int ret = Math.Max(res, Math.Max(DiameterOfBinaryTree(root.left), DiameterOfBinaryTree(root.right)));
+            map.Add(root, ret);
+            return ret;
+        }
+
+        
         //404. Sum of Left Leaves
         //       3
         //      / \

@@ -114,6 +114,53 @@ namespace Interview
             return st;
         }
 
+
+        //74. Search a 2D Matrix
+        //Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+        //Integers in each row are sorted from left to right.
+        //The first integer of each row is greater than the last integer of the previous row.
+        // time: O(m+n)   
+        public bool SearchMatrix(int[][] matrix, int target) {
+            if(matrix==null || matrix.Length==0||matrix[0].Length==0)
+                return false;
+
+            int rowIdx = 0;
+            int colIdx = matrix[0].Length-1;
+
+            while(rowIdx < matrix.Length && colIdx >=0){
+                if(matrix[rowIdx][colIdx]==target)
+                    return true;
+                if(matrix[rowIdx][colIdx] > target)
+                    colIdx--;
+                else if(matrix[rowIdx][colIdx]<target)    
+                    rowIdx++;
+            }
+            return false;            
+        }
+
+        //convert it 1 -dim series number then use binary search
+        //T: log(mxn)
+        public bool SearchMatrix2(int[][] matrix, int target) {
+            if(matrix==null || matrix.Length==0||matrix[0].Length==0)
+                return false;
+            
+            int n = matrix[0].Length;
+            int total =  matrix.Length * matrix[0].Length;
+
+            int st=0;
+            int end = total-1;
+            while(st<=end){
+                int piv = (st+end)/2;
+                if(target== matrix[piv/n][piv%n])
+                    return true;
+                if(target > matrix[piv/n][piv%n])
+                    st = piv+1;    
+                else
+                    end = piv-1;
+            }
+            return false;    
+        }
+
         //240. Search a 2D Matrix II
         //Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
         //Integers in each row are sorted in ascending from left to right.

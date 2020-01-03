@@ -7,6 +7,33 @@ using System.Threading.Tasks;
 
 namespace Interview
 {
+    //1114. Print in Order
+    //The same instance of Foo will be passed to three different threads. 
+    //Thread A will call first(), thread B will call second(), and thread C will call third(). 
+    //Design a mechanism and modify the program to ensure that second() is executed after first(), 
+    //and third() is executed after second().
+    public class EventWait{
+        EventWaitHandle _waitFirst;
+        EventWaitHandle _waitSec;
+        public EventWait(){
+            _waitFirst = new AutoResetEvent(false);
+            _waitSec = new AutoResetEvent(false);
+        }
+        public void printFirst(){
+            Console.WriteLine("first");
+            _waitFirst.Set();
+        }
+        public void printSec(){
+            _waitFirst.WaitOne();
+            Console.WriteLine("second");            
+            _waitSec.Set();
+        }
+        public void printThird(){
+            _waitSec.WaitOne();
+            Console.WriteLine("third");
+        }
+    }
+
     public class Dsign
     {
         //703. Kth Largest Element in a Stream
