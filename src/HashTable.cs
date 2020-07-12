@@ -29,11 +29,7 @@ namespace Interview
                 return kv2.Value.CompareTo(kv1.Value);
             });
 
-            var ret = new List<int>();
-            for(int i=0; i<k;i++)
-                ret.Add(myList.ElementAt(i).Key);
-
-            return ret;    
+            return myList.Select(kv => kv.Key).Take(k).ToList();                
         }
 
         //36. Valid Sudoku, sudoku validator ,if a passed string containing all 81 numbers of the puzzle 

@@ -59,7 +59,7 @@ namespace Interview
         }
 
 
-        //124. Binary Tree Maximum Path Sum (or Minimun) (FB)
+        //124. Binary Tree Maximum Path Sum (or Minimun) (FB)687, 543
         //Given a non-empty binary tree, find the maximum path sum.
         //For this problem, a path is defined as any sequence of nodes from some starting node to 
         //any node in the tree along the parent-child connections. The path must contain at least one 
@@ -81,16 +81,13 @@ namespace Interview
         {
             if (node == null)
                 return 0;
-
-            int left = MaxPathSumDfs(node.left, ret);
-            int right = MaxPathSumDfs(node.right, ret);
-
-            left = left > 0 ? left : 0;
-            right = right > 0 ? right : 0;
-
+            //Console.WriteLine(node.val);
+            int left = Math.Max(0, MaxPathSumDfs(node.left, ret));
+            int right = Math.Max(0, MaxPathSumDfs(node.right, ret));
+            Console.WriteLine(left);
+            
             ret[0] = Math.Max(ret[0], left + right + node.val);
             return Math.Max(left, right) + node.val;
-
         }
         //follow up, how about min Path ?
         public int MinPathSum(TreeNode root)
@@ -111,6 +108,38 @@ namespace Interview
             ret[0] = Math.Min(ret[0], curMin);
             return node.val < Math.Min(left, right) + node.val ? node.val : Math.Min(left, right) + node.val;
 
+        }
+
+        //687. Longest Univalue Path
+        //Given a binary tree, find the length of the longest path where each node 
+        //in the path has the same value. This path may or may not pass through the root.
+        //The length of path between two nodes is represented by the number of edges between them.
+        // O(n) / O(n)
+        public int LongestUnivaluePath(TreeNode root) {
+            if (root==null)
+                return 0;
+            var ret = new int[1]{0};
+            univaluePathHelper(ret, root);
+            return ret[0];
+        }
+        int univaluePathHelper(int[] ret, TreeNode r){
+            if(r==null)
+                return 0;
+
+            int left = univaluePathHelper(ret, r.left);
+            int right = univaluePathHelper(ret, r.right);
+            
+            int leftSub =0;
+            int rightSub =0;
+            if(r.right!=null && r.val == r.right.val){
+                rightSub = right +1;    
+            }
+            if(r.left!=null && r.val == r.left.val){
+                leftSub = left + 1;    
+            }
+            ret[0] = Math.Max(ret[0], leftSub+rightSub);
+        
+            return Math.Max(leftSub,rightSub);
         }
 
         //100. Same Tree
@@ -156,10 +185,10 @@ namespace Interview
             var ret = new List<int>();
             if (root == null)
                 return ret;
-            DFSRightSideView(0, root, ret);
+            DFSRightSideView_InSpace(0, root, ret);
             return ret;
         }
-        void DFSRightSideView(int depth, TreeNode root, List<int> ret)
+        void DFSRightSideView_InSpace(int depth, TreeNode root, List<int> ret)
         {
             if (root == null)
                 return;
@@ -167,8 +196,8 @@ namespace Interview
             {
                 ret.Add(root.val);
             }
-            DFSRightSideView(depth + 1, root.right, ret);
-            DFSRightSideView(depth + 1, root.left, ret);
+            DFSRightSideView_InSpace(depth + 1, root.right, ret);
+            DFSRightSideView_InSpace(depth + 1, root.left, ret);
         }
 
 
@@ -810,7 +839,7 @@ namespace Interview
         }
 
 
-        //297. Serialize and Deserialize Binary Tree  (Not passed yet)
+        //297. Serialize and Deserialize Binary Tree 
         //For example, you may serialize the following tree
         //    1         as "[1,2,3,null,null,4,5]", just the same as how LeetCode OJ 
         //   / \        serializes a binary tree.You do not necessarily need to follow 

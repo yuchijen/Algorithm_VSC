@@ -16,6 +16,9 @@ namespace Interview
             asa.solution01(2,"1A 2F 1C");
             asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
 
+            var enstr = asa.encode2(new List<string>{"str456#7/890", "str326#3/7890/123","seffc"});
+            asa.decode2(enstr);
+            
             //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
 
             //var arr = new int[] { 1, 2, 3, 4, 1, 2, 2 };
@@ -107,7 +110,9 @@ namespace Interview
             n3.right = new TreeNode(5);
 
             var bt = new BTree();
-           
+            Console.WriteLine("********************************MPS");
+            bt.MaxPathSum(root);
+
             bt.deserialize(bt.serialize(root));
             var ret =bt.FindLeaves(root);
 

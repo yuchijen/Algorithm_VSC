@@ -8,6 +8,69 @@ namespace Interview
 {
     public class ArrayString
     {
+
+        //271	Encode and Decode String
+        //Design an algorithm to encode a list of strings to a string. 
+        //The encoded string is then sent over the network and is decoded back to the original list of strings.
+        // Machine 1 (sender) has the function:
+        // string encode(vector<string> strs) {
+        //   // ... your code
+        //   return encoded_string;
+        // }
+        // Machine 2 (receiver) has the function:
+        // vector<string> decode(string s) {
+        //   //... your code
+        //   return strs;
+        // }
+        public string encode(List<string> strs) {
+            string res = "";
+            foreach (var str in strs) 
+                res += str + '\0';
+            return res;
+        }
+        //use length of each item as prefix, then put one character, then string item
+        public string encode2(List<string> strs) {
+            string res = "";
+            foreach (var str in strs) 
+                res +=  "#" + str.Length + "/" + str;
+            
+            Console.WriteLine(res);    
+            return res;
+        }
+        // Decodes a single string to a list of strings.
+        public List<string> decode(string s) {
+            List<string> res = new List<string>();
+            var ret = s.Split('\0').ToList();
+
+            foreach(var x in ret)
+                Console.Write(x+',');
+        
+            return ret;
+        }
+
+        public List<string> decode2(string s) {
+            List<string> ret = new List<string>();
+            int i = 0;
+            while(i < s.Length){
+                if(s[i]=='#'){
+                    int idx = s.IndexOf('/',i);
+                    int len = 0;
+                    
+                    if(idx!=-1){
+                        len = int.Parse(s.Substring(i+1, idx-i -1));
+                        ret.Add(s.Substring(idx+1,len));
+                        i = len+idx;
+                    }
+
+                }
+                                    i++;
+            }
+
+            foreach(var x in ret)
+                Console.Write(x+',');
+        
+            return ret;
+        }
         public int solution01(int N, string S)
         {
             if (N == 0)
