@@ -413,7 +413,7 @@ namespace Interview
         {
             if (nums == null || nums.Length == 0)
                 return 0;
-            int curSum = nums[0];
+            //int curSum = nums[0];
             int curMax = nums[0];
 
             int[] dp = new int[nums.Length+1];

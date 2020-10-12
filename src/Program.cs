@@ -8,9 +8,29 @@ namespace Interview
 {
     class Program
     {
+        static void foo (string s){Console.WriteLine("ss");}
+        static void foo (int i){Console.WriteLine("ii");}
+        static void foo (object s){Console.WriteLine("oo");}
+        
         static void Main(string[] args)
         {
 
+            String my11 = "abc";
+            String my22 = "abc";
+            var sb1 = new StringBuilder("abc");
+            var sb2 = new StringBuilder("abc");
+            var ll2 = new List<object>();
+            ll2.Add(my11);
+            ll2.Add(sb1);
+            Console.WriteLine(ll2.Contains(my22));
+            Console.WriteLine(ll2.Contains(sb2));
+            Console.WriteLine(ll2.Contains(sb2.ToString()));
+            // my[0] ='c';
+
+            // object xxx = "str";
+            // foo(xxx);
+            // dynamic yyy = "str";
+            // foo(yyy);
             var asa = new ArrayString();
             var dp = new DynamicProgramming();
             asa.solution01(2,"1A 2F 1C");
@@ -65,7 +85,7 @@ namespace Interview
 
             //Console.WriteLine("Press any key to exit...");
             //Console.ReadLine();
-
+            
             var C = new Circle();
             Console.WriteLine("circumference:" + C.Calculate((x) => { return x * 2 * 3.14; }));
 
@@ -88,6 +108,9 @@ namespace Interview
             //bk.SubarraysDivByK(new int[] { 4, 5, 0, -2, -3, 1 }, 5);
 
             Console.WriteLine("Permutation:########");
+
+            int? a  = null;
+            int b = (int)a;
             var perret = bk.Permute(new int[3] { 1, 2, 3 });
             foreach (var x in perret)
             {
@@ -106,8 +129,10 @@ namespace Interview
             TreeNode n3 = new TreeNode(3);
             root.left = n2;
             root.right = n3;
-            n3.left = new TreeNode(4);
-            n3.right = new TreeNode(5);
+            n2.left = new TreeNode(4);
+            n2.right = new TreeNode(5);
+            n3.left = new TreeNode(6);
+            n3.right = new TreeNode(7);
 
             var bt = new BTree();
             Console.WriteLine("********************************MPS");
@@ -116,8 +141,15 @@ namespace Interview
             bt.deserialize(bt.serialize(root));
             var ret =bt.FindLeaves(root);
 
-            //var tt = new Thailand();
-            //tt.Execute(10, 10);
+            bt.VerticalTraversal(root);
+
+            var ht = new HashTable();
+            Console.WriteLine("find anagrams:");
+            foreach(var x in ht.FindAnagrams2("cbaerwwbac","abc")){
+                Console.Write(x+',');
+            }
+
+
 
             var dfs = new DFS_BFS();
 

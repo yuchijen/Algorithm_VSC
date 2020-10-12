@@ -59,7 +59,7 @@ namespace Interview
                 {
                     if (curSetStr.Length - i == 1 && curSetStr[i] - '0' != 0)
                     {
-                        curRet = " " + digitStr1[curSetStr[i] - '0'] + curRet;
+                        curRet = " " + digitStr1[curSetStr[i] - '0'];
                     }
                     else if (curSetStr.Length - i == 2 && curSetStr[i] - '0' != 0)
                     {
@@ -68,7 +68,7 @@ namespace Interview
                         else
                             curRet = " " + digitStr2[curSetStr[i] - '0'] + curRet;
                     }
-                    else if (curSetStr.Length - i == 3)
+                    else if (curSetStr.Length - i == 3 && curSetStr[i] - '0' != 0)
                         curRet = " " + digitStr1[curSetStr[i] - '0'] + " "+ digitStr2[10] + curRet;
                 }
 

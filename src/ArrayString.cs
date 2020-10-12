@@ -548,15 +548,16 @@ namespace Interview
             }
             if (fDescIdx == int.MaxValue)  //input is all ascedent from tail, sort whole nums
             {
-                int st = 0, end = nums.Length - 1;
-                while (st < end)
-                {
-                    int temp = nums[st];
-                    nums[st] = nums[end];
-                    nums[end] = temp;
-                    st++;
-                    end--;
-                }
+                Array.Sort(nums);
+                //int st = 0, end = nums.Length - 1;
+                // while (st < end)
+                // {   //swap 
+                //     int temp = nums[st];
+                //     nums[st] = nums[end];
+                //     nums[end] = temp;
+                //     st++;
+                //     end--;
+                // }
             }
             else
             {
@@ -1036,11 +1037,55 @@ namespace Interview
             return 0;
         }
 
+        //415. Add Strings
+        public string AddStrings(string num1, string num2) {
+            int l1 = num1.Length-1;
+            int l2 = num2.Length-1;
+            int carry = 0;
+            var ret = new StringBuilder();
+            
+            while(l1 >= 0 || l2 >= 0){
+                int a = l1 >= 0 ? num1[l1--]-'0' : 0;
+                int b = l2 >= 0 ? num2[l2--]-'0' : 0;
+                ret.Insert(0,(carry + a + b) %10);
+                carry=(carry + a + b)/10;
+            }
+            if(carry!=0)
+                ret.Insert(0,carry);
+
+            return ret.ToString();
+        }
+
         //43. Multiply Strings
         //Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and 
         //num2, also represented as a string.
         //e.g. 1: Input: num1 = "2", num2 = "3" Output: "6"
         //e.g.2: Input: num1 = "123", num2 = "456"  Output: "56088"
+        public string Multiply2(string num1, string num2)
+        {
+            if(string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
+                return "0";
+            int n = num1.Length;
+            int m = num2.Length;    
+            var ret = new int[n+m];
+
+            for(int i = n-1; i>=0; i--){
+                for(int j = m-1; j>=0; j--){                
+                    ret[i+j] += (num1[i]*num2[j]) % 10;
+                    if(i+j>0)
+                        ret[i+j-1]+=(num1[i]*num2[j]) / 10;                
+                }
+            }
+            string rr = "";
+            int k =0;
+            while(ret[k]==0){
+                k++;
+            }
+            for(int  l=k; l< ret.Length; l++){
+                rr+=ret[l];
+            }
+            return rr;
+        }
         public string Multiply(string num1, string num2)
         {
             if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
@@ -1203,7 +1248,7 @@ namespace Interview
         }
 
 
-        //157. Read N Characters Given Read4  (not resoved yet)
+        //157. Read N Characters Given Read4  
         //The API: int read4(char *buf) reads 4 characters at a time from a file. 
         //The return value is the actual number of characters read.For example, it returns 3 
         //if there is only 3 characters left in the file.
@@ -1211,7 +1256,29 @@ namespace Interview
         //Note:The read function will only be called once for each test case.
         int read(char[] buf, int n)
         {
-            return 0;
+            char[] buf4 = new char[4];
+            int i = 0;
+            while(i < n){
+                int read_len = read4(buf4);
+                if(read_len == 0)
+                    return i;
+
+                int addChar = Math.Min(n-i, read_len);
+                for(int j =0; j<addChar; j++){
+                    buf[i+j] = buf4[j];
+                }
+                i += addChar;
+            }
+            return i;
+            
+            // for(int i =0; i< count ; i++){
+            //     res+=
+            // }
+
+            
+        }
+        int read4(char[] input){
+            return 1;
         }
 
         //253 meeting room2  (groupon phone)
@@ -1804,11 +1871,94 @@ namespace Interview
                 return new int[] { };
         }
 
+        //1428. Leftmost Column with at Least a One
+        public int LeftMostColumnWithOne(BinaryMatrix binaryMatrix) {
+            //matrix的右上角出发，首先往下走，如果遇到1的时候，我们就往左走。直到遇到0为止
+            int row = binaryMatrix.Dimensions()[0];
+            int col = binaryMatrix.Dimensions()[1];
+        
+            int i = 0, j = col-1, ret =-1;
+            while(i<row && j>=0){
+                if(binaryMatrix.Get(i,j)==0){
+                    //go down search this col
+                    i++;
+                } else{
+                    // go left
+                    ret=j;
+                    j--;
+                }
+            }
+            return ret;
+        }
+
+        public int LeftMostColumnWithOne2(BinaryMatrix binaryMatrix) {
+            int row = binaryMatrix.Dimensions()[0];
+            int col = binaryMatrix.Dimensions()[1];
+            //int ret = -1;
+            for(int j =0; j<col; j++){
+                //Bseearch by col to see have 1
+                int i = 0, k = row-1; 
+                while(i<k){
+                    int piv = (i+k)/2;
+                    if(binaryMatrix.Get(piv,j)==1){
+                        return j;
+                    }
+                    else{
+                        i = piv+1;
+                    }
+
+                }
+            }    
+            return -1;    
+            // int i = 0, j = col-1, ret =-1;
+            // while(i<row && j>=0){
+            //     if(binaryMatrix.Get(i,j)==0){
+            //         //go down search this col
+            //         i++;
+            //     } else{
+            //         // go left
+            //         ret=j;
+            //         j--;
+            //     }
+            // }
+            //return ret;
+        }
+
+        public class BinaryMatrix {
+            public int Get(int row, int col) {return 1;}
+            public IList<int> Dimensions() {return null;}
+        }
+ 
+
         //238. Product of Array Except Self
         //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to 
         //the product of all the elements of nums except nums[i].
         //Solve it without division and in O(n).
         //For example, given[1, 2, 3, 4], return [24,12,8,6].       
+        public int[] ProductExceptSelf2(int[] nums)
+        {
+            //我们知道其前面所有数字的乘积，同时也知道后面所有的数乘积，那么二者相乘就是我们要的结果，
+            //所以我们只要分别创建出这两个数组即可，分别从数组的两个方向遍历就可以分别创建出乘积累积数组
+            
+            int[] fwd = new int[nums.Length];
+            int[] bwd = new int[nums.Length];
+            bwd[0]=1;
+            fwd[nums.Length-1]=1;
+
+            for(int i=1; i< nums.Length; i++){
+                bwd[i]= bwd[i-1]*nums[i-1];
+            }
+
+            for(int i=nums.Length-2; i>=0; i--){
+                fwd[i]= fwd[i+1] *nums[i+1];
+            }
+
+            for(int i=0; i< nums.Length; i++){
+                fwd[i]*= bwd[i];
+            }
+            return fwd;
+        }
+
         public int[] ProductExceptSelf(int[] nums)
         {
             int[] result = new int[nums.Length];
@@ -2592,6 +2742,71 @@ namespace Interview
             }
         }
 
+        //1249. Minimum Remove to Make Valid Parentheses
+        //Given a string s of '(' , ')' and lowercase English characters. 
+        //Your task is to remove the minimum number of parentheses ( '(' or ')', in any positions ) 
+        //so that the resulting parentheses string is valid and return any valid string.
+        //Input: s = "lee(t(c)o)de)"  Output: "lee(t(c)o)de"
+        //Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
+        public string MinRemoveToMakeValid2(string s) {
+            if(string.IsNullOrEmpty(s))
+                return "";
+            int leftP = 0;
+            string temp = "";    
+            for(int i = 0; i< s.Length; i++){
+                 if(s[i] == '('){
+                     leftP++;
+                 }
+                 else if(s[i] == ')'){
+                     if(leftP == 0){
+                        continue;
+                     }
+                     leftP--;   
+                 }
+                 temp+=s[i];
+            }
+            StringBuilder ret = new StringBuilder();
+
+            for(int i =temp.Length-1; i>=0; i--){
+                if(temp[i]=='(' && leftP>0){
+                    leftP--;
+                }
+                else{
+                    ret.Insert(0,temp[i]);
+                }    
+            }
+            return ret.ToString();
+        }
+        public string MinRemoveToMakeValid(string s) {
+            // OK, but over time, O(n) / O(n)
+            if(string.IsNullOrEmpty(s))
+                return "";
+
+             var stackL = new Stack<int>();
+             var stackR = new Stack<int>(); 
+             for(int i = 0; i< s.Length; i++){
+                 if(s[i] == '('){
+                     stackL.Push(i);
+                 }
+                 else if(s[i]==')' && stackL.Count>0){
+                     stackL.Pop();
+                 }
+                 else if(s[i]==')'){
+                     stackR.Push(i);
+                 }
+             }
+             if(stackL.Count==0 && stackR.Count ==0 )
+                return s;
+
+             string ret ="";
+             for(int i = 0; i<s.Length; i++){
+                if(!(stackL.Contains(i) || stackR.Contains(i))){
+                    ret+= s[i];
+                }    
+             }
+             
+            return ret;
+        }
 
         //20. Valid Parentheses
         //Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.

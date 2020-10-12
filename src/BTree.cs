@@ -200,11 +200,74 @@ namespace Interview
             DFSRightSideView_InSpace(depth + 1, root.left, ret);
         }
 
+        //987. Vertical Order Traversal of a Binary Tree O(n)/O(n)
+        public IList<IList<int>> VerticalTraversal(TreeNode root) {
+            if(root==null)
+                return null;
+            var ret = new List<IList<int>>();   
+            var map = new SortedDictionary<int, SortedDictionary<int,List<int>>>();
+            verticalHelper(root, 0,0, map);
+            // foreach(var kv1 in map){
+            //     Console.WriteLine("x: "+ kv1.Key+":");
+            //     foreach(var kv2 in kv1.Value){
+            //         Console.WriteLine(" y: "+ kv2.Key+":");
+            //         foreach(var val in kv2.Value){
+            //             Console.Write("  "+val+" ");
+            //         }                
+            //         Console.WriteLine();
+            //     }
+            // }
+            // map=map.OrderBy(x=>x.Key).ToDictionary(x=>x.Key, x=>x.Value);
+            foreach(KeyValuePair<int,SortedDictionary<int,List<int>>> kv in map){
+                var listX = new List<int>();
+                //sorting y-key desc order in inner dictionary
+                var mapListY = kv.Value.OrderByDescending(x=>x.Key).ToDictionary(x=>x.Key, x=>x.Value);
+                foreach(var kv2 in mapListY){
+                    listX.AddRange(kv2.Value.OrderBy(x=>x).ToList());
+                }
+                ret.Add(listX);
+            }
+            return ret;
+        }
+        void verticalHelper(TreeNode root, int idx, int idy, SortedDictionary<int, SortedDictionary<int, List<int>>> map){
+            if(root==null)
+                return;
+            verticalHelper(root.left, idx-1, idy-1, map);    
+            if(map.ContainsKey(idx)){
+                if(map[idx].ContainsKey(idy))
+                    map[idx][idy].Add(root.val);
+                else
+                    map[idx].Add(idy, new List<int>(){root.val});    
+            }
+            else{
+                map.Add(idx, new SortedDictionary<int, List<int>>());
+                map[idx].Add(idy, new List<int>(){root.val});
+            }
+            verticalHelper(root.right, idx+1, idy-1,map);
+        }
 
         //543. Diameter of Binary Tree(Recur)
         //Given a binary tree, you need to compute the length of the diameter of the tree. 
         //The diameter of a binary tree is the length of the longest path between any two nodes 
         //in a tree. This path may or may not pass through the root.
+        public int DiameterOfBinaryTree2(TreeNode root){
+            //O(n) , O(n)
+            if(root ==null)
+                return 0;
+            var ret = new int[1]{0};
+            helperDia(root, ret);
+            return ret[0];
+        }
+        int helperDia(TreeNode root, int[] ret){
+            if(root ==null)
+                return 0;
+            
+            int l = helperDia(root.left,ret);
+            int r = helperDia(root.right,ret);
+            ret[0] = Math.Max(ret[0], l+r);
+            return Math.Max(l,r)+1;
+        }
+
         public int DiameterOfBinaryTree(TreeNode root)
         {
             if (root == null)
@@ -315,6 +378,54 @@ namespace Interview
         //285.	Inorder Successor in BST
         //Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
         //Note: If the given node has no in-order successor in the tree, return null.
+        public TreeNode inorderSuccessor3(TreeNode root, TreeNode p)
+        {
+            if(root==null)
+                return null;
+            var st = new Stack<TreeNode>();
+            bool found = false;
+            while(root!=null || st.Count>0){
+                if(root!=null){
+                    st.Push(root);
+                    root =root.left;
+                }
+                else{
+                    root = st.Pop();
+                    if(found){
+                        return root;
+                    }
+                    if(p ==root) {
+                        found =true;                        
+                    }
+                    root =root.right;
+                }
+            }
+            return null;
+        }
+        public TreeNode inorderSuccessor2(TreeNode root, TreeNode p)
+        {
+            if(root==null)
+                return null;
+            var st = new Stack<TreeNode>();
+            bool foundCurNode = false;
+            //inorder traversal interator approach
+            while(root!=null || st.Count>0){
+                while(root!=null){
+                    //save left tree node to stack
+                    st.Push(root);
+                    root=root.left;
+                }
+                var curNode = st.Pop();
+                if(foundCurNode)
+                    return curNode;
+                if(curNode==p){
+                   foundCurNode = true;
+                }
+                root=curNode.right;
+            }    
+            return null;
+        }
+
         public TreeNode inorderSuccessor(TreeNode root, TreeNode p)
         {
             if (root == null || p == null)
@@ -323,7 +434,6 @@ namespace Interview
             TreeNode successor = null;
             while (root != null)
             {
-
                 if (root.val > p.val)
                 {
                     successor = root;
@@ -331,7 +441,6 @@ namespace Interview
                 }
                 else
                     root = root.right;
-
             }
             return successor;
         }
@@ -429,15 +538,15 @@ namespace Interview
             public BSTIterator(TreeNode root)
             {
                 st = new Stack<TreeNode>();
-                saveLeftTreeToStack(root, st);
+                saveLeftTreeToStack(root);
             }
 
-            void saveLeftTreeToStack(TreeNode node, Stack<TreeNode> stack)
+            void saveLeftTreeToStack(TreeNode node)
             {
                 if (node == null)
                     return;
-                stack.Push(node);
-                saveLeftTreeToStack(node.left, stack);
+                st.Push(node);
+                saveLeftTreeToStack(node.left);
             }
 
             /** @return whether we have a next smallest number */
@@ -455,7 +564,7 @@ namespace Interview
 
                     if (curNode.right != null)
                     {
-                        saveLeftTreeToStack(curNode.right, st);
+                        saveLeftTreeToStack(curNode.right);
                     }
                     return curNode.val;
                 }
@@ -485,6 +594,46 @@ namespace Interview
         //   4   5 2   7
         //return its vertical order traversal as:
         //[  [4],  [9],  [3,5,2],  [20],  [7]  ]
+        class positionTreeNode{
+            public TreeNode node;
+            public int posX;
+            public positionTreeNode(int x, TreeNode n){
+                posX = x;
+                node = n;
+            }
+        }
+        public List<IList<int>> verticalOrder2(TreeNode root){
+            if(root==null)
+                return null;
+            var ret = new List<IList<int>>();
+            var map = new SortedDictionary<int,List<int>>();
+            //use level traversal to have correct order
+            var q = new Queue<positionTreeNode>();
+            var r = new positionTreeNode(0,root);
+            q.Enqueue(r);
+
+            while(q.Count>0){
+                int levelCnt = q.Count;
+                while(--levelCnt>=0){
+                    //traversal each level
+                    var cur = q.Dequeue();
+                    if(cur.node!=null){
+                        if(!map.ContainsKey(cur.posX)){
+                            map.Add(cur.posX, new List<int>());
+                        }
+                        map[cur.posX].Add(cur.node.val);
+                        q.Enqueue(new positionTreeNode(cur.posX-1, cur.node.left));
+                        q.Enqueue(new positionTreeNode(cur.posX+1, cur.node.right));
+                    }                
+                }
+
+            }
+
+            foreach(var kv in map){
+                ret.Add(kv.Value);
+            }
+            return ret;
+        }
         public List<List<int>> verticalOrder(TreeNode root)
         {
             var ret = new List<List<int>>();
@@ -531,7 +680,7 @@ namespace Interview
             return ret;
         }
 
-        public List<List<int>> verticalOrder2(TreeNode root)
+        public List<List<int>> verticalOrder3(TreeNode root)
         {
             var ret = new List<List<int>>();
 
@@ -862,15 +1011,15 @@ namespace Interview
                 if (curNode == null)
                 {
                     sb.Append("# ");
-                    continue;
                 }
                 else
+                {
                     sb.Append(curNode.val).Append(" ");
-
-                q.Enqueue(curNode.left);
-                q.Enqueue(curNode.right);
+                    q.Enqueue(curNode.left);
+                    q.Enqueue(curNode.right);
+                }
             }
-
+            Console.WriteLine(sb.ToString());
             return sb.ToString();
         }
 
@@ -892,15 +1041,15 @@ namespace Interview
                     TreeNode parent = q.Dequeue();
                     if (strs[i] != "#")
                     {
-                        TreeNode left = new TreeNode(Convert.ToInt32(strs[i]));
-                        parent.left = left;
-                        q.Enqueue(left);
+                        parent.left = new TreeNode(Convert.ToInt32(strs[i]));
+                        // parent.left = left;
+                        q.Enqueue(parent.left);
                     }
-                    if (strs[++i] != "#")
+                    if (i+1 < strs.Length && strs[++i] != "#")
                     {
-                        TreeNode right = new TreeNode(Convert.ToInt32(strs[i]));
-                        parent.right = right;
-                        q.Enqueue(right);
+                        parent.right = new TreeNode(Convert.ToInt32(strs[i]));
+                        //parent.right = right;
+                        q.Enqueue(parent.right);
                     }
                 }
             }
@@ -1073,6 +1222,33 @@ namespace Interview
         }
 
         //102. Binary Tree Level Order Traversal
+        public IList<IList<int>> LevelOrder2(TreeNode root)
+        {
+            // use queue to iterate level, this approach can process level by level
+            var ret = new List<IList<int>>();
+            if (root == null)
+                return ret;
+            var q = new Queue<TreeNode>();
+            // int level = 0;
+            q.Enqueue(root);
+            while(q.Count>0){
+                int levelCnt = q.Count;
+                ret.Add(new List<int>());
+                while(--levelCnt>=0){
+                    var cur = q.Dequeue();
+
+                    if(cur!=null){
+                        ret[ret.Count-1].Add(cur.val);
+                        q.Enqueue(cur.left);                            
+                        q.Enqueue(cur.right);                            
+                
+                    }
+                }
+            }
+            if(ret.Count>0)
+                ret.RemoveAt(ret.Count-1);
+            return ret;  
+        }
         public IList<IList<int>> LevelOrder(TreeNode root)
         {
             var ret = new List<IList<int>>();
@@ -1177,6 +1353,61 @@ namespace Interview
             return isChild(root.left, n) || isChild(root.right, n);
         }
 
+        //1026. Maximum Difference Between Node and Ancestor
+        public int MaxAncestorDiff(TreeNode root) {
+            var ret = new int[1]{int.MinValue};
+            if(root==null)
+                return 0;
+
+            maxAncestorDiffDFS(root, root.val, root.val, ret);
+            return ret[0];
+        }
+        void maxAncestorDiffDFS(TreeNode r, int min, int max, int[] ret){
+            if(r==null)
+                return;
+            ret[0]= Math.Max(ret[0], Math.Max(Math.Abs(max-r.val),Math.Abs(r.val-min)));
+            min = Math.Min(r.val, min);
+            max = Math.Max(r.val, max);
+            maxAncestorDiffDFS(r.left,min,max,ret);
+            maxAncestorDiffDFS(r.right,min,max,ret);
+        }
+
+        //958. Check Completeness of a Binary Tree O(n)/O(n)
+        public bool IsCompleteTree(TreeNode root) {
+            //level traversal using queue , pocess by every level 
+            if(root==null)
+                return false;
+            var q = new Queue<TreeNode>();
+            q.Enqueue(root);
+            bool missing = false;
+            while(q.Count>0){
+                int levelCnt = q.Count;
+                while(--levelCnt>=0){
+                    var cur = q.Dequeue();
+                    if(cur==null){
+                        missing = true;
+                    }
+                    else{
+                        if(missing)
+                            return false;                    
+                        q.Enqueue(cur.left);                            
+                        q.Enqueue(cur.right);                            
+                    }
+                }
+            }
+            return true;
+        }
+        
+        int treeNodeNumber(TreeNode r) {
+            if(r==null)
+                return 0;
+            int L = 0;
+            int R=0 ;   
+            L= treeNodeNumber(r.left);
+            R= treeNodeNumber(r.right);
+            return L+R+1;    
+        }
+
         //236. Lowest Common Ancestor of a Binary Tree
         public TreeNode LowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q)
         {
@@ -1279,9 +1510,44 @@ namespace Interview
 
             return root.val;
         }
+        // use BST feature to iterator 
+        public int ClosestValue2(TreeNode root, double target)
+        {
+            var diff = double.MaxValue;
+            int ret = int.MinValue;
+            
+            while(root!=null) {
+                if(diff > Math.Abs(root.val-target)){
+                    diff = Math.Abs(root.val-target);
+                    ret = root.val;
+                }
+                root = root.val > target ? root.left : root.right;
+                // if(root.val > target)
+                //     root = root.left;
+                // else
+                //     root = root.right;
+            }
+            return ret;
+        }
 
-
-
+        //inorder traversal iterator 
+        List<int> inorderTraversal(TreeNode root) 
+        {
+            List<int> ans = new List<int>();
+            if (root==null) return null;
+            Stack<TreeNode> st = new Stack<TreeNode>();
+            TreeNode cur = root;
+            while (cur!=null || st.Count>0) {
+                while (cur!=null) {
+                    st.Push(cur);
+                    cur = cur.left;
+                }
+                cur = st.Peek(); st.Pop();
+                ans.Add(cur.val);
+                cur = cur.right;
+            }
+            return ans;
+        }
 
     }
 }

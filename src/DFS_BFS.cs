@@ -321,7 +321,7 @@ namespace Interview
             if (words == null || words.Length == 0)
                 return true;
 
-            for (int i = 0; i < words.Length - 1; ++i)
+            for (int i = 0; i < words.Length - 1; i++)
             {
                 if (!inorder(words[i], words[i + 1], order))
                     return false;
@@ -780,7 +780,6 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(s))
                 return false;
-
             return ValidPalindromeHelper(s, true);
         }
         bool ValidPalindromeHelper(string s, bool firstTime)
@@ -806,7 +805,6 @@ namespace Interview
             }
             return true;
         }
-
 
         //426. Convert Binary Search Tree to Sorted Doubly Linked List
         public class Node
@@ -1030,14 +1028,14 @@ namespace Interview
                 if (temp[j] == ')')
                 {
                     right++;
-                    ret = temp[j] + temp;
+                    ret = temp[j] + ret;
                 }
                 else if (temp[j] == '(')
                 {
                     if (right > 0)
                     {
                         right--;
-                        ret = temp[j] + temp;
+                        ret = temp[j] + ret;
                     }
                 }
             }

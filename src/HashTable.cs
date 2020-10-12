@@ -149,7 +149,7 @@ namespace Interview
         }
         
 
-        //340. Find the longest substring with k unique characters in a given string (Not Tested yet)
+        //340. Find the longest substring with k unique characters in a given string 
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
         //If there are more than one substring of longest possible length, then print any one of them.
         //Examples:
@@ -165,32 +165,169 @@ namespace Interview
         //Max is "aabbcc" with length 6.
         //"aaabbb", k = 3
         //There are only two unique characters, thus show error message. 
-        public int lengthOfLongestSubstringKDistinct(string s, int k) { 
-            
+        public int lengthOfLongestSubstringKDistinct(string s, int k) {
+            //slide window
             var map = new Dictionary<char, int>();
-            int tailIdx=0;
-            int ret =0;
+            int ret = 0, j=0;
             
-            for(int i=0; i<s.Length; i++){
+            for(int i=0; i< s.Length; i++){
                 if(map.ContainsKey(s[i])){
                     map[s[i]]+=1;
-                    ret = Math.Max(ret, map.Sum(kv=>(kv.Value)));
-                }    
-                else{
+                } else {
                     map.Add(s[i],1);
-                    while(map.Count > k && tailIdx < i){
-                        if(map[s[tailIdx]] >1)
-                            map[s[tailIdx]]-=1;
-                        else
-                            map.Remove(s[tailIdx]);
+                }
 
-                        tailIdx++;
+                while(map.Count>k && j<=i){
+                    if(--map[s[j]]==0)
+                        map.Remove(s[j]);
+
+                    j++;
+                }
+                while(map.Count ==k){
+                    ret = Math.Max(ret, map.Sum(kv=>kv.Value));
+                    if(map.ContainsKey(s[j])){
+                        map[s[j]]--;
+                    }
+                    j++;
+                }
+            }
+            return ret;
+        }
+        public int lengthOfLongestSubstringKDistinct3(string s, int k) {
+            if(string.IsNullOrEmpty(s)||k==0)
+                return 0;
+
+            var map = new Dictionary<char, int>();
+            int ret = 0;
+            int b=0;
+            for(int i=0; i< s.Length; i++){
+                if(map.ContainsKey(s[i]))
+                    map[s[i]]+=1;
+                else
+                    map.Add(s[i],1);
+
+                while(map.Count > k ){
+                    if(map[s[b]]>1)
+                        map[s[b]]--;
+                    else    
+                        map.Remove(s[b]);
+                    b++;    
+                }
+                ret = Math.Max(ret, i-b+1);
+            }
+            return ret;
+        }
+
+        public int lengthOfLongestSubstringKDistinct2(string s, int k) {
+            if(string.IsNullOrEmpty(s)||k==0)
+                return 0;
+
+            var map = new Dictionary<char, int>();
+            int ret = 0;
+            int leftIdx = 0;
+            for(int i=0; i< s.Length; i++){
+                if(map.ContainsKey(s[i]))
+                    map[s[i]]+=1;
+                else
+                    map.Add(s[i],1);
+                
+                while(map.Count>k){
+                    if(--map[s[leftIdx]]==0)
+                        map.Remove(s[leftIdx]);
+
+                    leftIdx++;
+                }        
+                ret = Math.Max(ret, map.Sum(kv=>kv.Value));
+            }
+            return ret;
+        }
+        
+        //249. Group Shifted Strings
+        //Given a string, we can "shift" each of its letter to its successive letter, 
+        //for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+        //"abc" -> "bcd" -> ... -> "xyz"
+        //Given a list of non-empty strings which contains only lowercase alphabets, 
+        //group all strings that belong to the same shifting sequence.
+        //Input: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"],
+        // Output: 
+        // [
+        //   ["abc","bcd","xyz"],
+        //   ["az","ba"],
+        //   ["acef"],
+        //   ["a","z"]
+        //]
+        //利用偏移字符串的特点，那就是字符串的每个字母和首字符的相对距离都是相等的，比如 abc 和 efg 互为偏移，
+        //对于 abc 来说，b和a的距离是1，c和a的距离是2，对于 efg 来说，f和e的距离是1，g和e的距离是2。
+        //再来看一个例子，az 和 yx，z和a的距离是 25，x和y的距离也是 25 (直接相减是 -1，这就是要加 26 然后取余的原因)，
+        //那么这样的话，所有互为偏移的字符串都有个 unique 的距离差，根据这个来建立映射就可以很好的进行单词分组了
+        // O(n)/O(n)
+        public IList<IList<string>> GroupStrings(string[] strings) {
+            if(strings==null || strings.Length==0)
+                return null;
+
+            var ret = new List<IList<string>>();
+            var map = new Dictionary<string, List<string>>();
+
+            for(int i=0; i<strings.Length; i++) {
+                string curStr = strings[i];
+                string key = "";
+                if(!string.IsNullOrEmpty(curStr)){
+                    if(curStr.Length==1)
+                        key="";
+                    else{
+                        for(int j =1; j<curStr.Length; j++){
+                             key+=((curStr[j]-curStr[j-1] +26) %26).ToString();
+                        }
                     }
                 }
-                ret = Math.Max(ret, map.Sum(kv=>(kv.Value)));
+                if(map.ContainsKey(key)){
+                    map[key].Add(curStr);
+                }else{
+                    map.Add(key, new List<string>{curStr});            
+                }            
             }
-            return ret;        
+            ret.Concat(map.Values);
+            return ret;
         }
+
+    //380. Insert Delete GetRandom O(1)
+    public class RandomizedSet {
+
+        /** Initialize your data structure here. */
+        HashSet<int> hs;
+        public RandomizedSet() {
+            hs = new HashSet<int>();
+
+        }
+    
+        /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+        public bool Insert(int val) {
+            if(hs.Contains(val))
+                return false;
+            else{
+                hs.Add(val);
+                return true;
+            }    
+        }
+    
+        /** Removes a value from the set. Returns true if the set contained the specified element. */
+        public bool Remove(int val) {
+            if(hs.Contains(val)){
+                hs.Remove(val);
+                return true;
+            }
+            else{
+                return false;
+            } 
+        }
+    
+        /** Get a random element from the set. */
+        public int GetRandom() {
+            var len = hs.Count;
+            var rd = new Random();
+           return  hs.ElementAt(rd.Next(len));
+        }
+    }
 
 
         //825. Friends Of Appropriate Ages
@@ -252,6 +389,53 @@ namespace Interview
         //Explanation:
         //The substring with start index = 0 is "cba", which is an anagram of "abc".
         //The substring with start index = 6 is "bac", which is an anagram of "abc".
+        public IList<int> FindAnagrams2(string s, string p)
+        {
+            var ret = new List<int>();
+            if(string.IsNullOrEmpty(s)|| s.Length < p.Length)
+                return ret;
+
+            var map = new int[26];
+            for(int i=0; i< p.Length; i++)
+                map[p[i]-'a']+=1;
+            
+            int left = 0, right = 0, cnt = p.Length, n = s.Length;
+            
+            while (right < n) {
+                if (map[s[right]-'a'] >= 1) {
+                    --cnt;
+                }              
+                map[s[right]-'a']-- ;
+                right++;     
+                if (cnt == 0) 
+                    ret.Add(left);
+                if (right - left == p.Length  ) {
+                    if(map[s[left]-'a'] >= 0){
+                    ++cnt;    
+                    }
+                    map[s[left]-'a']++;
+                    left++;                   
+                }                   
+            }
+            
+            return ret;
+
+            // for(int i=0; i<s.Length-p.Length; i++){
+            //     bool ok = true;
+            //     for(int j = i; j< i+p.Length; j++){
+            //         var copy = (int[])pattern.Clone();
+            //         if(--copy[s[j]-'a'] < 0){
+            //             ok = false;
+            //             break;
+            //         }
+            //     }
+            //     if(ok){
+            //         ret.Add(i);
+            //     }
+            // }
+            // return ret;
+        }
+
         public IList<int> FindAnagrams(string s, string p)
         {
             var ret = new List<int>();
@@ -333,11 +517,11 @@ namespace Interview
             return ret;
         }
 
-
         //76. Minimum Window Substring
         //Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
         //Example: Input: S = "ADOBECODEBANC", T = "ABC"
         //Output: "BANC"
+        //O(n)
         public string minWindow2(string s, string t)
         {
             var map = new Dictionary<char, int>();
@@ -351,12 +535,13 @@ namespace Interview
             }
 
             int len = int.MaxValue, cnt = 0;
-            int stIdx = -1;
+            int stIdx = 0;
             int backPtr = 0;
             for (int i = 0; i < s.Length; i++)
             {
                 if (map.ContainsKey(s[i]))
                 {
+                    // ** avoid extra same char to mess up map count
                     if (map[s[i]] > 0)
                         cnt++;
 
@@ -461,8 +646,7 @@ namespace Interview
             }
             return false;
         }
-
-
+        
         //560. Subarray Sum Equals K
         //Given an array of integers and an integer k, you need to find the total number of 
         //continuous subarrays whose sum equals to k.
@@ -471,6 +655,27 @@ namespace Interview
         //Note:The length of the array is in range[1, 20, 000].
         //Note: The length of the array is in range[1, 20, 000].
         //The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+        public int SubarraySum1(int[] nums, int k)
+        {
+            // brutal force create sum array and find sum and previous possible sum
+            var sumList = new int[nums.Length];
+            sumList[0]= nums[0];
+            for(int i=1; i<sumList.Length; i++)
+                sumList[i]= sumList[i-1]+nums[i];
+
+            int ret = 0;
+            for(int i =0; i< nums.Length; i++){
+                if(k==sumList[i]){
+                 ret++;
+                }
+                for(int j =i-1; j>=0; j--){
+                    if(sumList[i]-sumList[j]==k){
+                        ret++;
+                    }
+                }
+            }    
+            return ret;
+        }
         public int SubarraySum(int[] nums, int k)
         {
             if (nums == null || nums.Length == 0)
@@ -552,6 +757,27 @@ namespace Interview
             return ret.ToArray();
         }
 
+        //167. Two Sum II - Input array is sorted
+        public int[] TwoSum2(int[] nums, int target)
+        {
+            int i =0, j = nums.Length-1;
+            var ret = new List<int>();
+            while(i<j){
+                int temp = nums[i]+nums[j];
+                if(temp==target){
+                    ret.Add(i);
+                    ret.Add(j);
+                    return ret.ToArray();
+                }
+                else if(temp > target){
+                    j--;
+                }
+                else{
+                    i++;
+                }
+            }
+            return ret.ToArray();
+        }
 
         //409. Longest Palindrome
         //Given a string which consists of lowercase or uppercase letters, find the length of the longest palindromes 
@@ -609,6 +835,7 @@ namespace Interview
         //Given two arrays, write a function to compute their intersection.
         //Example: Given nums1 = [1, 2, 2, 1], nums2 = [2, 2], return [2].
         //Note: Each element in the result must be unique. The result can be in any order.
+        // O(n) / O(3n)
         public int[] Intersection(int[] nums1, int[] nums2)
         {
             var l1 = nums1.ToList();
@@ -617,22 +844,41 @@ namespace Interview
             var cc = from item in l1
                      where (nums2.Contains(item))
                      select item;
+
+            return new HashSet<int>(cc).ToArray();         
             /*
-                        var c = from i in Enumerable.Range(0, l1.Count)
-                                from j in Enumerable.Range(0, l2.Count)
-                                where l1[i] == l2[j]
-                                select l1[i];
+                var c = from i in Enumerable.Range(0, l1.Count)
+                        from j in Enumerable.Range(0, l2.Count)
+                        where l1[i] == l2[j]
+                        select l1[i];
             */
-
-            HashSet<int> hs = new HashSet<int>();
-
-            foreach (var x in cc)
-                hs.Add(x);
-            return hs.ToArray();
         }
 
-
-
+        public int[] Intersection2(int[] nums1, int[] nums2)
+        {
+            //是将一个数组排序，然后遍历另一个数组，把遍历到的每个数字在排序号的数组中用二分查找法搜索，如果能找到则放入结果set中
+            Array.Sort(nums1);
+            var ret = new HashSet<int>();
+            for(int i=0; i< nums2.Length ; i++){
+                if(BSearch(nums2[i],nums1)){
+                    ret.Add(nums2[i]);
+                }
+            }
+            return ret.ToArray();
+        }
+        bool BSearch(int t, int[] arr){
+            int i = 0, j = arr.Length-1;
+            while(i < j){
+                int piv = (i+j)/2;
+                if(arr[piv] == t)
+                    return true;
+                if(arr[piv] > t)
+                    j =piv;
+                else
+                    i = piv+1;
+            }
+            return false;
+        }
 
         //350. Intersection of Two Arrays II
         //Given two arrays, write a function to compute their intersection.
