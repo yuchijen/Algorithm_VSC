@@ -8,6 +8,266 @@ namespace Interview
 {
     public class ArrayString
     {
+        //e.g.  nums = [3,34,30,5,9] return 9534330 (max value in permutation)
+        public int[] SortingArrayIntoOneNum(int[] nums)
+        {
+            Array.Sort(nums, (a, b) =>
+            {
+                for (int i = 0; i < Math.Max(a.ToString().Length, b.ToString().Length); i++)
+                {
+                    if (i >= a.ToString().Length && b.ToString()[i] - '0' != 0 )
+                        return 1;
+                    if (i >= a.ToString().Length && b.ToString()[i] - '0' == 0)
+                        return -1;
+                    if (i >= b.ToString().Length && a.ToString()[i] - '0' != 0)
+                        return -1;
+                    if (i >= b.ToString().Length && a.ToString()[i] - '0' == 0)
+                        return 1;
+                    if (b.ToString()[i] - '0' > a.ToString()[i] - '0')
+                        return 1;
+                    if (b.ToString()[i] - '0' < a.ToString()[i] - '0')
+                        return -1;
+                }
+                return 0;
+            });
+
+            foreach (var x in nums)
+            {
+                Console.Write(x);
+            }
+            Console.WriteLine();
+            return nums;
+        }
+
+        //227. Basic Calculator II
+        // Input: s = "3+2*2"
+        // Output: 7
+        public int Calculate(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+
+            var st = new Stack<int>();
+            char oper = '+';
+            int tempRet = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] >= '0') // number 
+                {
+                    tempRet = tempRet * 10 + s[i] - '0';
+                }
+                // not "if else": take care last value
+                if ((s[i] < '0' && s[i] != ' ') || i == s.Length - 1) //operator 
+                {
+                    if (oper == '+')
+                        st.Push(tempRet);
+                    else if (oper == '-')
+                        st.Push(-tempRet);
+                    else if (oper == '*')
+                        st.Push(st.Pop() * tempRet);
+                    else if (oper == '/')
+                    {
+                        if (tempRet != 0)
+                            st.Push(st.Pop() / tempRet);
+                    }
+                    oper = s[i];
+                    tempRet = 0;
+                }
+            }
+            return st.Sum();
+        }
+
+        //AZ OA: Items in Containers 
+        /*
+              0 1 2 3 4 5 6 7 8 9
+              * * | * * * | * * *
+        left -1-1 2 2 2 2 6 6 6 6
+        right 2 2 2 6 6 6 6-1-1-1
+        star  1 2 2 3 4 5 5 6 7 8
+        */
+        // O(N) solution 
+        int[] numberOfItems(string s, List<int> startindices, List<int> endindices)
+        {
+            int l = s.Length, n = startindices.Count;
+            int[] res = new int[n];
+            int[] left = new int[l];
+            int[] right = new int[l];
+            int[] star = new int[l];
+            int pre_left = -1, post_right = -1, cum = 0;
+
+            for (int i = 0; i < l; i++)
+            {
+                if (s[i] == '|') pre_left = i;
+                left[i] = pre_left;
+            }
+            for (int i = l - 1; i >= 0; i--)
+            {
+                if (s[i] == '|') post_right = i;
+                right[i] = post_right;
+            }
+            for (int i = 0; i < l; i++)
+            {
+                if (s[i] == '*') cum++;
+                star[i] = cum;
+            }
+            for (int i = 0; i < n; i++)
+            {
+                int start = startindices[i] - 1, end = endindices[i] - 1;
+                int a = right[start], b = left[end];
+                if (a >= b) res[i] = 0;
+                else res[i] = star[b] - star[a];
+            }
+            return res;
+        }
+
+        //AZ OA:
+        public int[][] KClosest(int[][] points, int K)
+        {
+            // 1 line solution
+            return points.OrderBy(p => p[0] * p[0] + p[1] * p[1]).Take(K).ToArray();
+        }
+
+        //Amazon OA: Transaction Logs
+        public string[] FradulentActivity(string[] logs, int k)
+        {
+            //[345366 89921 45], [029323 38239 23], ...
+            if (logs == null || logs.Length == 0)
+                return null;
+            var map = new Dictionary<string, int>();
+            for (int i = 0; i < logs.Length; i++)
+            {
+                var curLog = logs[i].Split(' ');
+                map.TryAdd(curLog[0], 0);
+                map[curLog[0]] += 1;
+                if (curLog[0] != curLog[1])
+                {
+                    map.TryAdd(curLog[1], 0);
+                    map[curLog[1]] += 1;
+                }
+            }
+            var ret = (from x in map
+                       where x.Value >= k
+                       select x.Key).ToArray();
+
+            // string[] ret = map.Where(kv => kv.Value >= k)
+            //                     .Select(kv => kv.Key)
+            //                     .ToArray();
+
+            Array.Sort(ret, (a, b) => int.Parse(b) - int.Parse(a));
+            for (int i = 0; i < ret.Length; i++)
+            {
+                Console.Write(ret[i] + ", ");
+            }
+            Console.WriteLine();
+
+            return ret;
+        }
+
+        // AZ OA: five star seller
+        // O(N + X logN) time, O(N) space
+        // N = length of ratings, X = number push and pop operations needed until 
+        // average rating ≥ threshold
+        public int five_stars_needed(List<List<int>> ratings, int threshold)
+        {
+            int ans = 0, N = ratings.Count;
+            double T = (double)threshold / 100.0, A = 0;
+            var PQ = new List<KeyValuePair<double, int>>();
+            // priority_queue<pair<double, int>> PQ;
+            for (int p = 0; p < N; p++)
+            {
+                var kv = new KeyValuePair<double, int>(marginal_gain(ratings, p), p);
+                PQ.Add(kv);
+                PQ = PQ.OrderByDescending(pair => pair.Key).ToList();
+                A += (double)ratings[p][0] / ratings[p][1] / N;
+            }
+
+            while (A < T)
+            {
+                int product = PQ.First().Value;
+                A += PQ.First().Key;  // marginal gain
+                PQ.RemoveAt(0);
+                ans++;
+                ratings[product][0]++;
+                ratings[product][1]++;
+                PQ.Add(new KeyValuePair<double, int>(marginal_gain(ratings, product), product));
+                PQ = PQ.OrderByDescending(pair => pair.Key).ToList();
+            }
+            return ans;
+        }
+
+        public double marginal_gain(List<List<int>> ratings, int product)
+        {
+            double five = ratings[product][0], all = ratings[product][1];
+            double N = ratings.Count;
+            return (five + 1) / (all + 1) / N - five / all / N;
+        }
+
+
+        // AZ OA:
+        public int NumPairsDivisibleBy60(int[] time)
+        {
+            if (time == null)
+                return 0;
+            var map = new Dictionary<int, int>(); // key: another half value needed
+            int ret = 0;
+            for (int i = 0; i < time.Length; i++)
+            {
+                int key = (60 - time[i] % 60) % 60;
+                if (map.ContainsKey(key))
+                {
+                    ret += map[key];
+                }
+
+                if (!map.ContainsKey(time[i] % 60))
+                {
+                    map.Add(time[i] % 60, 1);
+                }
+                else
+                {
+                    map[time[i] % 60] += 1;
+                }
+            }
+            return ret;
+        }
+
+        // AZ OA:
+        public string[] kFrequenctly(string[] keywords, string[] reviews, int k)
+        {
+
+            var sortedMap = keywords.ToDictionary(x => x, y => 0);
+
+            var rex = new Regex(@"[a-zA-Z]+", RegexOptions.IgnoreCase);
+
+            for (int i = 0; i < reviews.Length; i++)
+            {
+                var curStrArr = reviews[i].Split(' ');
+                for (int j = 0; j < curStrArr.Length; j++)
+                {
+                    string key = curStrArr[j];
+                    if (rex.IsMatch(curStrArr[j]))
+                    {
+                        key = rex.Match(curStrArr[j]).Groups[0].Value;
+                    }
+                    if (sortedMap.ContainsKey(key.ToLower()))
+                    {
+                        sortedMap[key.ToLower()] += 1;
+                    }
+                }
+            }
+
+            // IEnumerable<string> ret = from kv in sortedMap 
+            //             orderby kv.Value ascending 
+            //             orderby kv.Key
+            //             select kv.Key;
+
+            var ret = sortedMap.OrderBy(kv => kv.Key)
+            .OrderByDescending(kv => kv.Value)
+            .Take(k)
+            .Select(kv => kv.Key)
+            .ToArray();
+
+            return ret;
+        }
 
         //271	Encode and Decode String
         //Design an algorithm to encode a list of strings to a string. 
@@ -22,53 +282,60 @@ namespace Interview
         //   //... your code
         //   return strs;
         // }
-        public string encode(List<string> strs) {
+        public string encode(List<string> strs)
+        {
             string res = "";
-            foreach (var str in strs) 
+            foreach (var str in strs)
                 res += str + '\0';
             return res;
         }
         //use length of each item as prefix, then put one character, then string item
-        public string encode2(List<string> strs) {
+        public string encode2(List<string> strs)
+        {
             string res = "";
-            foreach (var str in strs) 
-                res +=  "#" + str.Length + "/" + str;
-            
-            Console.WriteLine(res);    
+            foreach (var str in strs)
+                res += "#" + str.Length + "/" + str;
+
+            Console.WriteLine(res);
             return res;
         }
         // Decodes a single string to a list of strings.
-        public List<string> decode(string s) {
+        public List<string> decode(string s)
+        {
             List<string> res = new List<string>();
             var ret = s.Split('\0').ToList();
 
-            foreach(var x in ret)
-                Console.Write(x+',');
-        
+            foreach (var x in ret)
+                Console.Write(x + ',');
+
             return ret;
         }
 
-        public List<string> decode2(string s) {
+        public List<string> decode2(string s)
+        {
             List<string> ret = new List<string>();
             int i = 0;
-            while(i < s.Length){
-                if(s[i]=='#'){
-                    int idx = s.IndexOf('/',i);
+            while (i < s.Length)
+            {
+                if (s[i] == '#')
+                {
+                    int idx = s.IndexOf('/', i);
                     int len = 0;
-                    
-                    if(idx!=-1){
-                        len = int.Parse(s.Substring(i+1, idx-i -1));
-                        ret.Add(s.Substring(idx+1,len));
-                        i = len+idx;
+
+                    if (idx != -1)
+                    {
+                        len = int.Parse(s.Substring(i + 1, idx - i - 1));
+                        ret.Add(s.Substring(idx + 1, len));
+                        i = len + idx;
                     }
 
                 }
-                                    i++;
+                i++;
             }
 
-            foreach(var x in ret)
-                Console.Write(x+',');
-        
+            foreach (var x in ret)
+                Console.Write(x + ',');
+
             return ret;
         }
         public int solution01(int N, string S)
@@ -109,6 +376,126 @@ namespace Interview
                     ret += 1;
             }
             return ret;
+        }
+
+        //String Without 3 Identical Consecutive Letters (tesla)
+        //Given a string S consisting of N letters a and b. In one move you can replace one letter by the other (a by b or b by a).
+        //given such a string S, returns the minimum number of moves required to obtain a string containing no
+        // instances of three identical consecutive letters.
+        //Input: "baaaaa" Output: 1
+        //Explanation: The string without three identical consecutive letters which can be obtained is one move is "baabaa".
+        //https://leetcode.com/discuss/interview-question/358268/google-mock-interview-string-without-3-identical-consecutive-letters
+        public int ThreeIdenticalConseLetters(string s)
+        {
+            int consecutive = 1;
+            int ret = 0;
+            for (int i = 0; i < s.Length - 1; i++)
+            {
+
+                if (s[i] == s[i + 1])
+                {
+                    consecutive++;
+                }
+                else if (s[i] != s[i + 1])
+                {
+                    consecutive = 1;
+                    continue;
+                }
+                if (consecutive == 3)
+                {
+                    ret += 1;
+                    consecutive = 0;
+                }
+            }
+            return ret;
+        }
+        //follow up. 是第一题的小变形～给一个string 跟 cost array, 每个字母对应固定的cost,要string最后不会有两个相同字母next to each other然后 return最小的删除cost
+        // ex   'aaa' [1,2,3] -> 1+2 = 3, 删除第一跟第二 的COST; 
+        // 'abaacc', [2,2,3,4,5,6] -> 3+5 = 8 删除第三跟第第五的COST
+        // traverse字串一次前一个字比较是否相同～～一样在比COST, 把小的丢到Temp存下来 大的放到后面
+        public int folllowupThreeIdenticalConseLetters(string S, int[] C)
+        {
+            int consecutive = 1;
+            int ret = 0;
+            int remainer = C[0];
+            for (int i = 0; i < S.Length - 1; i++)
+            {
+
+                if (S[i] == S[i + 1])
+                {
+                    consecutive++;
+                }
+                else if (S[i] != S[i + 1])
+                {
+                    consecutive = 1;
+                    continue;
+                }
+                if (consecutive == 2)
+                {
+                    ret += Math.Min(remainer, C[i + 1]);
+                    remainer = Math.Max(remainer, C[i + 1]);
+                    consecutive = 1;
+                }
+            }
+            return ret;
+        }
+
+        //given an array A of N integers, returns the smallest positive integer (greater than 0) that does not occur in A.
+        // A = [1, 3, 6, 4, 1, 2], the function should return 5.
+        //Given A = [1, 2, 3], the function should return 4.
+        // public int solutionhahah(int[] A) {
+        //     if(A==null)
+        //         return 1;
+
+        //     Array.Sort(A);
+        //     int st = 1;
+        //     for(int i =0; i<A.Length; i++){
+        //         if(A[i]<0)
+        //             continue;
+        //         if()
+        //     }
+
+        //     if(buet.All(x=>x==0)){
+        //         return 1;
+        //     }else if(buet[0]==0 && buet.Select())
+        // }
+
+        public int calculatepPercentage(string[] T, string[] R)
+        {
+            var map = new Dictionary<string, bool>();
+            for (int i = 0; i < T.Length; i++)
+            {
+
+                var match = Regex.Match(T[i], @"[a-zA-Z]+([0-9]+)([a-z]*)", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    var key = match.Groups[1].Value;
+                    var subNumber = match.Groups[2].Value;
+                    if (!map.ContainsKey(key))
+                    {
+                        if (R[i] == "OK")
+                        {
+                            map.Add(key, true);
+                        }
+                        else
+                        {
+                            map.Add(key, false);
+                        }
+                    }
+                    else if (map.ContainsKey(key) && map[key])
+                    {
+                        if (R[i] != "OK")
+                        {
+                            map[key] = false;
+                        }
+                    }
+                    else if (map.ContainsKey(key) && !map[key])
+                    {
+                        continue;
+                    }
+                }
+            }
+            return map.Values.Count(v => v == true) / map.Count();
         }
 
 
@@ -535,7 +922,7 @@ namespace Interview
             if (nums == null)
                 return;
 
-            //find from tail digits index until it becomes descendent (find first descendent index from tail) 
+            //find from tail digits index until it becomes ascendant (find first ascendant index from tail) 
             int fDescIdx = int.MaxValue;
 
             for (int i = nums.Length - 1; i > 0; i--)
@@ -546,7 +933,7 @@ namespace Interview
                     break;
                 }
             }
-            if (fDescIdx == int.MaxValue)  //input is all ascedent from tail, sort whole nums
+            if (fDescIdx == int.MaxValue)  //input is all descentant from tail, sort whole nums
             {
                 Array.Sort(nums);
                 //int st = 0, end = nums.Length - 1;
@@ -651,65 +1038,70 @@ namespace Interview
         //正反各遍历一次，正向遍历的时候，我们把星号都当成左括号，此时用经典的验证括号的方法，即遇左括号计数器加1，遇右括号则自减1，如果中间某个时刻计数器小于0了，直接返回false。如果最终计数器等于0了，我们直接返回true，因为此时我们把星号都当作了左括号，可以跟所有的右括号抵消。而此时就算计数器大于0了，我们暂时不能返回false，因为有可能多余的左括号是星号变的，星号也可以表示空，所以有可能不多，我们还需要反向q一下，哦不，是反向遍历一下，这是我们将所有的星号当作右括号，遇右括号计数器加1，遇左括号则自减1，如果中间某个时刻计数器小于0了，直接返回false。遍历结束后直接返回true，这是为啥呢？此时计数器有两种情况，要么为0，要么大于0。为0不用说，肯定是true，为啥大于0也是true呢？因为之前正向遍历的时候，我们的左括号多了，我们之前说过了，多余的左括号可能是星号变的，也可能是本身就多的左括号。本身就多的左括号这种情况会在反向遍历时被检测出来，如果没有检测出来，说明多余的左括号一定是星号变的。而这些星号在反向遍历时又变做了右括号，最终导致了右括号有剩余，所以当这些星号都当作空的时候，左右括号都是对应的，即是合法的。
         public bool CheckValidString2(string s)
         {
-            if(string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
                 return true;
             int left = 0;
             int right = 0;
-            
+
             //iterate from left, assume * as left 
-            foreach(var c in s){
-                if(c=='(' || c=='*')
+            foreach (var c in s)
+            {
+                if (c == '(' || c == '*')
                     left++;
                 else
                     left--;
-                if(left < 0)
-                    return false;                    
+                if (left < 0)
+                    return false;
             }
-            if(left==0)
+            if (left == 0)
                 return true;
-            
+
             //iterate from right to left, assume * as right 
-            for(int i = s.Length-1; i>=0; i--){
-                if(s[i]==')' || s[i]=='*')
+            for (int i = s.Length - 1; i >= 0; i--)
+            {
+                if (s[i] == ')' || s[i] == '*')
                     right++;
-                else 
+                else
                     right--;
-                if(right <0)
-                    return false;                            
-            }    
+                if (right < 0)
+                    return false;
+            }
             return true;
         }
 
         public bool CheckValidString(string s)
         {
-            if(string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
                 return true;
             //2 stacks saves left parenthesis and star, use int to remember index
             var st1 = new Stack<int>();
             var stStar = new Stack<int>();
 
-            for(int i =0; i< s.Length; i++){
-                if(s[i]=='(')
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
                     st1.Push('(');
-                else if(s[i]=='*')
+                else if (s[i] == '*')
                     stStar.Push('*');
-                else{
-                    if(st1.Count > 0)
+                else
+                {
+                    if (st1.Count > 0)
                         st1.Pop();
-                    else if(stStar.Count >0)
+                    else if (stStar.Count > 0)
                         stStar.Pop();
-                    else if(st1.Count==0 && stStar.Count==0)
-                        return false;        
+                    else if (st1.Count == 0 && stStar.Count == 0)
+                        return false;
                 }
             }
 
-            while(st1.Count!=0 && stStar.Count!=0){
-                if(st1.Peek() > stStar.Peek())
+            while (st1.Count != 0 && stStar.Count != 0)
+            {
+                if (st1.Peek() > stStar.Peek())
                     return false;
-                st1.Pop();    
+                st1.Pop();
                 stStar.Pop();
             }
-            return st1.Count ==0 || st1.Count<=stStar.Count;
+            return st1.Count == 0 || st1.Count <= stStar.Count;
         }
 
 
@@ -1002,56 +1394,48 @@ namespace Interview
 
             //check format
             var regex2 = new Regex("^[0-9]+([.]{1}[0-9]+)*$");
-
+            
             var v1s = version1.Split('.');
             var v2s = version2.Split('.');
 
-            int len = Math.Min(v1s.Length, v2s.Length);
-
-            for (int i = 0; i < len; i++)
-            {
-                if (int.Parse(v1s[i]) > int.Parse(v2s[i]))
+            int idx1 = 0, idx2 = 0, len1 = v1s.Length, len2 = v2s.Length;
+            int d1 = 0, d2 =0;
+            while(idx1 < len1 || idx2 < len2) {
+                if(idx1 <len1)
+                    d1 = int.Parse(v1s[idx1]);
+                if(idx2 <len2)
+                    d2 = int.Parse(v2s[idx2]);
+                    
+                if(d1 > d2)
                     return 1;
-                if (int.Parse(v1s[i]) < int.Parse(v2s[i]))
+                else if (d1 < d2)
                     return -1;
-            }
 
-            if (v1s.Length < v2s.Length)
-            {
-                for (int i = v1s.Length; i < v2s.Length; i++)
-                {
-                    if (int.Parse(v2s[i]) != 0)
-                        return -1;
-                }
-                return 0;
-            }
-            if (v1s.Length > v2s.Length)
-            {
-                for (int i = v2s.Length; i < v1s.Length; i++)
-                {
-                    if (int.Parse(v1s[i]) != 0)
-                        return 1;
-                }
-                return 0;
+                d1=0;
+                d2=0;
+                idx1++;
+                idx2++;    
             }
             return 0;
         }
 
         //415. Add Strings
-        public string AddStrings(string num1, string num2) {
-            int l1 = num1.Length-1;
-            int l2 = num2.Length-1;
+        public string AddStrings(string num1, string num2)
+        {
+            int l1 = num1.Length - 1;
+            int l2 = num2.Length - 1;
             int carry = 0;
             var ret = new StringBuilder();
-            
-            while(l1 >= 0 || l2 >= 0){
-                int a = l1 >= 0 ? num1[l1--]-'0' : 0;
-                int b = l2 >= 0 ? num2[l2--]-'0' : 0;
-                ret.Insert(0,(carry + a + b) %10);
-                carry=(carry + a + b)/10;
+
+            while (l1 >= 0 || l2 >= 0)
+            {
+                int a = l1 >= 0 ? num1[l1--] - '0' : 0;
+                int b = l2 >= 0 ? num2[l2--] - '0' : 0;
+                ret.Insert(0, (carry + a + b) % 10);
+                carry = (carry + a + b) / 10;
             }
-            if(carry!=0)
-                ret.Insert(0,carry);
+            if (carry != 0)
+                ret.Insert(0, carry);
 
             return ret.ToString();
         }
@@ -1063,26 +1447,30 @@ namespace Interview
         //e.g.2: Input: num1 = "123", num2 = "456"  Output: "56088"
         public string Multiply2(string num1, string num2)
         {
-            if(string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
+            if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
                 return "0";
             int n = num1.Length;
-            int m = num2.Length;    
-            var ret = new int[n+m];
+            int m = num2.Length;
+            var ret = new int[n + m];
 
-            for(int i = n-1; i>=0; i--){
-                for(int j = m-1; j>=0; j--){                
-                    ret[i+j] += (num1[i]*num2[j]) % 10;
-                    if(i+j>0)
-                        ret[i+j-1]+=(num1[i]*num2[j]) / 10;                
+            for (int i = n - 1; i >= 0; i--)
+            {
+                for (int j = m - 1; j >= 0; j--)
+                {
+                    ret[i + j] += (num1[i] * num2[j]) % 10;
+                    if (i + j > 0)
+                        ret[i + j - 1] += (num1[i] * num2[j]) / 10;
                 }
             }
             string rr = "";
-            int k =0;
-            while(ret[k]==0){
+            int k = 0;
+            while (ret[k] == 0)
+            {
                 k++;
             }
-            for(int  l=k; l< ret.Length; l++){
-                rr+=ret[l];
+            for (int l = k; l < ret.Length; l++)
+            {
+                rr += ret[l];
             }
             return rr;
         }
@@ -1258,26 +1646,29 @@ namespace Interview
         {
             char[] buf4 = new char[4];
             int i = 0;
-            while(i < n){
+            while (i < n)
+            {
                 int read_len = read4(buf4);
-                if(read_len == 0)
+                if (read_len == 0)
                     return i;
 
-                int addChar = Math.Min(n-i, read_len);
-                for(int j =0; j<addChar; j++){
-                    buf[i+j] = buf4[j];
+                int addChar = Math.Min(n - i, read_len);
+                for (int j = 0; j < addChar; j++)
+                {
+                    buf[i + j] = buf4[j];
                 }
                 i += addChar;
             }
             return i;
-            
+
             // for(int i =0; i< count ; i++){
             //     res+=
             // }
 
-            
+
         }
-        int read4(char[] input){
+        int read4(char[] input)
+        {
             return 1;
         }
 
@@ -1432,7 +1823,7 @@ namespace Interview
                 ret.Add(new Interval2(curAvialbelSt, finalENd));
             else
                 ret.Last().end = finalENd;
-            
+
             return ret;
         }
 
@@ -1554,15 +1945,12 @@ namespace Interview
 
             while (idxA >= 0 || idxB >= 0 || carry > 0)
             {
-                int valA = 0;
-                int valB = 0;
-                if (idxA >= 0)
-                    valA = a[idxA] - '0';
-                if (idxB >= 0)
-                    valB = b[idxB] - '0';
+                int valA = idxA >= 0 ? a[idxA] - '0' : 0;
+                int valB = idxB >= 0 ? b[idxB] - '0' : 0;
+                int temp = valA + valB + carry;
 
-                ret = (valA + valB + carry) % 2 + ret;
-                carry = (valA + valB + carry) / 2;
+                ret = temp % 2 + ret;
+                carry = temp / 2;
                 idxA--;
                 idxB--;
             }
@@ -1799,33 +2187,32 @@ namespace Interview
         //Input: "babad"
         //Output: "bab"
         //Note: "aba" is also a valid answer.
-        int startIdx = 0;
-        int maxLen = 0;
         public string LongestPalindrome(string s)
         {
-            if (s.Length == 0)
-                return "";
-            if (s.Length == 1)
+            if (s.Length < 2)
                 return s;
+
+            int[] startIdx = new int[1] { 0 };
+            int[] maxLen = new int[1] { 0 };
 
             for (int i = 0; i < s.Length - 1; i++)
             {
-                maxCheck(s, i, i);
-                maxCheck(s, i, i + 1);
+                maxCheck(s, i, i, startIdx, maxLen);
+                maxCheck(s, i, i + 1, startIdx, maxLen);
             }
-            return s.Substring(startIdx, maxLen);
+            return s.Substring(startIdx[0], maxLen[0]);
         }
-        void maxCheck(string s, int st, int ed)
+        void maxCheck(string s, int st, int ed, int[] stIdx, int[] maxLen)
         {
             while (st >= 0 && ed < s.Length && s[st] == s[ed])
             {
+                if (maxLen[0] < ed - st + 1)
+                {
+                    stIdx[0] = st;
+                    maxLen[0] = ed - st + 1;
+                }
                 st--;
                 ed++;
-            }
-            if (maxLen < ed - st - 1)
-            {
-                startIdx = st + 1;
-                maxLen = ed - st - 1;
             }
         }
 
@@ -1872,44 +2259,54 @@ namespace Interview
         }
 
         //1428. Leftmost Column with at Least a One
-        public int LeftMostColumnWithOne(BinaryMatrix binaryMatrix) {
+        public int LeftMostColumnWithOne(BinaryMatrix binaryMatrix)
+        {
             //matrix的右上角出发，首先往下走，如果遇到1的时候，我们就往左走。直到遇到0为止
             int row = binaryMatrix.Dimensions()[0];
             int col = binaryMatrix.Dimensions()[1];
-        
-            int i = 0, j = col-1, ret =-1;
-            while(i<row && j>=0){
-                if(binaryMatrix.Get(i,j)==0){
+
+            int i = 0, j = col - 1, ret = -1;
+            while (i < row && j >= 0)
+            {
+                if (binaryMatrix.Get(i, j) == 0)
+                {
                     //go down search this col
                     i++;
-                } else{
+                }
+                else
+                {
                     // go left
-                    ret=j;
+                    ret = j;
                     j--;
                 }
             }
             return ret;
         }
 
-        public int LeftMostColumnWithOne2(BinaryMatrix binaryMatrix) {
+        public int LeftMostColumnWithOne2(BinaryMatrix binaryMatrix)
+        {
             int row = binaryMatrix.Dimensions()[0];
             int col = binaryMatrix.Dimensions()[1];
             //int ret = -1;
-            for(int j =0; j<col; j++){
+            for (int j = 0; j < col; j++)
+            {
                 //Bseearch by col to see have 1
-                int i = 0, k = row-1; 
-                while(i<k){
-                    int piv = (i+k)/2;
-                    if(binaryMatrix.Get(piv,j)==1){
+                int i = 0, k = row - 1;
+                while (i < k)
+                {
+                    int piv = (i + k) / 2;
+                    if (binaryMatrix.Get(piv, j) == 1)
+                    {
                         return j;
                     }
-                    else{
-                        i = piv+1;
+                    else
+                    {
+                        i = piv + 1;
                     }
 
                 }
-            }    
-            return -1;    
+            }
+            return -1;
             // int i = 0, j = col-1, ret =-1;
             // while(i<row && j>=0){
             //     if(binaryMatrix.Get(i,j)==0){
@@ -1924,11 +2321,33 @@ namespace Interview
             //return ret;
         }
 
-        public class BinaryMatrix {
-            public int Get(int row, int col) {return 1;}
-            public IList<int> Dimensions() {return null;}
+        public class BinaryMatrix
+        {
+            public int Get(int row, int col) { return 1; }
+            public IList<int> Dimensions() { return null; }
         }
- 
+
+        public int[][] Transpose(int[][] A)
+        {
+            if (A == null)
+                return null;
+
+            int rowLen = A.Length;
+            int colLen = A[0].Length;
+            var ret = new int[colLen][];
+            for (int i = 0; i < colLen; i++)
+            {
+                ret[i] = new int[rowLen];
+            }
+            for (int i = 0; i < rowLen; i++)
+            {
+                for (int j = 0; j < colLen; j++)
+                {
+                    ret[j][i] = A[i][j];
+                }
+            }
+            return ret;
+        }
 
         //238. Product of Array Except Self
         //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to 
@@ -1939,22 +2358,25 @@ namespace Interview
         {
             //我们知道其前面所有数字的乘积，同时也知道后面所有的数乘积，那么二者相乘就是我们要的结果，
             //所以我们只要分别创建出这两个数组即可，分别从数组的两个方向遍历就可以分别创建出乘积累积数组
-            
+
             int[] fwd = new int[nums.Length];
             int[] bwd = new int[nums.Length];
-            bwd[0]=1;
-            fwd[nums.Length-1]=1;
+            bwd[0] = 1;
+            fwd[nums.Length - 1] = 1;
 
-            for(int i=1; i< nums.Length; i++){
-                bwd[i]= bwd[i-1]*nums[i-1];
+            for (int i = 1; i < nums.Length; i++)
+            {
+                bwd[i] = bwd[i - 1] * nums[i - 1];
             }
 
-            for(int i=nums.Length-2; i>=0; i--){
-                fwd[i]= fwd[i+1] *nums[i+1];
+            for (int i = nums.Length - 2; i >= 0; i--)
+            {
+                fwd[i] = fwd[i + 1] * nums[i + 1];
             }
 
-            for(int i=0; i< nums.Length; i++){
-                fwd[i]*= bwd[i];
+            for (int i = 0; i < nums.Length; i++)
+            {
+                fwd[i] *= bwd[i];
             }
             return fwd;
         }
@@ -2202,20 +2624,27 @@ namespace Interview
         //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
         //For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be[1, 3, 12, 0, 0].
         //Note:You must do this in-place without making a copy of the array.Minimize the total number of operations.
+        public void moveZ(int[] nums)
+        {
+            int firZ = Array.IndexOf(nums, 0);
+            if (firZ == -1)
+                return;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] != 0 && i > firZ)
+                {
+                    nums[firZ] = nums[i];
+                    nums[i] = 0;
+                    firZ++;
+                }
+            }
+        }
         public void MoveZeroes(int[] nums)
         { //smart solution~
             if (nums == null || nums.Length == 0)
                 return;
-
-            int zIdxx = -1;
-            for (int i = 0; i < nums.Length; i++)
-            {
-                if (nums[i] == 0)
-                {
-                    zIdxx = i;
-                    break;
-                }
-            }
+            int zIdxx = Array.IndexOf(nums, 0);
             if (zIdxx == -1)
                 return;
             for (int j = zIdxx + 1; j < nums.Length; j++)
@@ -2748,63 +3177,78 @@ namespace Interview
         //so that the resulting parentheses string is valid and return any valid string.
         //Input: s = "lee(t(c)o)de)"  Output: "lee(t(c)o)de"
         //Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
-        public string MinRemoveToMakeValid2(string s) {
-            if(string.IsNullOrEmpty(s))
+        public string MinRemoveToMakeValid2(string s)
+        {
+            if (string.IsNullOrEmpty(s))
                 return "";
             int leftP = 0;
-            string temp = "";    
-            for(int i = 0; i< s.Length; i++){
-                 if(s[i] == '('){
-                     leftP++;
-                 }
-                 else if(s[i] == ')'){
-                     if(leftP == 0){
+            string temp = "";
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
+                {
+                    leftP++;
+                }
+                else if (s[i] == ')')
+                {
+                    if (leftP == 0)
+                    {
                         continue;
-                     }
-                     leftP--;   
-                 }
-                 temp+=s[i];
+                    }
+                    leftP--;
+                }
+                temp += s[i];
             }
             StringBuilder ret = new StringBuilder();
 
-            for(int i =temp.Length-1; i>=0; i--){
-                if(temp[i]=='(' && leftP>0){
+            for (int i = temp.Length - 1; i >= 0; i--)
+            {
+                if (temp[i] == '(' && leftP > 0)
+                {
                     leftP--;
                 }
-                else{
-                    ret.Insert(0,temp[i]);
-                }    
+                else
+                {
+                    ret.Insert(0, temp[i]);
+                }
             }
             return ret.ToString();
         }
-        public string MinRemoveToMakeValid(string s) {
+        public string MinRemoveToMakeValid(string s)
+        {
             // OK, but over time, O(n) / O(n)
-            if(string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
                 return "";
 
-             var stackL = new Stack<int>();
-             var stackR = new Stack<int>(); 
-             for(int i = 0; i< s.Length; i++){
-                 if(s[i] == '('){
-                     stackL.Push(i);
-                 }
-                 else if(s[i]==')' && stackL.Count>0){
-                     stackL.Pop();
-                 }
-                 else if(s[i]==')'){
-                     stackR.Push(i);
-                 }
-             }
-             if(stackL.Count==0 && stackR.Count ==0 )
+            var stackL = new Stack<int>();
+            var stackR = new Stack<int>();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
+                {
+                    stackL.Push(i);
+                }
+                else if (s[i] == ')' && stackL.Count > 0)
+                {
+                    stackL.Pop();
+                }
+                else if (s[i] == ')')
+                {
+                    stackR.Push(i);
+                }
+            }
+            if (stackL.Count == 0 && stackR.Count == 0)
                 return s;
 
-             string ret ="";
-             for(int i = 0; i<s.Length; i++){
-                if(!(stackL.Contains(i) || stackR.Contains(i))){
-                    ret+= s[i];
-                }    
-             }
-             
+            string ret = "";
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!(stackL.Contains(i) || stackR.Contains(i)))
+                {
+                    ret += s[i];
+                }
+            }
+
             return ret;
         }
 

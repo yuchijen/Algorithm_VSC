@@ -58,6 +58,29 @@ namespace Interview
 
         }
 
+        //572. Subtree of Another Tree
+        public bool IsSubtree(TreeNode s, TreeNode t)
+        {
+            var l1 = new List<string>();
+            var l2 = new List<string>();
+
+            inorder(s, l1);
+            inorder(t, l2);
+            string s1 = string.Join(',', l1.ToArray());
+            string s2 = string.Join(',', l2.ToArray());
+            return s1.IndexOf(s2) != -1;
+        }
+        private void inorder(TreeNode s, List<string> ret)
+        {
+            if (s == null){
+                ret.Add("#");
+                return;
+            }                
+            ret.Add(","+s.val.ToString());
+            inorder(s.left, ret);
+            inorder(s.right, ret);
+        }
+
 
         //124. Binary Tree Maximum Path Sum (or Minimun) (FB)687, 543
         //Given a non-empty binary tree, find the maximum path sum.
@@ -85,7 +108,7 @@ namespace Interview
             int left = Math.Max(0, MaxPathSumDfs(node.left, ret));
             int right = Math.Max(0, MaxPathSumDfs(node.right, ret));
             Console.WriteLine(left);
-            
+
             ret[0] = Math.Max(ret[0], left + right + node.val);
             return Math.Max(left, right) + node.val;
         }
@@ -115,31 +138,35 @@ namespace Interview
         //in the path has the same value. This path may or may not pass through the root.
         //The length of path between two nodes is represented by the number of edges between them.
         // O(n) / O(n)
-        public int LongestUnivaluePath(TreeNode root) {
-            if (root==null)
+        public int LongestUnivaluePath(TreeNode root)
+        {
+            if (root == null)
                 return 0;
-            var ret = new int[1]{0};
+            var ret = new int[1] { 0 };
             univaluePathHelper(ret, root);
             return ret[0];
         }
-        int univaluePathHelper(int[] ret, TreeNode r){
-            if(r==null)
+        int univaluePathHelper(int[] ret, TreeNode r)
+        {
+            if (r == null)
                 return 0;
 
             int left = univaluePathHelper(ret, r.left);
             int right = univaluePathHelper(ret, r.right);
-            
-            int leftSub =0;
-            int rightSub =0;
-            if(r.right!=null && r.val == r.right.val){
-                rightSub = right +1;    
+
+            int leftSub = 0;
+            int rightSub = 0;
+            if (r.right != null && r.val == r.right.val)
+            {
+                rightSub = right + 1;
             }
-            if(r.left!=null && r.val == r.left.val){
-                leftSub = left + 1;    
+            if (r.left != null && r.val == r.left.val)
+            {
+                leftSub = left + 1;
             }
-            ret[0] = Math.Max(ret[0], leftSub+rightSub);
-        
-            return Math.Max(leftSub,rightSub);
+            ret[0] = Math.Max(ret[0], leftSub + rightSub);
+
+            return Math.Max(leftSub, rightSub);
         }
 
         //100. Same Tree
@@ -201,12 +228,13 @@ namespace Interview
         }
 
         //987. Vertical Order Traversal of a Binary Tree O(n)/O(n)
-        public IList<IList<int>> VerticalTraversal(TreeNode root) {
-            if(root==null)
+        public IList<IList<int>> VerticalTraversal(TreeNode root)
+        {
+            if (root == null)
                 return null;
-            var ret = new List<IList<int>>();   
-            var map = new SortedDictionary<int, SortedDictionary<int,List<int>>>();
-            verticalHelper(root, 0,0, map);
+            var ret = new List<IList<int>>();
+            var map = new SortedDictionary<int, SortedDictionary<int, List<int>>>();
+            verticalHelper(root, 0, 0, map);
             // foreach(var kv1 in map){
             //     Console.WriteLine("x: "+ kv1.Key+":");
             //     foreach(var kv2 in kv1.Value){
@@ -218,54 +246,61 @@ namespace Interview
             //     }
             // }
             // map=map.OrderBy(x=>x.Key).ToDictionary(x=>x.Key, x=>x.Value);
-            foreach(KeyValuePair<int,SortedDictionary<int,List<int>>> kv in map){
+            foreach (KeyValuePair<int, SortedDictionary<int, List<int>>> kv in map)
+            {
                 var listX = new List<int>();
                 //sorting y-key desc order in inner dictionary
-                var mapListY = kv.Value.OrderByDescending(x=>x.Key).ToDictionary(x=>x.Key, x=>x.Value);
-                foreach(var kv2 in mapListY){
-                    listX.AddRange(kv2.Value.OrderBy(x=>x).ToList());
+                var mapListY = kv.Value.OrderByDescending(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                foreach (var kv2 in mapListY)
+                {
+                    listX.AddRange(kv2.Value.OrderBy(x => x).ToList());
                 }
                 ret.Add(listX);
             }
             return ret;
         }
-        void verticalHelper(TreeNode root, int idx, int idy, SortedDictionary<int, SortedDictionary<int, List<int>>> map){
-            if(root==null)
+        void verticalHelper(TreeNode root, int idx, int idy, SortedDictionary<int, SortedDictionary<int, List<int>>> map)
+        {
+            if (root == null)
                 return;
-            verticalHelper(root.left, idx-1, idy-1, map);    
-            if(map.ContainsKey(idx)){
-                if(map[idx].ContainsKey(idy))
+            verticalHelper(root.left, idx - 1, idy - 1, map);
+            if (map.ContainsKey(idx))
+            {
+                if (map[idx].ContainsKey(idy))
                     map[idx][idy].Add(root.val);
                 else
-                    map[idx].Add(idy, new List<int>(){root.val});    
+                    map[idx].Add(idy, new List<int>() { root.val });
             }
-            else{
+            else
+            {
                 map.Add(idx, new SortedDictionary<int, List<int>>());
-                map[idx].Add(idy, new List<int>(){root.val});
+                map[idx].Add(idy, new List<int>() { root.val });
             }
-            verticalHelper(root.right, idx+1, idy-1,map);
+            verticalHelper(root.right, idx + 1, idy - 1, map);
         }
 
         //543. Diameter of Binary Tree(Recur)
         //Given a binary tree, you need to compute the length of the diameter of the tree. 
         //The diameter of a binary tree is the length of the longest path between any two nodes 
         //in a tree. This path may or may not pass through the root.
-        public int DiameterOfBinaryTree2(TreeNode root){
+        public int DiameterOfBinaryTree2(TreeNode root)
+        {
             //O(n) , O(n)
-            if(root ==null)
+            if (root == null)
                 return 0;
-            var ret = new int[1]{0};
+            var ret = new int[1] { 0 };
             helperDia(root, ret);
             return ret[0];
         }
-        int helperDia(TreeNode root, int[] ret){
-            if(root ==null)
+        int helperDia(TreeNode root, int[] ret)
+        {
+            if (root == null)
                 return 0;
-            
-            int l = helperDia(root.left,ret);
-            int r = helperDia(root.right,ret);
-            ret[0] = Math.Max(ret[0], l+r);
-            return Math.Max(l,r)+1;
+
+            int l = helperDia(root.left, ret);
+            int r = helperDia(root.right, ret);
+            ret[0] = Math.Max(ret[0], l + r);
+            return Math.Max(l, r) + 1;
         }
 
         public int DiameterOfBinaryTree(TreeNode root)
@@ -281,7 +316,7 @@ namespace Interview
         {
             if (root == null)
                 return 0;
-            if(map.ContainsKey(root))
+            if (map.ContainsKey(root))
                 return map[root];
 
             int res = MaxDepth(root.left) + MaxDepth(root.right);
@@ -290,7 +325,7 @@ namespace Interview
             return ret;
         }
 
-        
+
         //404. Sum of Left Leaves
         //       3
         //      / \
@@ -380,49 +415,58 @@ namespace Interview
         //Note: If the given node has no in-order successor in the tree, return null.
         public TreeNode inorderSuccessor3(TreeNode root, TreeNode p)
         {
-            if(root==null)
+            if (root == null)
                 return null;
             var st = new Stack<TreeNode>();
             bool found = false;
-            while(root!=null || st.Count>0){
-                if(root!=null){
+            while (root != null || st.Count > 0)
+            {
+                if (root != null)
+                {
                     st.Push(root);
-                    root =root.left;
+                    root = root.left;
                 }
-                else{
+                else
+                {
                     root = st.Pop();
-                    if(found){
+                    if (found)
+                    {
                         return root;
                     }
-                    if(p ==root) {
-                        found =true;                        
+                    if (p == root)
+                    {
+                        found = true;
                     }
-                    root =root.right;
+                    root = root.right;
                 }
             }
             return null;
         }
+
         public TreeNode inorderSuccessor2(TreeNode root, TreeNode p)
         {
-            if(root==null)
+            if (root == null)
                 return null;
             var st = new Stack<TreeNode>();
             bool foundCurNode = false;
             //inorder traversal interator approach
-            while(root!=null || st.Count>0){
-                while(root!=null){
+            while (root != null || st.Count > 0)
+            {
+                while (root != null)
+                {
                     //save left tree node to stack
                     st.Push(root);
-                    root=root.left;
+                    root = root.left;
                 }
                 var curNode = st.Pop();
-                if(foundCurNode)
+                if (foundCurNode)
                     return curNode;
-                if(curNode==p){
-                   foundCurNode = true;
+                if (curNode == p)
+                {
+                    foundCurNode = true;
                 }
-                root=curNode.right;
-            }    
+                root = curNode.right;
+            }
             return null;
         }
 
@@ -476,7 +520,7 @@ namespace Interview
             return null;
         }
 
-        
+
         public TreeNode inorderSuccessorBTree2(TreeNode root, TreeNode p)
         {
             if (root == null || p == null)
@@ -594,42 +638,50 @@ namespace Interview
         //   4   5 2   7
         //return its vertical order traversal as:
         //[  [4],  [9],  [3,5,2],  [20],  [7]  ]
-        class positionTreeNode{
+        class positionTreeNode
+        {
             public TreeNode node;
             public int posX;
-            public positionTreeNode(int x, TreeNode n){
+            public positionTreeNode(int x, TreeNode n)
+            {
                 posX = x;
                 node = n;
             }
         }
-        public List<IList<int>> verticalOrder2(TreeNode root){
-            if(root==null)
+        public List<IList<int>> verticalOrder2(TreeNode root)
+        {
+            if (root == null)
                 return null;
             var ret = new List<IList<int>>();
-            var map = new SortedDictionary<int,List<int>>();
+            var map = new SortedDictionary<int, List<int>>();
             //use level traversal to have correct order
             var q = new Queue<positionTreeNode>();
-            var r = new positionTreeNode(0,root);
+            var r = new positionTreeNode(0, root);
             q.Enqueue(r);
 
-            while(q.Count>0){
+            while (q.Count > 0)
+            {
                 int levelCnt = q.Count;
-                while(--levelCnt>=0){
+                while (--levelCnt >= 0)
+                {
                     //traversal each level
                     var cur = q.Dequeue();
-                    if(cur.node!=null){
-                        if(!map.ContainsKey(cur.posX)){
+                    if (cur.node != null)
+                    {
+                        if (!map.ContainsKey(cur.posX))
+                        {
                             map.Add(cur.posX, new List<int>());
                         }
                         map[cur.posX].Add(cur.node.val);
-                        q.Enqueue(new positionTreeNode(cur.posX-1, cur.node.left));
-                        q.Enqueue(new positionTreeNode(cur.posX+1, cur.node.right));
-                    }                
+                        q.Enqueue(new positionTreeNode(cur.posX - 1, cur.node.left));
+                        q.Enqueue(new positionTreeNode(cur.posX + 1, cur.node.right));
+                    }
                 }
 
             }
 
-            foreach(var kv in map){
+            foreach (var kv in map)
+            {
                 ret.Add(kv.Value);
             }
             return ret;
@@ -868,7 +920,7 @@ namespace Interview
             if (node == null)
                 return;
             curList.Add(node.val);
-         
+
             if (node.left == null && node.right == null && curList.Sum() == sum)
             {
                 ret.Add(new List<int>(curList));
@@ -1045,7 +1097,7 @@ namespace Interview
                         // parent.left = left;
                         q.Enqueue(parent.left);
                     }
-                    if (i+1 < strs.Length && strs[++i] != "#")
+                    if (i + 1 < strs.Length && strs[++i] != "#")
                     {
                         parent.right = new TreeNode(Convert.ToInt32(strs[i]));
                         //parent.right = right;
@@ -1231,23 +1283,26 @@ namespace Interview
             var q = new Queue<TreeNode>();
             // int level = 0;
             q.Enqueue(root);
-            while(q.Count>0){
+            while (q.Count > 0)
+            {
                 int levelCnt = q.Count;
                 ret.Add(new List<int>());
-                while(--levelCnt>=0){
+                while (--levelCnt >= 0)
+                {
                     var cur = q.Dequeue();
 
-                    if(cur!=null){
-                        ret[ret.Count-1].Add(cur.val);
-                        q.Enqueue(cur.left);                            
-                        q.Enqueue(cur.right);                            
-                
+                    if (cur != null)
+                    {
+                        ret[ret.Count - 1].Add(cur.val);
+                        q.Enqueue(cur.left);
+                        q.Enqueue(cur.right);
+
                     }
                 }
             }
-            if(ret.Count>0)
-                ret.RemoveAt(ret.Count-1);
-            return ret;  
+            if (ret.Count > 0)
+                ret.RemoveAt(ret.Count - 1);
+            return ret;
         }
         public IList<IList<int>> LevelOrder(TreeNode root)
         {
@@ -1354,58 +1409,66 @@ namespace Interview
         }
 
         //1026. Maximum Difference Between Node and Ancestor
-        public int MaxAncestorDiff(TreeNode root) {
-            var ret = new int[1]{int.MinValue};
-            if(root==null)
+        public int MaxAncestorDiff(TreeNode root)
+        {
+            var ret = new int[1] { int.MinValue };
+            if (root == null)
                 return 0;
 
             maxAncestorDiffDFS(root, root.val, root.val, ret);
             return ret[0];
         }
-        void maxAncestorDiffDFS(TreeNode r, int min, int max, int[] ret){
-            if(r==null)
+        void maxAncestorDiffDFS(TreeNode r, int min, int max, int[] ret)
+        {
+            if (r == null)
                 return;
-            ret[0]= Math.Max(ret[0], Math.Max(Math.Abs(max-r.val),Math.Abs(r.val-min)));
+            ret[0] = Math.Max(ret[0], Math.Max(Math.Abs(max - r.val), Math.Abs(r.val - min)));
             min = Math.Min(r.val, min);
             max = Math.Max(r.val, max);
-            maxAncestorDiffDFS(r.left,min,max,ret);
-            maxAncestorDiffDFS(r.right,min,max,ret);
+            maxAncestorDiffDFS(r.left, min, max, ret);
+            maxAncestorDiffDFS(r.right, min, max, ret);
         }
 
         //958. Check Completeness of a Binary Tree O(n)/O(n)
-        public bool IsCompleteTree(TreeNode root) {
+        public bool IsCompleteTree(TreeNode root)
+        {
             //level traversal using queue , pocess by every level 
-            if(root==null)
+            if (root == null)
                 return false;
             var q = new Queue<TreeNode>();
             q.Enqueue(root);
             bool missing = false;
-            while(q.Count>0){
+            while (q.Count > 0)
+            {
                 int levelCnt = q.Count;
-                while(--levelCnt>=0){
+                while (--levelCnt >= 0)
+                {
                     var cur = q.Dequeue();
-                    if(cur==null){
+                    if (cur == null)
+                    {
                         missing = true;
                     }
-                    else{
-                        if(missing)
-                            return false;                    
-                        q.Enqueue(cur.left);                            
-                        q.Enqueue(cur.right);                            
+                    else
+                    {
+                        if (missing)
+                            return false;
+                        q.Enqueue(cur.left);
+                        q.Enqueue(cur.right);
                     }
                 }
             }
             return true;
         }
-        
-        int treeNodeNumber(TreeNode r) {
-            if(r==null)
+
+        int treeNodeNumber(TreeNode r)
+        {
+            if (r == null)
                 return 0;
             int L = 0;
-            int R=0 ;   
-            L= treeNodeNumber(r.left);
-            R= treeNodeNumber(r.right);
-            return L+R+1;    
+            int R = 0;
+            L = treeNodeNumber(r.left);
+            R = treeNodeNumber(r.right);
+            return L + R + 1;
         }
 
         //236. Lowest Common Ancestor of a Binary Tree
@@ -1515,10 +1578,12 @@ namespace Interview
         {
             var diff = double.MaxValue;
             int ret = int.MinValue;
-            
-            while(root!=null) {
-                if(diff > Math.Abs(root.val-target)){
-                    diff = Math.Abs(root.val-target);
+
+            while (root != null)
+            {
+                if (diff > Math.Abs(root.val - target))
+                {
+                    diff = Math.Abs(root.val - target);
                     ret = root.val;
                 }
                 root = root.val > target ? root.left : root.right;
@@ -1531,14 +1596,16 @@ namespace Interview
         }
 
         //inorder traversal iterator 
-        List<int> inorderTraversal(TreeNode root) 
+        List<int> inorderTraversal(TreeNode root)
         {
             List<int> ans = new List<int>();
-            if (root==null) return null;
+            if (root == null) return null;
             Stack<TreeNode> st = new Stack<TreeNode>();
             TreeNode cur = root;
-            while (cur!=null || st.Count>0) {
-                while (cur!=null) {
+            while (cur != null || st.Count > 0)
+            {
+                while (cur != null)
+                {
                     st.Push(cur);
                     cur = cur.left;
                 }
@@ -1549,5 +1616,14 @@ namespace Interview
             return ans;
         }
 
+        void inorderTraversalRecursive(TreeNode root, List<int> ret)
+        {
+            if (root == null)
+                return;
+
+            inorderTraversalRecursive(root.left, ret);
+            ret.Add(root.val);
+            inorderTraversalRecursive(root.right, ret);
+        }
     }
 }

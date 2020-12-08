@@ -6,7 +6,35 @@ using System.Text;
 namespace Interview
 {
     public class DynamicProgramming
-    {
+    {   
+        //1335 Minimum Difficulty of a Job Schedule
+        public int MinDifficulty(int[] jobDifficulty, int d) {
+            int n = jobDifficulty.Length;
+            if(d>n)
+                return -1;
+            var dp = new int[n+1,d+1];
+            for(int i = 0; i< dp.GetLength(0); i++){
+                for(int j = 0; j< dp.GetLength(1); j++){
+                    dp[i,j] = int.MaxValue/2;  // if set max, will be overflow
+                }
+            }
+            dp[0,0]=0;
+
+            for(int i =1; i<=n ; i++){
+                for(int k =1; k<=d; k++){
+                    int minDay = 0;
+                    for(int j= i-1; j>=k-1; j--){
+                    //for(int j= k-1; j<=i ; j++){
+                        
+                        minDay = Math.Max(minDay, jobDifficulty[j]);
+                        dp[i,k] =Math.Min(dp[i,k], dp[j,k-1]+ minDay);
+                    }
+                }
+            }
+            return dp[n,d];
+
+        }
+
         string createShortestPalindrome(string s)
         {
             string str = s;

@@ -8,37 +8,77 @@ namespace Interview
 {
     class Program
     {
-        static void foo (string s){Console.WriteLine("ss");}
-        static void foo (int i){Console.WriteLine("ii");}
-        static void foo (object s){Console.WriteLine("oo");}
-        
+        static void foo(string s) { Console.WriteLine("ss"); }
+        static void foo(int i) { Console.WriteLine("ii"); }
+        static void foo(object s) { Console.WriteLine("oo"); }
+
         static void Main(string[] args)
         {
+            //******* Test Deep Clone ************/
+            var testClone = new SomeComxClass();
+            testClone.Prop = 2;
+            testClone.ComxProp = new Codec();
+            var decMap = new Dictionary<string, string>();
+            decMap.Add("k1","v1");
+            testClone.ComxProp.decodeMap = decMap;
+            var cloned = testClone.DeepClone();
 
-            String my11 = "abc";
-            String my22 = "abc";
-            var sb1 = new StringBuilder("abc");
-            var sb2 = new StringBuilder("abc");
-            var ll2 = new List<object>();
-            ll2.Add(my11);
-            ll2.Add(sb1);
-            Console.WriteLine(ll2.Contains(my22));
-            Console.WriteLine(ll2.Contains(sb2));
-            Console.WriteLine(ll2.Contains(sb2.ToString()));
-            // my[0] ='c';
+            Console.WriteLine(cloned.Prop);
+            Console.WriteLine(cloned.ComxProp.decodeMap.Keys.ElementAt(0));
 
-            // object xxx = "str";
-            // foo(xxx);
-            // dynamic yyy = "str";
-            // foo(yyy);
+            //******* Test log transaction ************/
+            List<List<int>> ratings = new List<List<int>>();
+            ratings.Add(new List<int>() { 4, 4 });
+            ratings.Add(new List<int>() { 1, 2 });
+            ratings.Add(new List<int>() { 3, 6 });
+            int threshold = 77;
+            var logs = new string[] { "345366 89921 45", "029323 38239 23", "38239 345366 15", "029323 38239 77", "345366 38239 23", "029323 345366 13", "38239 38239 23" };
+            //****************************************/
+
             var asa = new ArrayString();
+            
+            var arrUnsort = new int[5] { 3, 34, 30, 5, 9 };
+            asa.SortingArrayIntoOneNum(arrUnsort);
+            asa.FradulentActivity(logs, 3);
+
+            Console.WriteLine(asa.five_stars_needed(ratings, threshold));
+
+            // int kk = 2;
+            // string[] keywords = new string[]{"deltacellular","anacell", "betacellular", "cetracular", "eurocell"};
+            // string[] reviews = new string[]{
+            //   "I love anacell Best services; Best services provided by anacdell",
+            //   "betacellular has great services",
+            //   "deltacellular provides much better services than betacellular",
+            //   "cetracular is worse than anacell",
+            //   "Betacellular is better than deltacellular."
+            // };
+            //             asa.kFrequenctly(keywords, reviews, kk);
+
+            // List<PairString> itemAssociation1 = new  List<PairString>()
+            // {
+            //     new PairString("item1", "item2"),
+            //     new PairString("item3", "item4"),
+            //     new PairString("item4", "item5")
+            // };
+
+            // List<PairString> itemAssociation2 = new  List<PairString>()
+            // {
+            //     new PairString("item1", "item2"),
+            //     new PairString("item4", "item5"),
+            //     new PairString("item3", "item4"),
+            //     new PairString("item1", "item4")
+            // };
+
+            Console.Write("tesla: ");
+            Console.WriteLine(asa.folllowupThreeIdenticalConseLetters("aaa", new int[] { 1, 2, 3 }));
+
             var dp = new DynamicProgramming();
-            asa.solution01(2,"1A 2F 1C");
+            asa.solution01(2, "1A 2F 1C");
             asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
 
-            var enstr = asa.encode2(new List<string>{"str456#7/890", "str326#3/7890/123","seffc"});
+            var enstr = asa.encode2(new List<string> { "str456#7/890", "str326#3/7890/123", "seffc" });
             asa.decode2(enstr);
-            
+
             //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
 
             //var arr = new int[] { 1, 2, 3, 4, 1, 2, 2 };
@@ -85,7 +125,7 @@ namespace Interview
 
             //Console.WriteLine("Press any key to exit...");
             //Console.ReadLine();
-            
+
             var C = new Circle();
             Console.WriteLine("circumference:" + C.Calculate((x) => { return x * 2 * 3.14; }));
 
@@ -109,17 +149,15 @@ namespace Interview
 
             Console.WriteLine("Permutation:########");
 
-            int? a  = null;
-            int b = (int)a;
             var perret = bk.Permute(new int[3] { 1, 2, 3 });
             foreach (var x in perret)
             {
-                foreach(var y in x)
+                foreach (var y in x)
                 {
                     Console.Write(y);
                     Console.Write(",");
                 }
-                Console.WriteLine();    
+                Console.WriteLine();
             }
 
             bk.GetFactors(12);
@@ -139,14 +177,19 @@ namespace Interview
             bt.MaxPathSum(root);
 
             bt.deserialize(bt.serialize(root));
-            var ret =bt.FindLeaves(root);
+            var ret = bt.FindLeaves(root);
 
             bt.VerticalTraversal(root);
 
             var ht = new HashTable();
+
+            ht.PartitionLabels("ababcbacadefegdehijhklij");
+
+
             Console.WriteLine("find anagrams:");
-            foreach(var x in ht.FindAnagrams2("cbaerwwbac","abc")){
-                Console.Write(x+',');
+            foreach (var x in ht.FindAnagrams2("cbaerwwbac", "abc"))
+            {
+                Console.Write(x + ',');
             }
 
 
@@ -173,7 +216,7 @@ namespace Interview
             Console.WriteLine("word break");
             Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));
 
-            Point pt = new Point() { x=100,y=100};
+            Point pt = new Point() { x = 100, y = 100 };
             Point pt2 = new Point() { x = 0, y = 0 };
             dfs.refSwap(ref pt, ref pt2);
             Console.WriteLine(pt.x + "," + pt.y);
@@ -183,7 +226,7 @@ namespace Interview
 
             //asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
             asa.Compress("AAABBCCCCCCAAAAA");
-            asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2});
+            asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2 });
             asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });
             //asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
             asa.MaxSubArray(new int[] { 1, 2, -4, 4, 5, 6 });
@@ -248,7 +291,7 @@ namespace Interview
             //    }
             //    Console.WriteLine("length:" + pathdist[j]);
             //}
-        #endregion
+            #endregion
 
         }
 

@@ -4,31 +4,61 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Interview
 {
+    // Deep clone using serilzation and deserilization to deep copy object
+    // usage: MyClass copy = obj.DeepClone(); with [Serializable] attribute
+    public static class ExtensionMethods
+    {
+        public static T DeepClone<T>(this T a)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, a);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            }
+        }
+    }
+
+    [Serializable]
+    public class SomeComxClass{
+
+        public int Prop {get;set;}
+        public Codec ComxProp {get;set;}
+    }
+
     //1114. Print in Order
     //The same instance of Foo will be passed to three different threads. 
     //Thread A will call first(), thread B will call second(), and thread C will call third(). 
     //Design a mechanism and modify the program to ensure that second() is executed after first(), 
     //and third() is executed after second().
-    public class EventWait{
+    public class EventWait
+    {
         EventWaitHandle _waitFirst;
         EventWaitHandle _waitSec;
-        public EventWait(){
+        public EventWait()
+        {
             _waitFirst = new AutoResetEvent(false);
             _waitSec = new AutoResetEvent(false);
         }
-        public void printFirst(){
+        public void printFirst()
+        {
             Console.WriteLine("first");
             _waitFirst.Set();
         }
-        public void printSec(){
+        public void printSec()
+        {
             _waitFirst.WaitOne();
-            Console.WriteLine("second");            
+            Console.WriteLine("second");
             _waitSec.Set();
         }
-        public void printThird(){
+        public void printThird()
+        {
             _waitSec.WaitOne();
             Console.WriteLine("third");
         }
@@ -54,25 +84,25 @@ namespace Interview
             int kth;
             public KthLargest(int k, int[] nums)
             {
-                pq= new List<int>();
-                for(int i=0; i< k && i<nums.Length; i++)                
+                pq = new List<int>();
+                for (int i = 0; i < k && i < nums.Length; i++)
                     pq.Add(nums[i]);
 
-                pq.Sort();    
-                kth= k;
+                pq.Sort();
+                kth = k;
             }
 
             public int Add(int val)
             {
                 pq.Add(val);
                 pq.Sort();
-                if(pq.Count > kth){
+                if (pq.Count > kth)
+                {
                     pq.RemoveAt(0);
-                }   
-                return pq[0];                
+                }
+                return pq[0];
             }
         }
-
 
         //(google) flip game: flip 2 cards , if the same get point, if not flip them back. 
         // design shuffle method (uniformly )
@@ -99,8 +129,9 @@ namespace Interview
             public void shuffleArray(int[] nums)
             {
                 var rd = new Random();
-                for(int i=0; i< nums.Length; i++){
-                    int rdIdx = rd.Next(i,nums.Length);
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    int rdIdx = rd.Next(i, nums.Length);
                     int temp = nums[rdIdx];
                     nums[rdIdx] = nums[i];
                     nums[i] = temp;
@@ -136,7 +167,6 @@ namespace Interview
                 return 2;
             }
         }
-
 
         //211. Add and Search Word - Data structure design
         //Example:
@@ -397,7 +427,7 @@ namespace Interview
                 }
                 for (int k = 0; k < len; k++)
                 {
-                    if (board[k, len - 1 - k] == t)
+                    if (board[k, len - 1 - k] != t)
                         return false;
                 }
                 return true;
@@ -450,6 +480,7 @@ namespace Interview
             }
 
         }
+
         //341. Flatten Nested List Iterator
         //Given a nested list of integers, implement an iterator to flatten it.
         //Each element is either an integer, or a list -- whose elements may also be integers or other lists.
@@ -699,17 +730,18 @@ namespace Interview
         }
     }
 
-
     //535. Encode and Decode TinyURL
     //TinyURL is a URL shortening service where you enter a URL such as https://leetcode.com/problems/design-tinyurl 
     //and it returns a short URL such as http://tinyurl.com/4e9iAk.
     //Design the encode and decode methods for the TinyURL service.There is no restriction on how your encode/decode 
     //algorithm should work.You just need to ensure that a URL can be encoded to a tiny URL and the tiny URL can be 
     //decoded to the original URL.
+
+    [Serializable]
     public class Codec
     {
-        Dictionary<string, string> encodeMap;
-        Dictionary<string, string> decodeMap;
+        public Dictionary<string, string> encodeMap;
+        public Dictionary<string, string> decodeMap;
         const string baseURL = "http://tinyurl.com/";
 
         public Codec()
@@ -748,7 +780,6 @@ namespace Interview
             return decodeMap[shortUrl];
         }
     }
-
 
     /**
      * Your LRUCache object will be instantiated and called as such:
@@ -970,9 +1001,6 @@ namespace Interview
 
     public class AsyncTest
     {
-
-
-
         public void TestAsync()
         {
             foreach (var x in RunMultipleTasksParallelAsync(5).Result)

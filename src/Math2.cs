@@ -7,6 +7,75 @@ namespace Interview
 {
     public class Math2
     {
+        //152. Maximum Product Subarray
+        public int MaxProduct(int[] nums)
+        {
+            int max = nums[0];
+            int min = nums[0];
+            int ret = nums[0];
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] >= 0)
+                {
+                    max = Math.Max(nums[i], nums[i] * max);
+                    min = Math.Min(nums[i], nums[i] * min);
+                }
+                else
+                {
+                    int temp = max;
+                    max = Math.Max(nums[i], nums[i] * min);
+                    min = Math.Min(nums[i], nums[i] * temp);
+                }
+                ret = Math.Max(ret, max);
+            }
+            return ret;
+        }
+
+        //204. Count Primes
+        public int CountPrimes(int n)
+        {
+            int c = 0;
+            var hs = new HashSet<int>() { 2, 3 };
+            var primes = new bool[n];
+            for (int i = 0; i < primes.Length; i++)
+            {
+                primes[i] = true;
+            }
+
+            for (int i = 2; i < n; i++)
+            {
+                if (!primes[i])
+                    continue;
+                else
+                {
+                    c++;
+                    for (int j = 2; j * i < n; j++)
+                    {
+                        primes[j * i] = false;
+                    }
+                }
+            }
+            return c;
+        }
+
+        bool isPrime(int x, HashSet<int> hs)
+        {
+            if (hs.Contains(x))
+                return true;
+            if (x <= 1)
+                return false;
+            // if (x == 2 || x == 3)
+            //     return true;
+            for (int i = 2; i * i <= x; i++)
+            {
+                if (x % i == 0)
+                    return false;
+            }
+            hs.Add(x);
+            return true;
+        }
+
+
         //50. Pow(x, n)
         //Implement pow(x, n). in log(n)
         //Example 1:Input: 2.00000, 10
@@ -40,8 +109,8 @@ namespace Interview
         {
             string[] digitStr1 = new string[] { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
             string[] digitStrTeen = new string[] { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
-            string[] digitStr2 = new string[] { "zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety","Hundred" };
-            string[] digiStr3 = new string[] { "","Thousand", "Million", "Billion" };
+            string[] digitStr2 = new string[] { "zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety", "Hundred" };
+            string[] digiStr3 = new string[] { "", "Thousand", "Million", "Billion" };
             if (num <= 0)
                 return "Zero";
 
@@ -69,14 +138,14 @@ namespace Interview
                             curRet = " " + digitStr2[curSetStr[i] - '0'] + curRet;
                     }
                     else if (curSetStr.Length - i == 3 && curSetStr[i] - '0' != 0)
-                        curRet = " " + digitStr1[curSetStr[i] - '0'] + " "+ digitStr2[10] + curRet;
+                        curRet = " " + digitStr1[curSetStr[i] - '0'] + " " + digitStr2[10] + curRet;
                 }
 
                 if (level == 0)
                     ret = curRet;
                 else if (!string.IsNullOrWhiteSpace(curRet))
-                    ret = curRet +" "+ digiStr3[level] + ret;
-                
+                    ret = curRet + " " + digiStr3[level] + ret;
+
                 num /= 1000;
                 level += 1;
             }
@@ -98,7 +167,7 @@ namespace Interview
 
             string[] segPath = path.Split('/');
             var st = new Stack<string>();
-            for (int i =0; i< segPath.Length; i++)
+            for (int i = 0; i < segPath.Length; i++)
             {
                 if (segPath[i] == ".." && st.Count > 0)
                     st.Pop();
@@ -109,7 +178,7 @@ namespace Interview
             }
             while (st.Count > 0)
             {
-                ret = "/" + st.Pop() +ret;
+                ret = "/" + st.Pop() + ret;
             }
             return ret == "" ? "/" : ret;
         }
@@ -152,7 +221,7 @@ namespace Interview
             string charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             string ret = "";
-            while(n >0)
+            while (n > 0)
             {
                 if ((n % 26) > 0)
                 {
@@ -166,7 +235,7 @@ namespace Interview
                 }
             }
             return ret;
-            
+
         }
 
     }

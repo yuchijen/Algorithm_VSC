@@ -8,51 +8,84 @@ namespace Interview
 {
     public class HashTable
     {
+        //763. Partition Labels
+        public IList<int> PartitionLabels(string S)
+        {
+            var map = new Dictionary<char, int>();
+            for (int i = 0; i < S.Length; i++)
+            {
+                map.TryAdd(S[i], i);
+                map[S[i]] = i;
+            }
+            // int windowHead = 0; 
+            int windowLast = 0;
+            int curLast = 0;
+            var ret = new List<int>();
+            int head = 0;
+            while (windowLast < S.Length)
+            {
+
+                curLast = Math.Max(map[S[windowLast]], curLast);
+                if (curLast == windowLast)
+                {
+                    ret.Add(windowLast - head + 1);
+                    head = windowLast + 1;
+
+                }
+                windowLast++;
+            }
+            return ret;
+        }
+
         //347 Top K Frequent Elements
         //Given a non-empty array of integers, return the k most frequent elements.
         // Example 1: Input: nums = [1,1,1,2,2,3], k = 2, Output: [1,2]
         // Example 2: Input: nums = [1], k = 1 Output: [1]
-        public IList<int> TopKFrequent(int[] nums, int k) {
-            if(nums==null ||nums.Count()==0|| nums.Count() <k)
+        public IList<int> TopKFrequent(int[] nums, int k)
+        {
+            if (nums == null || nums.Count() == 0 || nums.Count() < k)
                 return null;
 
             var map = new Dictionary<int, int>();
-            foreach(var x in nums){
-                if(map.ContainsKey(x))
+            foreach (var x in nums)
+            {
+                if (map.ContainsKey(x))
                     map[x]++;
                 else
-                    map.Add(x,1);    
+                    map.Add(x, 1);
             }
             List<KeyValuePair<int, int>> myList = map.ToList();
 
-            myList.Sort((kv1,kv2)=>{
+            myList.Sort((kv1, kv2) =>
+            {
                 return kv2.Value.CompareTo(kv1.Value);
             });
 
-            return myList.Select(kv => kv.Key).Take(k).ToList();                
+            return myList.Select(kv => kv.Key).Take(k).ToList();
         }
 
         //36. Valid Sudoku, sudoku validator ,if a passed string containing all 81 numbers of the puzzle 
         //is a valid solution, false otherwise
         //note: The Sudoku board could be partially filled, where empty cells are filled
         // with the character '.'.
-        public bool IsValidSudoku(char[,] board){
-             var set = new HashSet<string>();
-        
-        //herizontal check
-        for(int i=0; i<9;i++)
+        public bool IsValidSudoku(char[,] board)
         {
-            for(int j=0; j<9; j++)
+            var set = new HashSet<string>();
+
+            //herizontal check
+            for (int i = 0; i < 9; i++)
             {
-                if(board[i,j]!='.')
-                if(!set.Add(board[i,j] +" in row "+i) || 
-                        !set.Add(board[i,j] +" in column "+j) ||
-                            !set.Add(board[i,j] +" in block ("+i/3+","+j/3+")"))
-                    return false;
+                for (int j = 0; j < 9; j++)
+                {
+                    if (board[i, j] != '.')
+                        if (!set.Add(board[i, j] + " in row " + i) ||
+                                !set.Add(board[i, j] + " in column " + j) ||
+                                    !set.Add(board[i, j] + " in block (" + i / 3 + "," + j / 3 + ")"))
+                            return false;
+                }
             }
-        }
-        
-        return true;
+
+            return true;
 
         }
 
@@ -102,7 +135,7 @@ namespace Interview
                 map.Add(message, timestamp);
                 return true;
             }
-            if(timestamp- map[message]>10)
+            if (timestamp - map[message] > 10)
             {
                 map[message] = timestamp;
                 return true;
@@ -120,12 +153,13 @@ namespace Interview
                 curSet = new HashSet<string>();
                 from = 0;
             }
-            
-            bool shouldPrintMessage(int timestamp, string message) {
+
+            bool shouldPrintMessage(int timestamp, string message)
+            {
                 //remove all element (in set and map) staying longer than 10
-                for(int i = from; i <= timestamp-10; i++)
+                for (int i = from; i <= timestamp - 10; i++)
                 {
-                    foreach(var str in mapSPM[i])
+                    foreach (var str in mapSPM[i])
                     {
                         if (curSet.Contains(str))
                             curSet.Remove(str);
@@ -147,7 +181,7 @@ namespace Interview
                 return true;
             }
         }
-        
+
 
         //340. Find the longest substring with k unique characters in a given string 
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
@@ -165,27 +199,35 @@ namespace Interview
         //Max is "aabbcc" with length 6.
         //"aaabbb", k = 3
         //There are only two unique characters, thus show error message. 
-        public int lengthOfLongestSubstringKDistinct(string s, int k) {
+        public int lengthOfLongestSubstringKDistinct(string s, int k)
+        {
             //slide window
             var map = new Dictionary<char, int>();
-            int ret = 0, j=0;
-            
-            for(int i=0; i< s.Length; i++){
-                if(map.ContainsKey(s[i])){
-                    map[s[i]]+=1;
-                } else {
-                    map.Add(s[i],1);
+            int ret = 0, j = 0;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                {
+                    map[s[i]] += 1;
+                }
+                else
+                {
+                    map.Add(s[i], 1);
                 }
 
-                while(map.Count>k && j<=i){
-                    if(--map[s[j]]==0)
+                while (map.Count > k && j <= i)
+                {
+                    if (--map[s[j]] == 0)
                         map.Remove(s[j]);
 
                     j++;
                 }
-                while(map.Count ==k){
-                    ret = Math.Max(ret, map.Sum(kv=>kv.Value));
-                    if(map.ContainsKey(s[j])){
+                while (map.Count == k)
+                {
+                    ret = Math.Max(ret, map.Sum(kv => kv.Value));
+                    if (map.ContainsKey(s[j]))
+                    {
                         map[s[j]]--;
                     }
                     j++;
@@ -193,55 +235,61 @@ namespace Interview
             }
             return ret;
         }
-        public int lengthOfLongestSubstringKDistinct3(string s, int k) {
-            if(string.IsNullOrEmpty(s)||k==0)
+        public int lengthOfLongestSubstringKDistinct3(string s, int k)
+        {
+            if (string.IsNullOrEmpty(s) || k == 0)
                 return 0;
 
             var map = new Dictionary<char, int>();
             int ret = 0;
-            int b=0;
-            for(int i=0; i< s.Length; i++){
-                if(map.ContainsKey(s[i]))
-                    map[s[i]]+=1;
+            int b = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                    map[s[i]] += 1;
                 else
-                    map.Add(s[i],1);
+                    map.Add(s[i], 1);
 
-                while(map.Count > k ){
-                    if(map[s[b]]>1)
+                while (map.Count > k)
+                {
+                    if (map[s[b]] > 1)
                         map[s[b]]--;
-                    else    
+                    else
                         map.Remove(s[b]);
-                    b++;    
+                    b++;
                 }
-                ret = Math.Max(ret, i-b+1);
+                ret = Math.Max(ret, i - b + 1);
             }
             return ret;
         }
 
-        public int lengthOfLongestSubstringKDistinct2(string s, int k) {
-            if(string.IsNullOrEmpty(s)||k==0)
+        public int lengthOfLongestSubstringKDistinct2(string s, int k)
+        {
+            if (string.IsNullOrEmpty(s) || k == 0)
                 return 0;
 
             var map = new Dictionary<char, int>();
             int ret = 0;
             int leftIdx = 0;
-            for(int i=0; i< s.Length; i++){
-                if(map.ContainsKey(s[i]))
-                    map[s[i]]+=1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                    map[s[i]] += 1;
                 else
-                    map.Add(s[i],1);
-                
-                while(map.Count>k){
-                    if(--map[s[leftIdx]]==0)
+                    map.Add(s[i], 1);
+
+                while (map.Count > k)
+                {
+                    if (--map[s[leftIdx]] == 0)
                         map.Remove(s[leftIdx]);
 
                     leftIdx++;
-                }        
-                ret = Math.Max(ret, map.Sum(kv=>kv.Value));
+                }
+                ret = Math.Max(ret, map.Sum(kv => kv.Value));
             }
             return ret;
         }
-        
+
         //249. Group Shifted Strings
         //Given a string, we can "shift" each of its letter to its successive letter, 
         //for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
@@ -261,73 +309,148 @@ namespace Interview
         //再来看一个例子，az 和 yx，z和a的距离是 25，x和y的距离也是 25 (直接相减是 -1，这就是要加 26 然后取余的原因)，
         //那么这样的话，所有互为偏移的字符串都有个 unique 的距离差，根据这个来建立映射就可以很好的进行单词分组了
         // O(n)/O(n)
-        public IList<IList<string>> GroupStrings(string[] strings) {
-            if(strings==null || strings.Length==0)
+        public IList<IList<string>> GroupStrings(string[] strings)
+        {
+            if (strings == null || strings.Length == 0)
                 return null;
 
             var ret = new List<IList<string>>();
             var map = new Dictionary<string, List<string>>();
 
-            for(int i=0; i<strings.Length; i++) {
+            for (int i = 0; i < strings.Length; i++)
+            {
                 string curStr = strings[i];
                 string key = "";
-                if(!string.IsNullOrEmpty(curStr)){
-                    if(curStr.Length==1)
-                        key="";
-                    else{
-                        for(int j =1; j<curStr.Length; j++){
-                             key+=((curStr[j]-curStr[j-1] +26) %26).ToString();
+                if (!string.IsNullOrEmpty(curStr))
+                {
+                    if (curStr.Length == 1)
+                        key = "";
+                    else
+                    {
+                        for (int j = 1; j < curStr.Length; j++)
+                        {
+                            key += ((curStr[j] - curStr[j - 1] + 26) % 26).ToString();
                         }
                     }
                 }
-                if(map.ContainsKey(key)){
+                if (map.ContainsKey(key))
+                {
                     map[key].Add(curStr);
-                }else{
-                    map.Add(key, new List<string>{curStr});            
-                }            
+                }
+                else
+                {
+                    map.Add(key, new List<string> { curStr });
+                }
             }
             ret.Concat(map.Values);
             return ret;
         }
 
-    //380. Insert Delete GetRandom O(1)
-    public class RandomizedSet {
+        //380. Insert Delete GetRandom O(1)
+        public class RandomizedSet
+        {
 
-        /** Initialize your data structure here. */
-        HashSet<int> hs;
-        public RandomizedSet() {
-            hs = new HashSet<int>();
+            /** Initialize your data structure here. */
+            HashSet<int> hs;
+            public RandomizedSet()
+            {
+                hs = new HashSet<int>();
+            }
 
+            /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+            public bool Insert(int val)
+            {
+                if (hs.Contains(val))
+                    return false;
+                else
+                {
+                    hs.Add(val);
+                    return true;
+                }
+            }
+
+            /** Removes a value from the set. Returns true if the set contained the specified element. */
+            public bool Remove(int val)
+            {
+                if (hs.Contains(val))
+                {
+                    hs.Remove(val);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            /** Get a random element from the set. */
+            public int GetRandom()
+            {
+                var len = hs.Count;
+                var rd = new Random();
+                return hs.ElementAt(rd.Next(len));
+            }
         }
-    
-        /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
-        public bool Insert(int val) {
-            if(hs.Contains(val))
-                return false;
-            else{
-                hs.Add(val);
-                return true;
-            }    
-        }
-    
-        /** Removes a value from the set. Returns true if the set contained the specified element. */
-        public bool Remove(int val) {
-            if(hs.Contains(val)){
-                hs.Remove(val);
+
+        //381 Insert Delete GetRandom O(1) with duplicated number
+        public class RandomizedCollection
+        {
+
+            /** Initialize your data structure here. */
+            public RandomizedCollection()
+            {
+                map = new Dictionary<int, HashSet<int>>();
+                list = new List<int>();
+            }
+            private Dictionary<int, HashSet<int>> map;
+            private List<int> list;
+            /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+            public bool Insert(int val)
+            {
+                if (map.ContainsKey(val))
+                {
+                    map[val].Add(list.Count);
+                    list.Add(val);
+                    return false;
+                }
+                map.TryAdd(val, new HashSet<int>());
+                map[val].Add(list.Count);
+                list.Add(val);
                 return true;
             }
-            else{
-                return false;
-            } 
+
+            /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+            public bool Remove(int val)
+            {
+                if (!map.ContainsKey(val))
+                {
+                    return false;
+                }
+                
+                int firstIdxRemoveVal = map[val].First();
+                map[val].Remove(firstIdxRemoveVal);
+                if (map[val].Count == 0)
+                    map.Remove(val);
+                if(list.Last() != val)        
+                if (firstIdxRemoveVal != list.Count-1)
+                {
+                    int tailVal = list.Last();
+                    list[firstIdxRemoveVal] = tailVal;
+                    map[tailVal].Remove(list.Count-1);
+                    map[tailVal].Add(firstIdxRemoveVal);
+                }
+                list.RemoveAt(list.Count-1);
+
+                return true;
+            }
+
+            /** Get a random element from the collection. */
+            public int GetRandom()
+            {
+                var rd = new Random();
+                return list[rd.Next(list.Count)];
+            }
         }
-    
-        /** Get a random element from the set. */
-        public int GetRandom() {
-            var len = hs.Count;
-            var rd = new Random();
-           return  hs.ElementAt(rd.Next(len));
-        }
-    }
 
 
         //825. Friends Of Appropriate Ages
@@ -392,32 +515,36 @@ namespace Interview
         public IList<int> FindAnagrams2(string s, string p)
         {
             var ret = new List<int>();
-            if(string.IsNullOrEmpty(s)|| s.Length < p.Length)
+            if (string.IsNullOrEmpty(s) || s.Length < p.Length)
                 return ret;
 
             var map = new int[26];
-            for(int i=0; i< p.Length; i++)
-                map[p[i]-'a']+=1;
-            
+            for (int i = 0; i < p.Length; i++)
+                map[p[i] - 'a'] += 1;
+
             int left = 0, right = 0, cnt = p.Length, n = s.Length;
-            
-            while (right < n) {
-                if (map[s[right]-'a'] >= 1) {
+
+            while (right < n)
+            {
+                if (map[s[right] - 'a'] >= 1)
+                {
                     --cnt;
-                }              
-                map[s[right]-'a']-- ;
-                right++;     
-                if (cnt == 0) 
+                }
+                map[s[right] - 'a']--;
+                right++;
+                if (cnt == 0)
                     ret.Add(left);
-                if (right - left == p.Length  ) {
-                    if(map[s[left]-'a'] >= 0){
-                    ++cnt;    
+                if (right - left == p.Length)
+                {
+                    if (map[s[left] - 'a'] >= 0)
+                    {
+                        ++cnt;
                     }
-                    map[s[left]-'a']++;
-                    left++;                   
-                }                   
+                    map[s[left] - 'a']++;
+                    left++;
+                }
             }
-            
+
             return ret;
 
             // for(int i=0; i<s.Length-p.Length; i++){
@@ -448,12 +575,12 @@ namespace Interview
             var arrP = new int[26];
             var arrS = new int[26];
 
-            for(int i=0; i< p.Length; i++)
+            for (int i = 0; i < p.Length; i++)
             {
                 arrP[p[i] - 'a']++;
             }
 
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (i >= l)
                     arrS[s[i - l] - 'a']--;
@@ -497,7 +624,7 @@ namespace Interview
                 else
                     map[s[i]]++;
 
-                if (map.Count <= 2 )
+                if (map.Count <= 2)
                 {
                     ret = Math.Max(ret, i - backIdx + 1);
                 }
@@ -611,14 +738,14 @@ namespace Interview
             int curSum = 0;
             var map = new Dictionary<int, int>();  //key is Module, value is index
             map.Add(0, -1);
-            for(int i=0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 curSum += nums[i];
                 int modu = k == 0 ? curSum : curSum % k;
 
                 if (map.ContainsKey(modu))
                 {
-                    if (i-map[modu] > 1)
+                    if (i - map[modu] > 1)
                         return true;
                 }
                 else
@@ -646,7 +773,7 @@ namespace Interview
             }
             return false;
         }
-        
+
         //560. Subarray Sum Equals K
         //Given an array of integers and an integer k, you need to find the total number of 
         //continuous subarrays whose sum equals to k.
@@ -659,21 +786,25 @@ namespace Interview
         {
             // brutal force create sum array and find sum and previous possible sum
             var sumList = new int[nums.Length];
-            sumList[0]= nums[0];
-            for(int i=1; i<sumList.Length; i++)
-                sumList[i]= sumList[i-1]+nums[i];
+            sumList[0] = nums[0];
+            for (int i = 1; i < sumList.Length; i++)
+                sumList[i] = sumList[i - 1] + nums[i];
 
             int ret = 0;
-            for(int i =0; i< nums.Length; i++){
-                if(k==sumList[i]){
-                 ret++;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (k == sumList[i])
+                {
+                    ret++;
                 }
-                for(int j =i-1; j>=0; j--){
-                    if(sumList[i]-sumList[j]==k){
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    if (sumList[i] - sumList[j] == k)
+                    {
                         ret++;
                     }
                 }
-            }    
+            }
             return ret;
         }
         public int SubarraySum(int[] nums, int k)
@@ -760,19 +891,23 @@ namespace Interview
         //167. Two Sum II - Input array is sorted
         public int[] TwoSum2(int[] nums, int target)
         {
-            int i =0, j = nums.Length-1;
+            int i = 0, j = nums.Length - 1;
             var ret = new List<int>();
-            while(i<j){
-                int temp = nums[i]+nums[j];
-                if(temp==target){
+            while (i < j)
+            {
+                int temp = nums[i] + nums[j];
+                if (temp == target)
+                {
                     ret.Add(i);
                     ret.Add(j);
                     return ret.ToArray();
                 }
-                else if(temp > target){
+                else if (temp > target)
+                {
                     j--;
                 }
-                else{
+                else
+                {
                     i++;
                 }
             }
@@ -792,7 +927,7 @@ namespace Interview
                 return 0;
             var map = new Dictionary<char, int>();
 
-            for(int i=0; i<s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 if (map.ContainsKey(s[i]))
                     map[s[i]]++;
@@ -800,14 +935,14 @@ namespace Interview
                     map.Add(s[i], 1);
             }
             int ret = 0;
-            bool singleUsed=false;
-            foreach(var kv in map)
+            bool singleUsed = false;
+            foreach (var kv in map)
             {
                 if (kv.Value % 2 == 0)
                     ret += kv.Value;
-                else if(kv.Value > 2)
+                else if (kv.Value > 2)
                 {
-                    ret += singleUsed ? kv.Value - 1 : kv.Value;                    
+                    ret += singleUsed ? kv.Value - 1 : kv.Value;
                     singleUsed = true;
                 }
                 else if (!singleUsed)
@@ -820,7 +955,7 @@ namespace Interview
 
         }
 
-        
+
         //389. Find the Difference
         //Given two strings s and t which consist of only lowercase letters.
         //String t is generated by random shuffling string s and then add one more letter at a random position.
@@ -845,7 +980,7 @@ namespace Interview
                      where (nums2.Contains(item))
                      select item;
 
-            return new HashSet<int>(cc).ToArray();         
+            return new HashSet<int>(cc).ToArray();
             /*
                 var c = from i in Enumerable.Range(0, l1.Count)
                         from j in Enumerable.Range(0, l2.Count)
@@ -859,23 +994,27 @@ namespace Interview
             //是将一个数组排序，然后遍历另一个数组，把遍历到的每个数字在排序号的数组中用二分查找法搜索，如果能找到则放入结果set中
             Array.Sort(nums1);
             var ret = new HashSet<int>();
-            for(int i=0; i< nums2.Length ; i++){
-                if(BSearch(nums2[i],nums1)){
+            for (int i = 0; i < nums2.Length; i++)
+            {
+                if (BSearch(nums2[i], nums1))
+                {
                     ret.Add(nums2[i]);
                 }
             }
             return ret.ToArray();
         }
-        bool BSearch(int t, int[] arr){
-            int i = 0, j = arr.Length-1;
-            while(i < j){
-                int piv = (i+j)/2;
-                if(arr[piv] == t)
+        bool BSearch(int t, int[] arr)
+        {
+            int i = 0, j = arr.Length - 1;
+            while (i < j)
+            {
+                int piv = (i + j) / 2;
+                if (arr[piv] == t)
                     return true;
-                if(arr[piv] > t)
-                    j =piv;
+                if (arr[piv] > t)
+                    j = piv;
                 else
-                    i = piv+1;
+                    i = piv + 1;
             }
             return false;
         }
@@ -891,9 +1030,9 @@ namespace Interview
         //What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
         public int[] Intersect(int[] nums1, int[] nums2)
         {
-            var map = new Dictionary<int,int>();
+            var map = new Dictionary<int, int>();
 
-            for (int i=0; i < nums1.Length; i++)
+            for (int i = 0; i < nums1.Length; i++)
             {
                 if (!map.ContainsKey(nums1[i]))
                     map.Add(nums1[i], 1);
@@ -905,13 +1044,13 @@ namespace Interview
 
             for (int i = 0; i < nums2.Length; i++)
             {
-                if (map.ContainsKey(nums2[i])&& map[nums2[i]]>0)
+                if (map.ContainsKey(nums2[i]) && map[nums2[i]] > 0)
                 {
                     ret.Add(nums2[i]);
                     map[nums2[i]]--;
                 }
             }
-            return ret.ToArray();            
+            return ret.ToArray();
         }
         //follow up: use sort and 2 pointer
         public int[] Intersect2(int[] nums1, int[] nums2)
@@ -921,7 +1060,7 @@ namespace Interview
             int i = 0;
             int j = 0;
             var ret = new List<int>();
-            while (i < nums1.Length &&  j < nums2.Length)
+            while (i < nums1.Length && j < nums2.Length)
             {
                 if (nums1[i] == nums2[j])
                 {

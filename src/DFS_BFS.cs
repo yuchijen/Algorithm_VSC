@@ -15,6 +15,53 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //[[s1,s2]
+        // [s4,s5]
+        // [s3,s4]
+        // [s1,s4]]  => [s1,s2,s3,s4,s5]
+        public List<string> largestItemAssociation(List<PairString> itemAssociation) {
+            
+            //build graph
+            var map = new Dictionary<string, List<string>>(); 
+            foreach(var item in itemAssociation){
+                map.TryAdd(item.first, new List<string>());
+                map.TryAdd(item.second, new List<string>());
+                map[item.first].Add(item.second);
+                map[item.second].Add(item.first);
+            }
+
+            var visited = new HashSet<string>();
+            var ret = new List<List<string>>();
+
+            // go DFS 
+            foreach(var k in map.Keys){
+                var curList = new List<string>();
+                DfsItems(visited, k, map, curList);
+                ret.Add(curList);                
+            }
+            ret.ForEach(x => x.Sort());
+            return ret.OrderByDescending(list => list.Count).FirstOrDefault();
+	    }
+        
+        void DfsItems(HashSet<string> visited, string key, Dictionary<string, List<string>> map, List<string> curList){
+            if(visited.Contains(key))
+                return;
+            visited.Add(key);
+            curList.Add(key);
+            foreach(var neighborItem in map[key]){
+                DfsItems(visited, neighborItem, map, curList);
+            }
+        }
+
+        public class PairString {
+            public String first;
+            public String second;
+
+            public PairString(String first, String second) {
+                this.first = first;
+                this.second = second;
+            }
+        }	
         
         //zume given 2 node in graph, find any common ancestor 
         public bool findCA(List<int[]> input, int n1, int n2)
@@ -1454,6 +1501,79 @@ namespace Interview
         //    map.Add(s, cur);
         //    return map[s];
         //}
+
+        //547. friend circle
+        public int FindCircleNum(int[][] M) {
+            if(M==null)
+                return 0;
+            int len = M.Length;
+            var visited = new bool[len];
+            var map = new Dictionary<int, List<int>>();
+            //build graph
+            for(int i=0; i<len; i++){
+                for(int j=i+1; j<len; j++){
+                    if(M[i][j]==1){
+                        map.TryAdd(i, new List<int>());
+                        map.TryAdd(j, new List<int>());
+                        map[i].Add(j);
+                        map[j].Add(i);
+                    }
+                }
+            }
+            foreach(var kv in map){
+                Console.Write(kv.Key.ToString() +":");
+                foreach(var va in kv.Value){
+                    Console.Write(va+",");
+                }
+            }
+            int ret = 0;
+            foreach(var kv in map){
+                if(!visited[kv.Key]){
+                    ret+=1;
+                    DFSFindCircleNum(kv.Key, visited, map);
+                }
+            }
+            return ret + visited.Count(n => n == false);
+        }
+        void DFSFindCircleNum(int key, bool[] visited, Dictionary<int, List<int>> map){
+            if(visited[key])
+                return;
+            visited[key] = true;    
+            foreach(var n in map[key]){
+                DFSFindCircleNum(n, visited, map);
+            }   
+        }
+
+        //323. Number of Connected Components in an Undirected Graph
+        public int CountComponents(int n, int[][] edges) {            
+            var ret = new int[1];
+            var visited = new bool[n];
+            var map = new Dictionary<int, List<int>>();
+            for (int i = 0; i < edges.GetLength(0); i++)
+            {
+                map.TryAdd(edges[i][0], new List<int>());
+                map.TryAdd(edges[i][1], new List<int>());
+                map[edges[i][0]].Add(edges[i][1]);
+                map[edges[i][1]].Add(edges[i][0]);
+            }
+
+            foreach(var kv in map){
+                if(!visited[kv.Key]){
+                    ret[0]+=1;
+                    DFSComponentHelper(visited, map, kv.Key);
+                }
+            }
+            ret[0]+= visited.Count(c => c ==false);
+            return ret[0];
+        }
+        void DFSComponentHelper(bool[] visited, Dictionary<int, List<int>> map, int key){
+            if(visited[key])
+                return;
+            visited[key]=true;            
+            foreach(var node in map[key]){
+                DFSComponentHelper(visited, map, node);
+            }
+        }
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
