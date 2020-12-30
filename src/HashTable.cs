@@ -8,6 +8,82 @@ namespace Interview
 {
     public class HashTable
     {
+        //1268. Search Suggestions System
+        // Input: products = ["mobile","mouse","moneypot","monitor","mousepad"], searchWord = "mouse"
+        // Output: [
+        // ["mobile","moneypot","monitor"],
+        // ["mobile","moneypot","monitor"],
+        // ["mouse","mousepad"],
+        // ["mouse","mousepad"],
+        // ["mouse","mousepad"]
+        // ]
+        public IList<IList<string>> SuggestedProducts(string[] products, string searchWord)
+        {
+            if(products==null || products.Length==0 || string.IsNullOrEmpty(searchWord))
+                return null;
+
+            Array.Sort(products);
+
+            int maxCnt = 3;
+            var ret = new List<IList<string>>();
+
+            for(int i=1; i<=searchWord.Length; i++){
+                var cur = new List<string>();
+                var curSearch = searchWord.Substring(0,i);
+
+                foreach(var p in products){
+                    if(p.StartsWith(curSearch)){
+                        cur.Add(p);
+                    }
+                    if(cur.Count==maxCnt)
+                        break;
+                }
+                ret.Add(cur);
+            }
+            return ret;
+        }
+        class Trie {
+            public Dictionary<char, Trie> next = new Dictionary<char, Trie>();
+            public List<string> Storage = new List<string>();
+        }
+        public IList<IList<string>> SuggestedProductsWithTrie(string[] products, string searchWord)
+        {
+            if(products==null || products.Length==0 || string.IsNullOrEmpty(searchWord))
+                return null;
+
+            Array.Sort(products);
+
+            //build trie graph
+            var root = new Trie();
+            for(int i=0; i<products.Length; i++){
+                var pt = root;
+                for(int j =0; j< products[i].Length; j++){
+                    char key = products[i][j];
+                    pt.next.TryAdd(key, new Trie());
+                    if(pt.next[key].Storage.Count <3){                    
+                        pt = pt.next[key];
+                        pt.Storage.Add(products[i]);                                                                                        
+                    }
+                    else{
+                        break;
+                    }
+                }
+            }
+            //search
+            var ret = new List<IList<string>>();
+            for(int i=0; i<searchWord.Length; i++){
+                //var cur = new List<string>();
+                if(root.next.ContainsKey(searchWord[i])){
+                    root = root.next[searchWord[i]];
+                    ret.Add(root.Storage);
+                }else{
+                    ret.Add(new List<string>());
+                }
+            }
+
+            return ret;
+        }
+
         //763. Partition Labels
         public IList<int> PartitionLabels(string S)
         {
@@ -426,20 +502,20 @@ namespace Interview
                 {
                     return false;
                 }
-                
+
                 int firstIdxRemoveVal = map[val].First();
                 map[val].Remove(firstIdxRemoveVal);
                 if (map[val].Count == 0)
                     map.Remove(val);
-                if(list.Last() != val)        
-                if (firstIdxRemoveVal != list.Count-1)
-                {
-                    int tailVal = list.Last();
-                    list[firstIdxRemoveVal] = tailVal;
-                    map[tailVal].Remove(list.Count-1);
-                    map[tailVal].Add(firstIdxRemoveVal);
-                }
-                list.RemoveAt(list.Count-1);
+                if (list.Last() != val)
+                    if (firstIdxRemoveVal != list.Count - 1)
+                    {
+                        int tailVal = list.Last();
+                        list[firstIdxRemoveVal] = tailVal;
+                        map[tailVal].Remove(list.Count - 1);
+                        map[tailVal].Add(firstIdxRemoveVal);
+                    }
+                list.RemoveAt(list.Count - 1);
 
                 return true;
             }

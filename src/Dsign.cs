@@ -1001,22 +1001,31 @@ namespace Interview
 
     public class AsyncTest
     {
+        Random rd = new Random();
         public void TestAsync()
         {
             foreach (var x in RunMultipleTasksParallelAsync(5).Result)
                 Console.WriteLine(x);
 
-            //foreach (var x in runMultipleTasksAwaitAsync(5).Result)
-            //    Console.WriteLine(x); 
-
             Console.WriteLine("waiting for long run thread feedback...");
-
             Console.WriteLine("done!");
+        }
+        public void TestAsync2()
+        {
+            var task3 = RunSingleTask3(3);
+            
+            Console.WriteLine("Something in between");
+            var task2 = RunSingleTask2(2);
+            //Task.WhenAll(task3, task2);
+            Task.WaitAll(task2, task3);
+            Console.WriteLine("All tasks done");            
+            Console.WriteLine(task2.Result);
+            Console.WriteLine(task3.Result);
         }
 
         async Task<List<string>> RunMultipleTasksParallelAsync(int cnt)
         {
-            // Console.WriteLine("starting run long method, doesn't block main thread");
+            Console.WriteLine("starting run long Parallel, doesn't block main thread");
             var ret = new List<string>();
             var tasks = new List<Task<string>>();
 
@@ -1026,11 +1035,8 @@ namespace Interview
                 //Console.WriteLine(result);
             }
             ret = (await Task.WhenAll(tasks)).ToList();
-
-
             return ret;
         }
-
 
         async Task<List<string>> runMultipleTasksAwaitAsync(int cnt)
         {
@@ -1038,22 +1044,39 @@ namespace Interview
             for (int i = 0; i < cnt; i++)
             {
                 //var result = await longRunTask(i);
-                var result = await Task.Run(() => longRunTask(i));
+                string result = await Task.Run(() => longRunTask(i));
                 ret.Add(result);
             }
-
             return ret;
+        }
+
+        async Task<string> RunSingleTask2(int i){
+            // int x = rd.Next(i);
+            await Task.Delay(2000);
+            Console.WriteLine("task 2 running. No: "); 
+            // for(int j =0; j< i; j++){
+            //     await Task.Delay(2000);
+            //     Console.WriteLine("task 2 running. No: "+j);
+            // }
+            return "task 2 done";           
+        }
+
+        async Task<string> RunSingleTask3(int i){
+            await Task.Delay(4000);
+            Console.WriteLine("task 3 running. No: ");         
+            //int x = rd.Next(i);
+            // for(int j =0; j< i; j++){
+            //     await Task.Delay(2000);
+            //     Console.WriteLine("task 3 running. No: "+j);
+            // }
+            return "task 3 done";           
         }
 
         private string longRunTask(int i)
         {
-            //await Task.Delay(2000);
             Thread.Sleep(2000);
             return i + " finished";
         }
-
-
-
     }
 
     //design hashtable class without using the built-in classes

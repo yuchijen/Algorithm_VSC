@@ -1397,7 +1397,9 @@ namespace Interview
         }
 
         //139. Word Break
-        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, 
+        //determine if s can be segmented into a space-separated sequence of one or more dictionary words. 
+        //You may assume the dictionary does not contain duplicate words.
         //For example, given s = "leetcode", dict = ["leet", "code"].
         //Return true because "leetcode" can be segmented as "leet code".
         public bool WordBreak(string s, IList<string> wordDict)
@@ -1415,14 +1417,12 @@ namespace Interview
                 {
                     if (WordBreak(s.Substring(i), wordDict))
                         return true;
-
                 }
             }
             return false;
         }
         public bool WordBreakBetter(string s, IList<string> wordDict)
         {
-
             var map = new Dictionary<string, bool>();
             var hs = new HashSet<string>(wordDict);
             if (s == null || wordDict == null)
@@ -1448,11 +1448,11 @@ namespace Interview
 
                 if (wordDict.Contains(left) && WordBreakHelper(right, wordDict, map))
                 {
-                    map.Add(s, true);
+                    map.TryAdd(s, true);
                     return true;
                 }
             }
-            map.Add(s, false);
+            map.TryAdd(s, false);
             return false;
         }
 

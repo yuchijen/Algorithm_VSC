@@ -59,8 +59,18 @@ namespace Interview
         }
 
         //572. Subtree of Another Tree
+        public bool IsSubtree2(TreeNode s, TreeNode t)
+        {
+            if(s==null)
+                return false;
+            if(IsSameTree(s,t))
+                return true;
+
+            return IsSubtree2(s.left,t) || IsSubtree2(s.right, t);            
+        }
         public bool IsSubtree(TreeNode s, TreeNode t)
         {
+            // serilize tree approch
             var l1 = new List<string>();
             var l2 = new List<string>();
 

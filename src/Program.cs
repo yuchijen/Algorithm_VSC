@@ -15,33 +15,33 @@ namespace Interview
         static void Main(string[] args)
         {
             //******* Test Deep Clone ************/
-            var testClone = new SomeComxClass();
-            testClone.Prop = 2;
-            testClone.ComxProp = new Codec();
-            var decMap = new Dictionary<string, string>();
-            decMap.Add("k1","v1");
-            testClone.ComxProp.decodeMap = decMap;
-            var cloned = testClone.DeepClone();
+            // var testClone = new SomeComxClass();
+            // testClone.Prop = 2;
+            // testClone.ComxProp = new Codec();
+            // var decMap = new Dictionary<string, string>();
+            // decMap.Add("k1","v1");
+            // testClone.ComxProp.decodeMap = decMap;
+            // var cloned = testClone.DeepClone();
 
-            Console.WriteLine(cloned.Prop);
-            Console.WriteLine(cloned.ComxProp.decodeMap.Keys.ElementAt(0));
+            // Console.WriteLine(cloned.Prop);
+            // Console.WriteLine(cloned.ComxProp.decodeMap.Keys.ElementAt(0));
 
             //******* Test log transaction ************/
-            List<List<int>> ratings = new List<List<int>>();
-            ratings.Add(new List<int>() { 4, 4 });
-            ratings.Add(new List<int>() { 1, 2 });
-            ratings.Add(new List<int>() { 3, 6 });
-            int threshold = 77;
-            var logs = new string[] { "345366 89921 45", "029323 38239 23", "38239 345366 15", "029323 38239 77", "345366 38239 23", "029323 345366 13", "38239 38239 23" };
+            // List<List<int>> ratings = new List<List<int>>();
+            // ratings.Add(new List<int>() { 4, 4 });
+            // ratings.Add(new List<int>() { 1, 2 });
+            // ratings.Add(new List<int>() { 3, 6 });
+            // int threshold = 77;
+            // var logs = new string[] { "345366 89921 45", "029323 38239 23", "38239 345366 15", "029323 38239 77", "345366 38239 23", "029323 345366 13", "38239 38239 23" };
             //****************************************/
 
-            var asa = new ArrayString();
+            // var asa = new ArrayString();
             
-            var arrUnsort = new int[5] { 3, 34, 30, 5, 9 };
-            asa.SortingArrayIntoOneNum(arrUnsort);
-            asa.FradulentActivity(logs, 3);
+            // var arrUnsort = new int[5] { 3, 34, 30, 5, 9 };
+            // asa.SortingArrayIntoOneNum(arrUnsort);
+            // asa.FradulentActivity(logs, 3);
 
-            Console.WriteLine(asa.five_stars_needed(ratings, threshold));
+            // Console.WriteLine(asa.five_stars_needed(ratings, threshold));
 
             // int kk = 2;
             // string[] keywords = new string[]{"deltacellular","anacell", "betacellular", "cetracular", "eurocell"};
@@ -69,15 +69,15 @@ namespace Interview
             //     new PairString("item1", "item4")
             // };
 
-            Console.Write("tesla: ");
-            Console.WriteLine(asa.folllowupThreeIdenticalConseLetters("aaa", new int[] { 1, 2, 3 }));
+            // Console.Write("tesla: ");
+            // Console.WriteLine(asa.folllowupThreeIdenticalConseLetters("aaa", new int[] { 1, 2, 3 }));
 
-            var dp = new DynamicProgramming();
-            asa.solution01(2, "1A 2F 1C");
-            asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
+            // var dp = new DynamicProgramming();
+            // asa.solution01(2, "1A 2F 1C");
+            // asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
 
-            var enstr = asa.encode2(new List<string> { "str456#7/890", "str326#3/7890/123", "seffc" });
-            asa.decode2(enstr);
+            // var enstr = asa.encode2(new List<string> { "str456#7/890", "str326#3/7890/123", "seffc" });
+            // asa.decode2(enstr);
 
             //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
 
@@ -111,13 +111,11 @@ namespace Interview
             //    Console.WriteLine();
             //}
 
-
             var ast = new AsyncTest();
-            ast.TestAsync();
-            Console.WriteLine("doesn't block main thread");
-
-            foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
-                Console.WriteLine(x);
+            ast.TestAsync2();
+            // Console.WriteLine("doesn't block main thread");
+            // foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
+            //     Console.WriteLine(x);
 
 
             //var ast = new AsyncTest();
@@ -126,112 +124,111 @@ namespace Interview
             //Console.WriteLine("Press any key to exit...");
             //Console.ReadLine();
 
-            var C = new Circle();
-            Console.WriteLine("circumference:" + C.Calculate((x) => { return x * 2 * 3.14; }));
+            //********** Test closure **********/
+            // var C = new Circle();
+            // Console.WriteLine("circumference:" + C.Calculate((x) => { return x * 2 * 3.14; }));
+            //**********************************/
 
-            UInt16 uii = 0xFFFF;
-            var byt = BitConverter.GetBytes(uii);
-            Int32 data = BitConverter.ToInt16(byt, 0);
-            Console.WriteLine(data);
+            // UInt16 uii = 0xFFFF;
+            // var byt = BitConverter.GetBytes(uii);
+            // Int32 data = BitConverter.ToInt16(byt, 0);
+            // Console.WriteLine(data);
 
-            var bs = new BinarySearch();
-            bs.MyPow(5.0, -4);
+            // var bs = new BinarySearch();
+            // bs.MyPow(5.0, -4);
 
-            var bm = new BitManipulate();
+            // var bm = new BitManipulate();
 
-            //Console.WriteLine("4th bit:" + bm.FourthBit(-23));
-            bm.CountOneBit(4294967295);
+            // //Console.WriteLine("4th bit:" + bm.FourthBit(-23));
+            // bm.CountOneBit(4294967295);
 
-            var bk = new BackTracking();
+            // var bk = new BackTracking();
 
 
             //bk.SubarraysDivByK(new int[] { 4, 5, 0, -2, -3, 1 }, 5);
 
-            Console.WriteLine("Permutation:########");
+            // Console.WriteLine("Permutation:########");
 
-            var perret = bk.Permute(new int[3] { 1, 2, 3 });
-            foreach (var x in perret)
-            {
-                foreach (var y in x)
-                {
-                    Console.Write(y);
-                    Console.Write(",");
-                }
-                Console.WriteLine();
-            }
+            // var perret = bk.Permute(new int[3] { 1, 2, 3 });
+            // foreach (var x in perret)
+            // {
+            //     foreach (var y in x)
+            //     {
+            //         Console.Write(y);
+            //         Console.Write(",");
+            //     }
+            //     Console.WriteLine();
+            // }
 
-            bk.GetFactors(12);
+            // bk.GetFactors(12);
 
-            TreeNode root = new TreeNode(1);
-            TreeNode n2 = new TreeNode(2);
-            TreeNode n3 = new TreeNode(3);
-            root.left = n2;
-            root.right = n3;
-            n2.left = new TreeNode(4);
-            n2.right = new TreeNode(5);
-            n3.left = new TreeNode(6);
-            n3.right = new TreeNode(7);
+            // TreeNode root = new TreeNode(1);
+            // TreeNode n2 = new TreeNode(2);
+            // TreeNode n3 = new TreeNode(3);
+            // root.left = n2;
+            // root.right = n3;
+            // n2.left = new TreeNode(4);
+            // n2.right = new TreeNode(5);
+            // n3.left = new TreeNode(6);
+            // n3.right = new TreeNode(7);
 
-            var bt = new BTree();
-            Console.WriteLine("********************************MPS");
-            bt.MaxPathSum(root);
+            // var bt = new BTree();
+            // Console.WriteLine("********************************MPS");
+            // bt.MaxPathSum(root);
 
-            bt.deserialize(bt.serialize(root));
-            var ret = bt.FindLeaves(root);
+            // bt.deserialize(bt.serialize(root));
+            // var ret = bt.FindLeaves(root);
 
-            bt.VerticalTraversal(root);
+            // bt.VerticalTraversal(root);
 
-            var ht = new HashTable();
+            // var ht = new HashTable();
 
-            ht.PartitionLabels("ababcbacadefegdehijhklij");
+            // ht.PartitionLabels("ababcbacadefegdehijhklij");
 
+            // Console.WriteLine("find anagrams:");
+            // foreach (var x in ht.FindAnagrams2("cbaerwwbac", "abc"))
+            // {
+            //     Console.Write(x + ',');
+            // }
 
-            Console.WriteLine("find anagrams:");
-            foreach (var x in ht.FindAnagrams2("cbaerwwbac", "abc"))
-            {
-                Console.Write(x + ',');
-            }
+            // var dfs = new DFS_BFS();
 
+            // var parentChildPairs = new List<int[]>() {
+            // new int[]{1, 3},
+            // new int[]{2, 3},
+            // new int[]{3, 6},
+            // new int[]{5, 6},
+            // new int[]{5, 7},
+            // new int[]{4, 5},
+            // new int[]{4, 8},
+            // new int[]{8, 10}
+            //     };
 
-
-            var dfs = new DFS_BFS();
-
-            var parentChildPairs = new List<int[]>() {
-            new int[]{1, 3},
-            new int[]{2, 3},
-            new int[]{3, 6},
-            new int[]{5, 6},
-            new int[]{5, 7},
-            new int[]{4, 5},
-            new int[]{4, 8},
-            new int[]{8, 10}
-                };
-
-            Console.Write("find CA:");
-            Console.WriteLine(dfs.findCA(parentChildPairs, 10, 7));
+            // Console.Write("find CA:");
+            // Console.WriteLine(dfs.findCA(parentChildPairs, 10, 7));
 
             //var chlist = new char[6] { 'A', 'A', 'A', 'B', 'B', 'B' };
             //Console.WriteLine("tasks:" + dfs.LeastInterval(chlist, 0));
 
-            Console.WriteLine("word break");
-            Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));
+            // Console.WriteLine("word break");
+            // Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));
 
-            Point pt = new Point() { x = 100, y = 100 };
-            Point pt2 = new Point() { x = 0, y = 0 };
-            dfs.refSwap(ref pt, ref pt2);
-            Console.WriteLine(pt.x + "," + pt.y);
-            Console.WriteLine(pt2.x + "," + pt2.y);
+            // Point pt = new Point() { x = 100, y = 100 };
+            // Point pt2 = new Point() { x = 0, y = 0 };
+            // dfs.refSwap(ref pt, ref pt2);
+            // Console.WriteLine(pt.x + "," + pt.y);
+            // Console.WriteLine(pt2.x + "," + pt2.y);
 
-            dfs.KillProcess(new List<int> { 1, 3, 10, 5 }, new List<int> { 3, 0, 5, 3 }, 5);
+            // dfs.KillProcess(new List<int> { 1, 3, 10, 5 }, new List<int> { 3, 0, 5, 3 }, 5);
 
-            //asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
-            asa.Compress("AAABBCCCCCCAAAAA");
-            asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2 });
-            asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });
-            //asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
-            asa.MaxSubArray(new int[] { 1, 2, -4, 4, 5, 6 });
-            asa.SortColors(new int[] { 1, 2, 0 });
-            asa.Equi(new int[] { -1, 3, -4, 5, 1, -6, 2, 1 });
+            // //asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
+            // asa.Compress("AAABBCCCCCCAAAAA");
+            // asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2 });
+            // asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });
+            // //asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
+            // asa.MaxSubArray(new int[] { 1, 2, -4, 4, 5, 6 });
+            // asa.SortColors(new int[] { 1, 2, 0 });
+            // asa.Equi(new int[] { -1, 3, -4, 5, 1, -6, 2, 1 });
 
 
             #region traveler problem
