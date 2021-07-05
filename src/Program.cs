@@ -35,7 +35,8 @@ namespace Interview
             // var logs = new string[] { "345366 89921 45", "029323 38239 23", "38239 345366 15", "029323 38239 77", "345366 38239 23", "029323 345366 13", "38239 38239 23" };
             //****************************************/
 
-            // var asa = new ArrayString();
+            var asa = new ArrayString();
+            asa.MinRemoveToMakeValid2("lee(t(c)o)de)");
             
             // var arrUnsort = new int[5] { 3, 34, 30, 5, 9 };
             // asa.SortingArrayIntoOneNum(arrUnsort);
@@ -112,7 +113,7 @@ namespace Interview
             //}
 
             var ast = new AsyncTest();
-            ast.TestAsync2();
+            ast.TestAsync();
             // Console.WriteLine("doesn't block main thread");
             // foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
             //     Console.WriteLine(x);

@@ -2264,7 +2264,7 @@ namespace Interview
             //matrix的右上角出发，首先往下走，如果遇到1的时候，我们就往左走。直到遇到0为止
             int row = binaryMatrix.Dimensions()[0];
             int col = binaryMatrix.Dimensions()[1];
-
+            
             int i = 0, j = col - 1, ret = -1;
             while (i < row && j >= 0)
             {
@@ -3181,38 +3181,27 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(s))
                 return "";
-            int leftP = 0;
-            string temp = "";
+            // int leftP = 0;
+            // string temp = "";
+            var st  = new Stack<int>();
+            var removedIdx = new HashSet<int>();
             for (int i = 0; i < s.Length; i++)
             {
-                if (s[i] == '(')
-                {
-                    leftP++;
+                if(s[i]=='('){
+                    st.Push(i);
+                }else if(s[i] == ')' && st.Count > 0){
+                    st.Pop();
+                }else if(s[i] == ')' && st.Count == 0){
+                    removedIdx.Add(i);
                 }
-                else if (s[i] == ')')
-                {
-                    if (leftP == 0)
-                    {
-                        continue;
-                    }
-                    leftP--;
-                }
-                temp += s[i];
-            }
-            StringBuilder ret = new StringBuilder();
-
-            for (int i = temp.Length - 1; i >= 0; i--)
+            }       
+            var sb = new StringBuilder();
+            for (int i = 0; i < s.Length; i++)
             {
-                if (temp[i] == '(' && leftP > 0)
-                {
-                    leftP--;
-                }
-                else
-                {
-                    ret.Insert(0, temp[i]);
-                }
+                if(!st.Contains(i) && !removedIdx.Contains(i))
+                    sb.Append(s[i]);
             }
-            return ret.ToString();
+            return sb.ToString();
         }
         public string MinRemoveToMakeValid(string s)
         {

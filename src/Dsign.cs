@@ -1032,7 +1032,7 @@ namespace Interview
             for (int i = 0; i < cnt; i++)
             {
                 tasks.Add(Task.Run(() => longRunTask(i)));
-                //Console.WriteLine(result);
+                Console.WriteLine("haha");
             }
             ret = (await Task.WhenAll(tasks)).ToList();
             return ret;
@@ -1072,9 +1072,10 @@ namespace Interview
             return "task 3 done";           
         }
 
-        private string longRunTask(int i)
+        private async Task<string> longRunTask(int i)
         {
-            Thread.Sleep(2000);
+            await Task.Delay(3000);
+            // Thread.Sleep(2000);
             return i + " finished";
         }
     }

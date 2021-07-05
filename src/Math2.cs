@@ -7,6 +7,15 @@ namespace Interview
 {
     public class Math2
     {
+        //973. K Closest Points to Origin
+        //We have a list of points on the plane.  Find the K closest points to the origin (0, 0).
+        //Input: points = [[1,3],[-2,2]], K = 1 ;Output: [[-2,2]]
+        public int[][] KClosest(int[][] points, int K) {
+            return points.OrderBy(p => p[0]*p[0] + p[1]*p[1]).Take(K).ToArray();
+            // Array.Sort(points, (p1, p2) => (p1[0]*p1[0] + p1[1]*p1[1] - p2[0]*p2[0] - p2[1]*p2[1]));
+            // return points.Take(K).ToArray();
+        }         
+        
         //152. Maximum Product Subarray
         public int MaxProduct(int[] nums)
         {

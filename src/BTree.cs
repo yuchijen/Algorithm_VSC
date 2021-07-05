@@ -20,6 +20,88 @@ namespace Interview
     }
     public class BTree
     {
+        //545. Boundary of Binary Tree
+        List<int> leftB = new List<int>();
+        List<int> leaves = new List<int>();
+        List<int> rightB = new List<int>();
+
+        public IList<int> BoundaryOfBinaryTree(TreeNode root)
+        {
+            List<int> ret = new List<int>();
+            if (root == null)
+                return ret;
+
+            if (root.left == null && root.right == null)
+            {
+                ret.Add(root.val);
+                return ret;
+            }
+
+            if (root.left == null)
+                leftB.Add(root.val);
+            else
+                findLeftBoundary(root);
+
+            findLeaves(root);
+
+            if (root.right != null)
+                findRightBoundary(root.right);
+
+            foreach (var x in leftB)
+                ret.Add(x);
+
+            foreach (var x in leaves)
+                ret.Add(x);
+            foreach (var x in rightB)
+                ret.Add(x);
+
+            return ret;
+        }
+
+        void findLeftBoundary(TreeNode node)
+        {
+            if (node == null || (node.left == null && node.right == null))
+                return;
+            else if (node.left == null && node.right != null)
+            {
+                leftB.Add(node.val);
+                findLeftBoundary(node.right);
+            }
+            else
+            {
+                leftB.Add(node.val);
+                findLeftBoundary(node.left);
+            }
+        }
+        void findRightBoundary(TreeNode node)
+        {
+            if (node == null || (node.left == null && node.right == null))
+                return;
+            else if (node.right == null && node.left != null)
+            {
+                findRightBoundary(node.left);
+                rightB.Add(node.val);
+            }
+            else
+            {
+                findRightBoundary(node.right);
+                rightB.Add(node.val);
+            }
+        }
+        void findLeaves(TreeNode node)
+        {
+            if (node == null)
+                return;
+
+            if (node.left == null && node.right == null)
+                leaves.Add(node.val);
+            
+                findLeaves(node.left);
+                findLeaves(node.right);
+            
+        }
+
+
         //114. Flatten Binary Tree to Linked List
         //Given a binary tree, flatten it to a linked list in-place.
         //For example, given the following tree:
@@ -137,8 +219,8 @@ namespace Interview
             int left = MinPathSumDfs(node.left, ret);
             int right = MinPathSumDfs(node.right, ret);
 
-            int curMin = Math.Min(node.val, node.val + left + right);
-            ret[0] = Math.Min(ret[0], curMin);
+            //int curMin = Math.Min(node.val,);
+            ret[0] = Math.Min(ret[0],  node.val + left + right);
             return node.val < Math.Min(left, right) + node.val ? node.val : Math.Min(left, right) + node.val;
 
         }
@@ -453,6 +535,13 @@ namespace Interview
             return null;
         }
 
+        // public TreeNode inorderSuccessorRecursive(TreeNode root, TreeNode p){
+        //     var list = new List<TreeNode>();
+        //     inorderTraversalRecursive(root, list);
+        //     var nodes = list.Where(i => i.val >= p.val).Select(node=>node).ToList();
+        //     return nodes.Count <= 1? null: nodes.ElementAt(1);
+        // }
+        
         public TreeNode inorderSuccessor2(TreeNode root, TreeNode p)
         {
             if (root == null)
@@ -585,7 +674,7 @@ namespace Interview
         /** * Your BSTIterator will be called like this:
             BSTIterator i = new BSTIterator(root);
             while (i.HasNext()) v[f()] = i.Next();*/
-        //
+
         public class BSTIterator
         {
             Stack<TreeNode> st;
@@ -601,6 +690,11 @@ namespace Interview
                     return;
                 st.Push(node);
                 saveLeftTreeToStack(node.left);
+                // OR
+                // while(node!=null){
+                //     st.Push(node);
+                //     node = node.left;
+                // }
             }
 
             /** @return whether we have a next smallest number */
