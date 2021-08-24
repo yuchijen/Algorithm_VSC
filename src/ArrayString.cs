@@ -8,6 +8,115 @@ namespace Interview
 {
     public class ArrayString
     {
+        //408. Valid Word Abbreviation
+        //Given a non-empty string s and an abbreviation abbr, return whether the string matches
+        // with the given abbreviation.
+        //Example 1: Given s = "internationalization", abbr = "i12iz4n": Return true.
+        //题目中限定了单词中只有小写字母和数字，所以我们只要对这两种情况分别处理即可。我们使用双指针分别指向两个单词的开头，循环的条件是两个指针都没有到各自的末尾，如果指向缩写单词的指针指的是一个数字的话，如果当前数字是0，返回false，因为数字不能以0开头，然后我们要把该数字整体取出来，所以我们用一个while循环将数字整体取出来，然后指向原单词的指针也要对应的向后移动这么多位数。如果指向缩写单词的指针指的是一个字母的话，那么我们只要比两个指针指向的字母是否相同，不同则返回false，相同则两个指针均向后移动一位
+        public bool validWordAbbreviation(string word, string abbr) {
+            if(string.IsNullOrEmpty(word))
+                return false;
+            int i = 0, j =0;
+            int wordLen = word.Length;
+            int abbrLen = abbr.Length;
+            int digitLen = 0;                
+            while(i < wordLen && j < abbrLen){
+                if(abbr[j] >= 0 && abbr[j] <= 9){
+                    digitLen = digitLen * 10 + abbr[j] - '0';
+                    j++;
+                }
+                else{
+                    i += digitLen;
+                    if(word[i++] != abbr[j++])
+                        return false;
+                    digitLen =0;
+                }
+            }
+            return i == wordLen && j == abbrLen;
+        }
+
+        //844. Backspace String Compare
+        //Input: s = "ab#c", t = "ad#c"  Output: true
+        //Explanation: Both s and t become "ac".
+        public bool BackspaceCompare(string s, string t)
+        {
+            return BackspaceCompareHelper(s) == BackspaceCompareHelper(t);
+        }
+        string BackspaceCompareHelper(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return "";
+            string ret = "";
+
+            foreach (var c in s)
+            {
+                if (c == '#' && ret.Length > 0)
+                    ret = ret.Remove(ret.Length - 1, 1);
+                else if (c != '#')
+                {
+                    ret += c;
+                }
+            }
+            Console.WriteLine(ret);
+            return ret;
+        }
+        //space O(1) solution
+        bool backspaceCompare(string S, string T)
+        {
+            int i = S.Length - 1, j = T.Length - 1, cnt1 = 0, cnt2 = 0;
+            while (i >= 0 || j >= 0)
+            {
+                while (i >= 0 && (S[i] == '#' || cnt1 > 0)) {
+                    if(S[i--] == '#') 
+                        ++cnt1; 
+                    else
+                        --cnt1;
+                }
+
+                while (j >= 0 && (T[j] == '#' || cnt2 > 0)){
+                    if(T[j--] == '#') 
+                        ++cnt2; 
+                    else
+                        --cnt2;
+                }
+                if (i < 0 || j < 0) return i == j;
+                if (S[i--] != T[j--]) return false;
+            }
+            return S.Substring(0,i+1) == T.Substring(0,j+1);
+        }
+
+        //input = Zebra-493?  rotationFactor = 3   output = Cheud-726?    
+        public string rotationalCipher(String input, int rotationFactor)
+        {
+            // Write your code here
+            var sb = new StringBuilder();
+            foreach (var c in input)
+            {
+                if (Char.IsLetter(c))
+                {
+                    var newC = (char)(((c + rotationFactor) > 'Z' ?
+                    (c + rotationFactor) % ('Z' + 1) % 26 + 'A' : (c + rotationFactor) % ('Z' + 1)));
+                    sb.Append(newC);
+                }
+                else if (Char.IsLetter(c) && Char.IsLower(c))
+                {
+                    var newC = (char)(((c + rotationFactor) > 'z' ?
+                    (c + rotationFactor) % ('z' + 1) % 26 + 'a' : (c + rotationFactor) % ('z' + 1)));
+                    sb.Append(newC);
+                }
+                else if (Char.IsNumber(c))
+                {
+                    var newC = (int.Parse(c.ToString()) + rotationFactor) % 10;
+                    sb.Append(newC.ToString());
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
+
         //e.g.  nums = [3,34,30,5,9] return 9534330 (max value in permutation)
         public int[] SortingArrayIntoOneNum(int[] nums)
         {
@@ -15,7 +124,7 @@ namespace Interview
             {
                 for (int i = 0; i < Math.Max(a.ToString().Length, b.ToString().Length); i++)
                 {
-                    if (i >= a.ToString().Length && b.ToString()[i] - '0' != 0 )
+                    if (i >= a.ToString().Length && b.ToString()[i] - '0' != 0)
                         return 1;
                     if (i >= a.ToString().Length && b.ToString()[i] - '0' == 0)
                         return -1;
@@ -1394,32 +1503,35 @@ namespace Interview
 
             //check format
             var regex2 = new Regex("^[0-9]+([.]{1}[0-9]+)*$");
-            
+
             var v1s = version1.Split('.');
             var v2s = version2.Split('.');
 
             int idx1 = 0, idx2 = 0, len1 = v1s.Length, len2 = v2s.Length;
-            int d1 = 0, d2 =0;
-            while(idx1 < len1 || idx2 < len2) {
-                if(idx1 <len1)
+            int d1 = 0, d2 = 0;
+            while (idx1 < len1 || idx2 < len2)
+            {
+                if (idx1 < len1)
                     d1 = int.Parse(v1s[idx1]);
-                if(idx2 <len2)
+                if (idx2 < len2)
                     d2 = int.Parse(v2s[idx2]);
-                    
-                if(d1 > d2)
+
+                if (d1 > d2)
                     return 1;
                 else if (d1 < d2)
                     return -1;
 
-                d1=0;
-                d2=0;
+                d1 = 0;
+                d2 = 0;
                 idx1++;
-                idx2++;    
+                idx2++;
             }
             return 0;
         }
 
         //415. Add Strings
+        //Input: num1 = "456", num2 = "77"
+        //Output: "533"
         public string AddStrings(string num1, string num2)
         {
             int l1 = num1.Length - 1;
@@ -1445,35 +1557,6 @@ namespace Interview
         //num2, also represented as a string.
         //e.g. 1: Input: num1 = "2", num2 = "3" Output: "6"
         //e.g.2: Input: num1 = "123", num2 = "456"  Output: "56088"
-        public string Multiply2(string num1, string num2)
-        {
-            if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
-                return "0";
-            int n = num1.Length;
-            int m = num2.Length;
-            var ret = new int[n + m];
-
-            for (int i = n - 1; i >= 0; i--)
-            {
-                for (int j = m - 1; j >= 0; j--)
-                {
-                    ret[i + j] += (num1[i] * num2[j]) % 10;
-                    if (i + j > 0)
-                        ret[i + j - 1] += (num1[i] * num2[j]) / 10;
-                }
-            }
-            string rr = "";
-            int k = 0;
-            while (ret[k] == 0)
-            {
-                k++;
-            }
-            for (int l = k; l < ret.Length; l++)
-            {
-                rr += ret[l];
-            }
-            return rr;
-        }
         public string Multiply(string num1, string num2)
         {
             if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
@@ -2264,7 +2347,7 @@ namespace Interview
             //matrix的右上角出发，首先往下走，如果遇到1的时候，我们就往左走。直到遇到0为止
             int row = binaryMatrix.Dimensions()[0];
             int col = binaryMatrix.Dimensions()[1];
-            
+
             int i = 0, j = col - 1, ret = -1;
             while (i < row && j >= 0)
             {
@@ -3183,22 +3266,27 @@ namespace Interview
                 return "";
             // int leftP = 0;
             // string temp = "";
-            var st  = new Stack<int>();
+            var st = new Stack<int>();
             var removedIdx = new HashSet<int>();
             for (int i = 0; i < s.Length; i++)
             {
-                if(s[i]=='('){
+                if (s[i] == '(')
+                {
                     st.Push(i);
-                }else if(s[i] == ')' && st.Count > 0){
+                }
+                else if (s[i] == ')' && st.Count > 0)
+                {
                     st.Pop();
-                }else if(s[i] == ')' && st.Count == 0){
+                }
+                else if (s[i] == ')' && st.Count == 0)
+                {
                     removedIdx.Add(i);
                 }
-            }       
+            }
             var sb = new StringBuilder();
             for (int i = 0; i < s.Length; i++)
             {
-                if(!st.Contains(i) && !removedIdx.Contains(i))
+                if (!st.Contains(i) && !removedIdx.Contains(i))
                     sb.Append(s[i]);
             }
             return sb.ToString();
@@ -3323,7 +3411,7 @@ namespace Interview
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 
-        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.        
+        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.
         public void Merge(int[] nums1, int m, int[] nums2, int n)
         {
             if (nums1 == null || nums2 == null || n <= 0)

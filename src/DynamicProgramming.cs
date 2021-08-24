@@ -6,39 +6,81 @@ using System.Text;
 namespace Interview
 {
     public class DynamicProgramming
-    {   
-        //1335 Minimum Difficulty of a Job Schedule
-        public int MinDifficulty(int[] jobDifficulty, int d) {
-            int n = jobDifficulty.Length;
-            if(d>n)
-                return -1;
-            var dp = new int[n+1,d+1];
-            for(int i = 0; i< dp.GetLength(0); i++){
-                for(int j = 0; j< dp.GetLength(1); j++){
-                    dp[i,j] = int.MaxValue/2;  // if set max, will be overflow
+    {
+        //1062. Longest Repeating Substring
+        //Given a string S, find out the length of the longest repeating substring(s). Return 0 if no 
+        //repeating substring exists.
+        //Input: “aabcaabdaab”
+        //Output: 3
+        //Explanation: The longest repeating substring is “aab”, which occurs 3 times.
+        //先定义dp[i][j]为分别以第i个字符和第j个字符结尾的substring有相同共同后缀的最大长度。
+        //stores length of the matching substrings ending 
+        //with i'th and j'th characters.
+        //因此，我们也要求i>j。
+        //我们注意到，当S[i] != S[j], 那么dp[i][j] = 0， 否则dp[i][j] = dp[i-1][j-1] + 1。这就是我们的状态转移方程。
+        // dp[i][j] = dp[i-1][j-1] + 1 ----------- S[i] == S[j]
+        // dp[i][j] = 0 ----------- S[i] != S[j]
+        // 我们更新dp[i][j]的最大值，就可以得到最后的答案。
+        public int longestRepeatingSubstring(string S)
+        {
+            int ans = int.MinValue;
+            int[,] dp = new int[S.Length + 1, S.Length + 1];
+
+            for (int i = 1; i <= S.Length; i++)
+            {
+                for (int j = 1; j < i; j++)
+                {
+                    if (S[i - 1] == S[j - 1])
+                    {
+                        dp[i, j] = dp[i - 1, j - 1] + 1;
+                    }
+                    ans = Math.Max(ans, dp[i, j]);
                 }
             }
-            dp[0,0]=0;
+            return ans;
+        }
 
-            for(int i =1; i<=n ; i++){
-                for(int k =1; k<=d; k++){
+
+
+
+        //1335 Minimum Difficulty of a Job Schedule
+        public int MinDifficulty(int[] jobDifficulty, int d)
+        {
+            int n = jobDifficulty.Length;
+            if (d > n)
+                return -1;
+            var dp = new int[n + 1, d + 1];
+            for (int i = 0; i < dp.GetLength(0); i++)
+            {
+                for (int j = 0; j < dp.GetLength(1); j++)
+                {
+                    dp[i, j] = int.MaxValue / 2;  // if set max, will be overflow
+                }
+            }
+            dp[0, 0] = 0;
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int k = 1; k <= d; k++)
+                {
                     int minDay = 0;
-                    for(int j= i-1; j>=k-1; j--){
-                    //for(int j= k-1; j<=i ; j++){
-                        
+                    for (int j = i - 1; j >= k - 1; j--)
+                    {
+                        //for(int j= k-1; j<=i ; j++){
+
                         minDay = Math.Max(minDay, jobDifficulty[j]);
-                        dp[i,k] =Math.Min(dp[i,k], dp[j,k-1]+ minDay);
+                        dp[i, k] = Math.Min(dp[i, k], dp[j, k - 1] + minDay);
                     }
                 }
             }
-            return dp[n,d];
+            return dp[n, d];
 
         }
 
         string createShortestPalindrome(string s)
         {
             string str = s;
-            
+
             //reverse (str);
             char[] charArray = str.ToCharArray();
             Array.Reverse(charArray);
@@ -54,11 +96,11 @@ namespace Interview
                 while (k > 0 && str[k] != str[i])
                     k = vec[k - 1];
 
-                vec[i] = (k += str[i] == str[k]?1:0);
+                vec[i] = (k += str[i] == str[k] ? 1 : 0);
             }
             return str.Substring(len1 + 1, len1 - vec[len2 - 1]) + s;
         }
-        
+
 
         //expeida OA
         //Longest repeating and non-overlapping substring
@@ -77,24 +119,24 @@ namespace Interview
         //j varies from i+1 to n
         public string longestRepeatedSubstring(string str)
         {
-            var dp = new int[str.Length+1,str.Length+1];
+            var dp = new int[str.Length + 1, str.Length + 1];
 
             dp[0, 0] = 0;
             int stIdx = 0;
             int maxLen = 0;
 
-            for(int i=1; i<=str.Length; i++)
+            for (int i = 1; i <= str.Length; i++)
             {
-                for(int j =i+1; j<=str.Length; j++)
+                for (int j = i + 1; j <= str.Length; j++)
                 {
-                    if (str[i-1] == str[j-1] && (j-i)>dp[i-1,j-1])
+                    if (str[i - 1] == str[j - 1] && (j - i) > dp[i - 1, j - 1])
                     {
                         dp[i, j] = 1 + dp[i - 1, j - 1];
                         if (dp[i, j] > maxLen)
                         {
                             stIdx = i;
-                            maxLen =  dp[i, j];
-                        }                           
+                            maxLen = dp[i, j];
+                        }
                     }
                     else
                     {
@@ -104,10 +146,10 @@ namespace Interview
             }
             string ret = "";
 
-            if(maxLen>0)
+            if (maxLen > 0)
             {
                 for (int i = stIdx - maxLen + 1; i <= stIdx; i++)
-                    ret += str[i-1];
+                    ret += str[i - 1];
             }
             return ret;
         }
@@ -128,12 +170,12 @@ namespace Interview
                 return nums[0];
 
             //dp i is cur max value if rob this house or not  
-            var dp = new int[nums.Length+1];
+            var dp = new int[nums.Length + 1];
             dp[0] = 0;
             dp[1] = nums[0];
-            dp[2] = Math.Max(dp[1],nums[1]+dp[0]);
-                
-            for(int i=3; i< dp.Length; i++)
+            dp[2] = Math.Max(dp[1], nums[1] + dp[0]);
+
+            for (int i = 3; i < dp.Length; i++)
             {
                 dp[i] = Math.Max(dp[i - 1], nums[i - 1] + dp[i - 2]);
             }
@@ -154,9 +196,9 @@ namespace Interview
             var arr1 = new int[nums.Length - 1];
             var arr2 = new int[nums.Length - 1];
 
-            Array.Copy(nums,0, arr1,0, nums.Length - 1);
-            Array.Copy(nums,1, arr2,0, nums.Length - 1);
-           
+            Array.Copy(nums, 0, arr1, 0, nums.Length - 1);
+            Array.Copy(nums, 1, arr2, 0, nums.Length - 1);
+
             return Math.Max(Rob(arr1), Rob(arr2));
         }
 
@@ -173,10 +215,10 @@ namespace Interview
             var dp = new bool[s.Length, s.Length];
             //init dp with i==j :true , i to j means from index i to index j in string is Palindrom
             int ret = 0;
-            
+
             for (int j = 0; j < s.Length; j++)
             {
-                for (int i =0; i <= j; i++)
+                for (int i = 0; i <= j; i++)
                 {
                     if (s[i] == s[j] && (j - i <= 2 || dp[i + 1, j - 1]))
                     {
@@ -212,11 +254,11 @@ namespace Interview
             //dp i to j means  longest common length of before i in word1 and before j in word2
             var dp = new int[l1 + 1, l2 + 1];
 
-            for(int i=1; i <= l1; i++)
+            for (int i = 1; i <= l1; i++)
             {
-                for(int j=1; j <= l2; j++)
+                for (int j = 1; j <= l2; j++)
                 {
-                    if (word1[i-1] == word2[j-1])
+                    if (word1[i - 1] == word2[j - 1])
                         dp[i, j] = dp[i - 1, j - 1] + 1;
                     else
                         dp[i, j] = Math.Max(dp[i - 1, j], dp[i, j - 1]);
@@ -250,7 +292,7 @@ namespace Interview
         {
             if (s == null || p == null)
                 return false;
-          
+
             // empty pattern can only match with 
             // empty string 
             if (p.Length == 0)
@@ -295,8 +337,8 @@ namespace Interview
             }
             return lookup[s.Length, p.Length];
         }
-        
-        
+
+
         //416. Partition Equal Subset Sum
         //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
         //Note:Each of the array element will not exceed 100.
@@ -323,7 +365,7 @@ namespace Interview
             //initialize first column = false (empty subset column)            
             for (int i = 1; i <= sum / 2; i++)
                 dp[i, 0] = false;
-        
+
             for (int i = 1; i <= sum / 2; i++)
             {
                 for (int j = 1; j <= nums.Length; j++)
@@ -357,9 +399,9 @@ namespace Interview
             //for (int i = 0; i < s.Length; i++)
             //    dpPalindrom[i, i] = true;
 
-            for(int j =0; j < s.Length; j++)
+            for (int j = 0; j < s.Length; j++)
             {
-                for(int i=0; i<=j; i++)
+                for (int i = 0; i <= j; i++)
                 {
                     if (s[i] == s[j] && (j - i <= 2 || dpPalindrom[i + 1, j - 1]))
                     {
@@ -374,8 +416,8 @@ namespace Interview
                         dpPalindrom[i, j] = false;
                 }
             }
-            
-            return s.Substring(startIdx, maxLen);            
+
+            return s.Substring(startIdx, maxLen);
         }
 
 
@@ -399,12 +441,12 @@ namespace Interview
             ret[0] = 0;
 
             //iterate coin value , (pick 1 of coin, the rest is ret[amount - this coin value] )
-            for(int i=0; i< coins.Length; i++)
+            for (int i = 0; i < coins.Length; i++)
             {
-                for(int j = coins[i]; j <= amount; j++)
+                for (int j = coins[i]; j <= amount; j++)
                 {
-                    if(ret[j-coins[i]] < int.MaxValue)
-                    ret[j] = Math.Min(ret[j - coins[i]] + 1, ret[j]);
+                    if (ret[j - coins[i]] < int.MaxValue)
+                        ret[j] = Math.Min(ret[j - coins[i]] + 1, ret[j]);
                 }
             }
 
@@ -417,14 +459,14 @@ namespace Interview
         public int[] ReverseFibonacci(int i, int j)
         {
             //assume this is for positive 
-            if (i <= 0 || j <= 0 || i<j)
+            if (i <= 0 || j <= 0 || i < j)
                 return null;
 
             var ret = new List<int>();
             ret.Add(i);
             ret.Add(j);
             int k = i - j;
-            while(k >=0)
+            while (k >= 0)
             {
                 ret.Add(k);
                 k = ret.Last() - k;
@@ -444,12 +486,12 @@ namespace Interview
             //int curSum = nums[0];
             int curMax = nums[0];
 
-            int[] dp = new int[nums.Length+1];
+            int[] dp = new int[nums.Length + 1];
 
-            for(int i =1; i<=nums.Length; i++)
+            for (int i = 1; i <= nums.Length; i++)
             {
-                dp[i] = dp[i - 1] + nums[i-1] < nums[i - 1] ? nums[i - 1] : dp[i - 1] + nums[i - 1];
-                curMax=Math.Max(curMax, dp[i]);
+                dp[i] = dp[i - 1] + nums[i - 1] < nums[i - 1] ? nums[i - 1] : dp[i - 1] + nums[i - 1];
+                curMax = Math.Max(curMax, dp[i]);
             }
             return curMax;
         }

@@ -5,8 +5,70 @@ using System.Text;
 
 namespace Interview
 {
+    //34. Find First and Last Position of Element in Sorted Array
     public class BinarySearch
     {
+        //287. Find the Duplicate Number
+        //Given an array  nums  containing  n  + 1 integers where each integer is between 1 and  n  (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
+        // Example 1: Input: [1,3,4,2,2]  Output: 2
+        //不能改变原数组，即不能给原数组排序，又不能用多余空间，那么哈希表神马的也就不用考虑了，又说时间小于 O(n^2)，也就不能用 brute force 的方法，那也就只能考虑用二分搜索法了，在区间 [1, n] 中搜索，首先求出中点 mid，然后遍历整个数组，统计所有小于等于 mid 的数的个数，如果个数小于等于 mid，则说明重复值在 [mid+1, n] 之间，反之，重复值应在 [1, mid-1] 之间
+        public int FindDuplicate(int[] nums)
+        {
+            int st = 1;
+            int end = nums.Length;
+            while (st < end)
+            {
+                int mid = (st + end) / 2;
+                int cnt = 0;
+                foreach (int num in nums)
+                {
+                    if (num <= mid)
+                        cnt++;
+                }
+                if (cnt > mid)
+                    end = mid;
+                else
+                    st = mid + 1;
+            }
+            return st;
+        }
+        public int[] SearchRange(int[] nums, int target)
+        {
+
+            if (Array.BinarySearch(nums, target) < 0)
+                return new int[] { -1, -1 };
+
+            int pos1 = bSearchFirstIdx(nums, target);
+
+            //if(pos1>=nums.Length || nums[pos1]!=target)
+            //  return new int[]{-1,-1};
+
+            int pos2 = bSearchFirstIdx(nums, target + 1);
+
+            return new int[] { pos1, pos2 - 1 };
+        }
+
+        //return the first if have multiple target, or return the closest lower value one
+        //this template is to find the first target idx in array
+        int bSearchFirstIdx(int[] nums, int target)
+        {
+            int st = 0;
+            int end = nums.Length;
+
+            while (st < end)
+            {
+                int mid = st + ((end - st) >> 1);
+
+                if (nums[mid] < target)
+                    st = mid + 1;
+                else //might be equel to target
+                {
+                    end = mid;
+                }
+            }
+            return st;
+        }
+
         //215. Kth Largest Element in an Array
         //use q-sort 核心思想是每次都要先找一个中枢点Pivot，然后遍历其他所有的数字，像这道题从小往大排的话，
         //就把小于中枢点的数字放到左半边，把大于中枢点的放在右半边，这样中枢点是整个数组中第几大的数字就确定了，
@@ -120,45 +182,49 @@ namespace Interview
         //Integers in each row are sorted from left to right.
         //The first integer of each row is greater than the last integer of the previous row.
         // time: O(m+n)   
-        public bool SearchMatrix(int[][] matrix, int target) {
-            if(matrix==null || matrix.Length==0||matrix[0].Length==0)
+        public bool SearchMatrix(int[][] matrix, int target)
+        {
+            if (matrix == null || matrix.Length == 0 || matrix[0].Length == 0)
                 return false;
 
             int rowIdx = 0;
-            int colIdx = matrix[0].Length-1;
+            int colIdx = matrix[0].Length - 1;
 
-            while(rowIdx < matrix.Length && colIdx >=0){
-                if(matrix[rowIdx][colIdx]==target)
+            while (rowIdx < matrix.Length && colIdx >= 0)
+            {
+                if (matrix[rowIdx][colIdx] == target)
                     return true;
-                if(matrix[rowIdx][colIdx] > target)
+                if (matrix[rowIdx][colIdx] > target)
                     colIdx--;
-                else if(matrix[rowIdx][colIdx]<target)    
+                else if (matrix[rowIdx][colIdx] < target)
                     rowIdx++;
             }
-            return false;            
+            return false;
         }
 
         //convert it 1 -dim series number then use binary search
         //T: log(mxn)
-        public bool SearchMatrix2(int[][] matrix, int target) {
-            if(matrix==null || matrix.Length==0||matrix[0].Length==0)
+        public bool SearchMatrix2(int[][] matrix, int target)
+        {
+            if (matrix == null || matrix.Length == 0 || matrix[0].Length == 0)
                 return false;
-            
-            int n = matrix[0].Length;
-            int total =  matrix.Length * matrix[0].Length;
 
-            int st=0;
-            int end = total-1;
-            while(st<=end){
-                int piv = (st+end)/2;
-                if(target== matrix[piv/n][piv%n])
+            int n = matrix[0].Length;
+            int total = matrix.Length * matrix[0].Length;
+
+            int st = 0;
+            int end = total - 1;
+            while (st <= end)
+            {
+                int piv = (st + end) / 2;
+                if (target == matrix[piv / n][piv % n])
                     return true;
-                if(target > matrix[piv/n][piv%n])
-                    st = piv+1;    
+                if (target > matrix[piv / n][piv % n])
+                    st = piv + 1;
                 else
-                    end = piv-1;
+                    end = piv - 1;
             }
-            return false;    
+            return false;
         }
 
         //240. Search a 2D Matrix II
@@ -252,7 +318,7 @@ namespace Interview
             }
             return false;
         }
-        
+
 
         //4. Median of Two Sorted Arrays
         //There are two sorted arrays nums1 and nums2 of size m and n respectively.

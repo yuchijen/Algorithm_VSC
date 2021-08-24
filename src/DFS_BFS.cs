@@ -15,15 +15,161 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //787. Cheapest Flights Within K Stops (FB) 
+        int curMin = int.MaxValue;
+        public int FindCheapestPrice(int n, int[][] flights, int src, int dst, int k)
+        {
+            var map = new Dictionary<int, List<List<int>>>();
+            //flights.GroupBy(g => g[0]).ToDictionary<
+            for (int i = 0; i < n; i++)
+            {
+                map.Add(i, new List<List<int>>());
+            }
+            for (int i = 0; i < flights.Length; i++)
+            {
+                if (map.ContainsKey(flights[i][0]))
+                {
+                    map[flights[i][0]].Add(new List<int>() { flights[i][1], flights[i][2] });
+                }
+            }
+
+            var visited = new bool[n];
+            findDFSPricePath(src, dst, 0, 0, map, k, visited);
+
+            return curMin == int.MaxValue ? -1 : curMin;
+        }
+
+        // DFS: O(V+E) where V is all vertices, E is all number of edges 
+        void findDFSPricePath(int src, int dst, int cost, int pathCnt, Dictionary<int, List<List<int>>> map, int k, bool[] visited)
+        {
+            if (src == dst)
+            {
+                curMin = Math.Min(curMin, cost);
+                return;
+            }
+
+            if (visited[src] || pathCnt > k)
+                return;
+
+            visited[src] = true;
+
+            for (int i = 0; i < map[src].Count; i++)
+            {
+                findDFSPricePath(map[src][i][0], dst, cost + map[src][i][1], pathCnt + 1, map, k, visited);
+            }
+            visited[src] = false;
+        }
+
+        // BFS: O(V+E) where V is all vertices, E is all number of edges 
+        // each node get into queue (V); and each node's adj edges will enqueue too (E)
+        public int FindCheapestPriceBFS(int n, int[][] flights, int src, int dst, int k)
+        {
+            var map = new Dictionary<int, List<List<int>>>();
+            //flights.GroupBy(g => g[0]).ToDictionary<
+            for (int i = 0; i < n; i++)
+            {
+                map.Add(i, new List<List<int>>());
+            }
+            for (int i = 0; i < flights.Length; i++)
+            {
+                if (map.ContainsKey(flights[i][0]))
+                {
+                    map[flights[i][0]].Add(new List<int>() { flights[i][1], flights[i][2] });
+                }
+            }
+
+            var q = new Queue<List<int>>();
+            q.Enqueue(new List<int> { src, 0});
+            int curMin = 0;
+            //int cost =0;
+            int pathCnt = 0;
+            while (q.Count > 0)
+            {
+                for (int i = 0; i < q.Count; i++)
+                {
+                    var curNode = q.Dequeue();
+                    if (curNode[0] == dst)
+                    {
+                        curMin = Math.Min(curMin, curNode[1]);
+                        //return curMin;
+                    }
+                    if(curNode[2] >k){
+                        continue;
+                    }
+                    else
+                    {
+                        foreach (var child in map[curNode[0]])
+                        {
+                            if (curNode[1] + child[1] > curMin)
+                                continue;
+                            q.Enqueue(new List<int> { child[0], curNode[1] + child[1]});
+                        }
+                    }
+                }
+
+                if (pathCnt > k)
+                    break;
+                pathCnt += 1;
+            }
+            return curMin == int.MaxValue ? -1 : curMin;
+        }
+
+        //Dijkstra: is similar with BFS, the difference is using priority queue instand of queue. 
+        //The priority will always pop the element with heigher priority. In this case, the cost is lower the 
+        //priority is heigher. Once the pop src is equal to destination we will have the answer.
+        public int FindCheapestPriceDijkstra(int n, int[][] flights, int src, int dst, int k)
+        {
+            var map = new Dictionary<int, List<List<int>>>();
+            for (int i = 0; i < n; i++)
+            {
+                map.Add(i, new List<List<int>>());
+            }
+            for (int i = 0; i < flights.Length; i++)
+            {
+                if (map.ContainsKey(flights[i][0]))
+                {
+                    map[flights[i][0]].Add(new List<int>() { flights[i][1], flights[i][2] });
+                }
+            }
+
+            var q = new Queue<List<int>>();
+            q.Enqueue(new List<int> { src, 0, 0 });
+            int curMin = 0;
+            while (q.Count > 0)
+            {
+                    q = new Queue<List<int>>(q.OrderBy(Node=>Node[1]));   
+                    var curNode = q.Dequeue();
+                    if (curNode[0] == dst)
+                    {
+                        return curNode[1];
+                    }
+                    if(curNode[2] > k){
+                        continue;
+                    }
+                    else
+                    {
+                        foreach (var child in map[curNode[0]])
+                        {
+                            if (curNode[1] + child[1] > curMin)
+                                continue;
+                            q.Enqueue(new List<int> { child[0], curNode[1] + child[1], curNode[2]+1 });
+                        }
+                    }
+            }
+            return curMin == int.MaxValue ? -1 : curMin;
+        }
+
         //[[s1,s2]
         // [s4,s5]
         // [s3,s4]
         // [s1,s4]]  => [s1,s2,s3,s4,s5]
-        public List<string> largestItemAssociation(List<PairString> itemAssociation) {
-            
+        public List<string> largestItemAssociation(List<PairString> itemAssociation)
+        {
+
             //build graph
-            var map = new Dictionary<string, List<string>>(); 
-            foreach(var item in itemAssociation){
+            var map = new Dictionary<string, List<string>>();
+            foreach (var item in itemAssociation)
+            {
                 map.TryAdd(item.first, new List<string>());
                 map.TryAdd(item.second, new List<string>());
                 map[item.first].Add(item.second);
@@ -34,35 +180,40 @@ namespace Interview
             var ret = new List<List<string>>();
 
             // go DFS 
-            foreach(var k in map.Keys){
+            foreach (var k in map.Keys)
+            {
                 var curList = new List<string>();
                 DfsItems(visited, k, map, curList);
-                ret.Add(curList);                
+                ret.Add(curList);
             }
             ret.ForEach(x => x.Sort());
             return ret.OrderByDescending(list => list.Count).FirstOrDefault();
-	    }
-        
-        void DfsItems(HashSet<string> visited, string key, Dictionary<string, List<string>> map, List<string> curList){
-            if(visited.Contains(key))
+        }
+
+        void DfsItems(HashSet<string> visited, string key, Dictionary<string, List<string>> map, List<string> curList)
+        {
+            if (visited.Contains(key))
                 return;
             visited.Add(key);
             curList.Add(key);
-            foreach(var neighborItem in map[key]){
+            foreach (var neighborItem in map[key])
+            {
                 DfsItems(visited, neighborItem, map, curList);
             }
         }
 
-        public class PairString {
+        public class PairString
+        {
             public String first;
             public String second;
 
-            public PairString(String first, String second) {
+            public PairString(String first, String second)
+            {
                 this.first = first;
                 this.second = second;
             }
-        }	
-        
+        }
+
         //zume given 2 node in graph, find any common ancestor 
         public bool findCA(List<int[]> input, int n1, int n2)
         {
@@ -83,7 +234,7 @@ namespace Interview
                 else
                     map.Add(tu[1], new List<int>() { tu[0] });
             }
-            
+
             //trace back to root from n1 and n2 
             var path1 = new List<int>();
             var path2 = new List<int>();
@@ -92,7 +243,7 @@ namespace Interview
             visited = new Dictionary<int, int>();
             pathHelper(map, visited, n2, path2);
             //see any node in path is the same
-            return path1.Any(p1 => (path2.Contains(p1)));            
+            return path1.Any(p1 => (path2.Contains(p1)));
         }
         void pathHelper(Dictionary<int, List<int>> map, Dictionary<int, int> visited, int n, List<int> path)
         {
@@ -101,11 +252,11 @@ namespace Interview
                 return;
             visited.Add(n, 1);
             if (map.ContainsKey(n))
-            {   
+            {
                 foreach (var parent in map[n])
                 {
-                    pathHelper(map,visited, parent, path);                        
-                }                
+                    pathHelper(map, visited, parent, path);
+                }
             }
         }
 
@@ -146,7 +297,7 @@ namespace Interview
             ret.Add(retOneP);
             return ret;
         }
-        
+
 
         //127. Word Ladder
         //Given two words(beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
@@ -646,39 +797,48 @@ namespace Interview
         }
 
         //by Hunrey Liu
-        public String alienOrderBFS(String[] words) {
+        public String alienOrderBFS(String[] words)
+        {
             if (words.Length == 0) return "";
             var map = new Dictionary<char, HashSet<char>>();
             var indegree = new Dictionary<char, int>();
-            
+
             //Map<Character, Integer> indegree = new HashMap<>();
 
-            foreach(String word in words) {
-                foreach (char c in word) {
+            foreach (String word in words)
+            {
+                foreach (char c in word)
+                {
                     indegree.Add(c, 0);
                 }
             }
-            for (int i = 0; i < words.Length - 1; i++) 
+            for (int i = 0; i < words.Length - 1; i++)
             {
                 String curr = words[i];
-                String next = words[i+1];
+                String next = words[i + 1];
                 addDependency(curr, next, words, indegree, map);
             }
             Queue<char> queue = new Queue<char>();
             StringBuilder sb = new StringBuilder();
-            foreach (char c in indegree.Keys) {
-                if (indegree[c] == 0) {
+            foreach (char c in indegree.Keys)
+            {
+                if (indegree[c] == 0)
+                {
                     queue.Enqueue(c);
                 }
             }
-            while (queue.Count>0) {
+            while (queue.Count > 0)
+            {
                 char curr = queue.Dequeue();
                 sb.Append(curr);
                 HashSet<char> child = map[curr];
-                if (child != null) {
-                    foreach (char node in child) {
-                        indegree.Add(node, indegree[node]-1);
-                        if (indegree[node] == 0) {
+                if (child != null)
+                {
+                    foreach (char node in child)
+                    {
+                        indegree.Add(node, indegree[node] - 1);
+                        if (indegree[node] == 0)
+                        {
                             queue.Enqueue(node);
                         }
                     }
@@ -686,25 +846,30 @@ namespace Interview
             }
             return sb.Length == indegree.Count ? sb.ToString() : "";
         }
-    private void addDependency(String curr, String next, String[] words, Dictionary<char, int> indegree,
-                               Dictionary<char, HashSet<char>> map) {
-        int len = Math.Min(curr.Length, next.Length);
-        for (int i = 0; i < len; i++) {
-            char c1 = curr[i];
-            char c2 = next[i];
-            if (c1 != c2) {                
-                if (!map.ContainsKey(c1)) {
-                    map.Add(c1, new HashSet<char>());
-                }
-                if (!map[c1].Add(c2)) {
+        private void addDependency(String curr, String next, String[] words, Dictionary<char, int> indegree,
+                                   Dictionary<char, HashSet<char>> map)
+        {
+            int len = Math.Min(curr.Length, next.Length);
+            for (int i = 0; i < len; i++)
+            {
+                char c1 = curr[i];
+                char c2 = next[i];
+                if (c1 != c2)
+                {
+                    if (!map.ContainsKey(c1))
+                    {
+                        map.Add(c1, new HashSet<char>());
+                    }
+                    if (!map[c1].Add(c2))
+                    {
+                        break;
+                    }
+                    indegree[c2] += 1;
+                    //indegree.Add(c2, indegree[c2] + 1);
                     break;
                 }
-                indegree[c2]+=1;
-                //indegree.Add(c2, indegree[c2] + 1);
-                break;
             }
         }
-    }
 
 
 
@@ -817,12 +982,34 @@ namespace Interview
             }
         }
 
-
         //680. Valid Palindrome II
         //Given a non-empty string s, you may delete at most one character. Judge whether you can make it a palindrome.
         // Example 1:Input: "aba"   Output: True
         //Example 2:   Input: "abca"  Output: True
         //Explanation: You could delete the character 'c'.
+        public bool ValidPalindrome2(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return false;
+
+            return ValidPalindromeHelper2(s, 0, s.Length - 1, false);
+        }
+        bool ValidPalindromeHelper2(string s, int i, int j, bool skip)
+        {
+            while (i < j)
+            {
+                if (s[i] != s[j] && skip)
+                    return false;
+                else if (s[i] != s[j] && !skip)
+                {
+                    return ValidPalindromeHelper2(s, i + 1, j, true) || ValidPalindromeHelper2(s, i, j - 1, true);
+                }
+                i++;
+                j--;
+            }
+            return true;
+        }
+
         public bool ValidPalindrome(string s)
         {
             if (string.IsNullOrEmpty(s))
@@ -854,6 +1041,9 @@ namespace Interview
         }
 
         //426. Convert Binary Search Tree to Sorted Doubly Linked List
+        //Convert a BST to a sorted circular doubly-linked list in-place. Think of the left and right 
+        //pointers as synonymous to the previous and next pointers in a doubly-linked list.
+        //Let's take the following BST as an example, it may help you understand the problem better
         public class Node
         {
             public int val;
@@ -867,6 +1057,36 @@ namespace Interview
                 left = _left;
                 right = _right;
             }
+        }
+
+        public Node treeToDoublyListRecursive(Node root)
+        {
+            if (root == null)
+                return null;
+            Node head = null;
+            Node pre = null;
+            treeToNodeInOrderHelper(root, pre, head);
+            pre.right = head;
+            head.left = pre;
+            return head;
+        }
+
+        void treeToNodeInOrderHelper(Node r, Node pre, Node head)
+        {
+            if (r == null)
+                return;
+            treeToNodeInOrderHelper(r.left, pre, head);
+            if (head == null)
+            {
+                head = r;
+            }
+            else
+            {
+                pre.right = r;
+                r.left = pre;
+            }
+            pre = r;
+            treeToNodeInOrderHelper(r.right, pre, head);
         }
 
         public Node treeToDoublyList(Node root)
@@ -1503,16 +1723,20 @@ namespace Interview
         //}
 
         //547. friend circle
-        public int FindCircleNum(int[][] M) {
-            if(M==null)
+        public int FindCircleNum(int[][] M)
+        {
+            if (M == null)
                 return 0;
             int len = M.Length;
             var visited = new bool[len];
             var map = new Dictionary<int, List<int>>();
             //build graph
-            for(int i=0; i<len; i++){
-                for(int j=i+1; j<len; j++){
-                    if(M[i][j]==1){
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = i + 1; j < len; j++)
+                {
+                    if (M[i][j] == 1)
+                    {
                         map.TryAdd(i, new List<int>());
                         map.TryAdd(j, new List<int>());
                         map[i].Add(j);
@@ -1520,32 +1744,39 @@ namespace Interview
                     }
                 }
             }
-            foreach(var kv in map){
-                Console.Write(kv.Key.ToString() +":");
-                foreach(var va in kv.Value){
-                    Console.Write(va+",");
+            foreach (var kv in map)
+            {
+                Console.Write(kv.Key.ToString() + ":");
+                foreach (var va in kv.Value)
+                {
+                    Console.Write(va + ",");
                 }
             }
             int ret = 0;
-            foreach(var kv in map){
-                if(!visited[kv.Key]){
-                    ret+=1;
+            foreach (var kv in map)
+            {
+                if (!visited[kv.Key])
+                {
+                    ret += 1;
                     DFSFindCircleNum(kv.Key, visited, map);
                 }
             }
             return ret + visited.Count(n => n == false);
         }
-        void DFSFindCircleNum(int key, bool[] visited, Dictionary<int, List<int>> map){
-            if(visited[key])
+        void DFSFindCircleNum(int key, bool[] visited, Dictionary<int, List<int>> map)
+        {
+            if (visited[key])
                 return;
-            visited[key] = true;    
-            foreach(var n in map[key]){
+            visited[key] = true;
+            foreach (var n in map[key])
+            {
                 DFSFindCircleNum(n, visited, map);
-            }   
+            }
         }
 
         //323. Number of Connected Components in an Undirected Graph
-        public int CountComponents(int n, int[][] edges) {            
+        public int CountComponents(int n, int[][] edges)
+        {
             var ret = new int[1];
             var visited = new bool[n];
             var map = new Dictionary<int, List<int>>();
@@ -1557,20 +1788,24 @@ namespace Interview
                 map[edges[i][1]].Add(edges[i][0]);
             }
 
-            foreach(var kv in map){
-                if(!visited[kv.Key]){
-                    ret[0]+=1;
+            foreach (var kv in map)
+            {
+                if (!visited[kv.Key])
+                {
+                    ret[0] += 1;
                     DFSComponentHelper(visited, map, kv.Key);
                 }
             }
-            ret[0]+= visited.Count(c => c ==false);
+            ret[0] += visited.Count(c => c == false);
             return ret[0];
         }
-        void DFSComponentHelper(bool[] visited, Dictionary<int, List<int>> map, int key){
-            if(visited[key])
+        void DFSComponentHelper(bool[] visited, Dictionary<int, List<int>> map, int key)
+        {
+            if (visited[key])
                 return;
-            visited[key]=true;            
-            foreach(var node in map[key]){
+            visited[key] = true;
+            foreach (var node in map[key])
+            {
                 DFSComponentHelper(visited, map, node);
             }
         }

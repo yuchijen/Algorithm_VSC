@@ -12,6 +12,19 @@ namespace Interview
         public TreeNode right;
         public TreeNode(int x) { val = x; }
     }
+
+    public class TrieNode
+    {
+        public int Val;
+        public List<TrieNode> Children;
+
+        public TrieNode(int x, List<TrieNode> children)
+        {
+            Val = x;
+            Children = children;
+        }
+    }
+
     public class TreeLinkNode
     {
         int val;
@@ -20,6 +33,32 @@ namespace Interview
     }
     public class BTree
     {
+        //129. Sum Root to Leaf Numbers
+        //Input: root = [1,2,3]  Output: 25
+        // Explanation:
+        // The root-to-leaf path 1->2 represents the number 12.
+        // The root-to-leaf path 1->3 represents the number 13.
+        // Therefore, sum = 12 + 13 = 25.
+        public int SumNumbers(TreeNode root)
+        {
+            int[] ret = new int[1]{0};
+            SumNumbersHelp(root, 0 , ret);
+            return ret[0];
+        }
+
+        void SumNumbersHelp(TreeNode node, int curVal, int[] ret){
+            if(node==null)
+                return;
+            
+            curVal= curVal*10 + node.val;
+            if(node.left==null && node.right==null)
+                ret[0]+=curVal;
+
+            SumNumbersHelp(node.left, curVal, ret);
+            SumNumbersHelp(node.right, curVal, ret);
+        }
+
+
         //545. Boundary of Binary Tree
         List<int> leftB = new List<int>();
         List<int> leaves = new List<int>();
@@ -95,10 +134,10 @@ namespace Interview
 
             if (node.left == null && node.right == null)
                 leaves.Add(node.val);
-            
-                findLeaves(node.left);
-                findLeaves(node.right);
-            
+
+            findLeaves(node.left);
+            findLeaves(node.right);
+
         }
 
 
@@ -143,12 +182,12 @@ namespace Interview
         //572. Subtree of Another Tree
         public bool IsSubtree2(TreeNode s, TreeNode t)
         {
-            if(s==null)
+            if (s == null)
                 return false;
-            if(IsSameTree(s,t))
+            if (IsSameTree(s, t))
                 return true;
 
-            return IsSubtree2(s.left,t) || IsSubtree2(s.right, t);            
+            return IsSubtree2(s.left, t) || IsSubtree2(s.right, t);
         }
         public bool IsSubtree(TreeNode s, TreeNode t)
         {
@@ -164,17 +203,18 @@ namespace Interview
         }
         private void inorder(TreeNode s, List<string> ret)
         {
-            if (s == null){
+            if (s == null)
+            {
                 ret.Add("#");
                 return;
-            }                
-            ret.Add(","+s.val.ToString());
+            }
+            ret.Add("," + s.val.ToString());
             inorder(s.left, ret);
             inorder(s.right, ret);
         }
 
 
-        //124. Binary Tree Maximum Path Sum (or Minimun) (FB)687, 543
+        //124. Binary Tree Maximum Path Sum (or Minimun) (FB)687, 543, 1522
         //Given a non-empty binary tree, find the maximum path sum.
         //For this problem, a path is defined as any sequence of nodes from some starting node to 
         //any node in the tree along the parent-child connections. The path must contain at least one 
@@ -220,7 +260,7 @@ namespace Interview
             int right = MinPathSumDfs(node.right, ret);
 
             //int curMin = Math.Min(node.val,);
-            ret[0] = Math.Min(ret[0],  node.val + left + right);
+            ret[0] = Math.Min(ret[0], node.val + left + right);
             return node.val < Math.Min(left, right) + node.val ? node.val : Math.Min(left, right) + node.val;
 
         }
@@ -371,6 +411,97 @@ namespace Interview
             verticalHelper(root.right, idx + 1, idy - 1, map);
         }
 
+        //938. Range Sum of BST
+        //Given the root node of a binary search tree and two integers low and high,
+        // return the sum of values of all nodes with a value in the inclusive range [low, high].
+        public int RangeSumBST2(TreeNode root, int low, int high)
+        {
+            if (root == null)
+                return 0;
+            int sum = 0;
+
+            if (root.val <= high && root.val >= low)
+            {
+                sum += root.val;
+                sum += RangeSumBST2(root.left, low, high);
+                sum += RangeSumBST2(root.right, low, high);
+            }
+            if (root.val < low)
+                sum += RangeSumBST2(root.right, low, high);
+            if (root.val > high)
+            {
+                sum += RangeSumBST2(root.left, low, high);
+            }
+            return sum;
+        }
+        public int RangeSumBST(TreeNode root, int low, int high)
+        {
+            if (root == null)
+                return 0;
+
+            var ret = new int[1] { 0 };
+            RangeSumBSTHelper(root, low, high, ret);
+            return ret[0];
+        }
+
+        void RangeSumBSTHelper(TreeNode node, int L, int H, int[] ret)
+        {
+            if (node == null)
+                return;
+            if (node.val <= H && node.val >= L)
+            {
+                ret[0] += node.val;
+                RangeSumBSTHelper(node.left, L, H, ret);
+                RangeSumBSTHelper(node.right, L, H, ret);
+            }
+            else if (node.val > H)
+            {
+                RangeSumBSTHelper(node.left, L, H, ret);
+            }
+            else
+            {
+                RangeSumBSTHelper(node.right, L, H, ret);
+            }
+        }
+
+        //1522. Given a root of an N-ary tree, you need to compute the length of the diameter of the tree.
+        //The diameter of an N-ary tree is the length of the longest path between any two nodes in the tree. This path may or may not pass through the root.
+        //(Nary-Tree input serialization is represented in their level order traversal, each group of children is separated by the null value.)
+        public int DiameterOfTrie(TrieNode node)
+        {
+            //O(n) , O(n)
+            if (node == null)
+                return 0;
+            var ret = new int[1] { 0 };
+            helperDiaTrie(node, ret);
+            return ret[0];
+        }
+
+        private int helperDiaTrie(TrieNode node, int[] ret)
+        {
+            if (node == null)
+                return 0;
+
+            int firstLenPath = 0, sndLenPath = 0;
+
+            foreach (var child in node.Children)
+            {
+                int pathLengthOfChild = helperDiaTrie(child, ret);
+                if (pathLengthOfChild > firstLenPath)
+                {
+                    sndLenPath = firstLenPath;
+                    firstLenPath = pathLengthOfChild;
+                }
+                else if (pathLengthOfChild > sndLenPath)
+                {
+                    sndLenPath = pathLengthOfChild;
+                }
+            }
+
+            ret[0] = Math.Max(ret[0], firstLenPath + sndLenPath);
+            return firstLenPath + 1;
+        }
+
         //543. Diameter of Binary Tree(Recur)
         //Given a binary tree, you need to compute the length of the diameter of the tree. 
         //The diameter of a binary tree is the length of the longest path between any two nodes 
@@ -417,7 +548,6 @@ namespace Interview
             return ret;
         }
 
-
         //404. Sum of Left Leaves
         //       3
         //      / \
@@ -455,7 +585,7 @@ namespace Interview
         //     9  20
         //       /  \
         //      15   7      return true
-        public bool IsBalanced(TreeNode root)
+        public bool IsBalanced(TreeNode root) // O(nlogn)
         {
             if (root == null)
                 return true;
@@ -541,7 +671,7 @@ namespace Interview
         //     var nodes = list.Where(i => i.val >= p.val).Select(node=>node).ToList();
         //     return nodes.Count <= 1? null: nodes.ElementAt(1);
         // }
-        
+
         public TreeNode inorderSuccessor2(TreeNode root, TreeNode p)
         {
             if (root == null)

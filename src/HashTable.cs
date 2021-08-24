@@ -725,6 +725,48 @@ namespace Interview
         //Example: Input: S = "ADOBECODEBANC", T = "ABC"
         //Output: "BANC"
         //O(n)
+        public string minWindow3(string s, string t)
+        {
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < t.Length; i++)
+            {
+                if (map.ContainsKey(t[i]))
+                    map[t[i]]++;
+                else
+                    map.Add(t[i], 1);
+            }
+            var map2 = new Dictionary<char, int>();
+            int len = int.MaxValue;
+            int stIdx = 0;
+            int backPtr = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map2.ContainsKey(s[i]))
+                    map2[s[i]]++;
+                else
+                    map2.Add(s[i], 1);
+
+                while(map.All(kv=> map2.ContainsKey(kv.Key)) && map.All(kv => map[kv.Key] <= map2[kv.Key]))
+                {
+                    if(i - backPtr +1 < len){
+                        stIdx = backPtr;
+                        len = i - backPtr +1 ;
+                    }
+                    // shrank back
+                    if (map2.ContainsKey(s[backPtr]))
+                    {
+                        if (map2[s[backPtr]] == 1)
+                            map2.Remove(s[backPtr]);
+                        else    
+                            map2[s[backPtr]]--;
+                    }
+                    backPtr++;    
+                }
+            }
+            return len == int.MaxValue ? "" : s.Substring(stIdx, len);    
+        }
+
         public string minWindow2(string s, string t)
         {
             var map = new Dictionary<char, int>();
@@ -736,7 +778,7 @@ namespace Interview
                 else
                     map.Add(t[i], 1);
             }
-
+            var map2 = new Dictionary<char, int>();
             int len = int.MaxValue, cnt = 0;
             int stIdx = 0;
             int backPtr = 0;

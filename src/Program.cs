@@ -36,7 +36,8 @@ namespace Interview
             //****************************************/
 
             var asa = new ArrayString();
-            asa.MinRemoveToMakeValid2("lee(t(c)o)de)");
+            //Console.WriteLine( asa.rotationalCipher("Zebra-493?", 3));
+            //asa.MinRemoveToMakeValid2("lee(t(c)o)de)");
             
             // var arrUnsort = new int[5] { 3, 34, 30, 5, 9 };
             // asa.SortingArrayIntoOneNum(arrUnsort);
@@ -192,8 +193,14 @@ namespace Interview
             //     Console.Write(x + ',');
             // }
 
-            // var dfs = new DFS_BFS();
+            var dfs = new DFS_BFS();
+            var flights = new int[3][];
+            flights[0] = new int[]{0,1,100};
+            flights[1] = new int[]{1,2,100};
+            flights[2] = new int[]{0,2,500};
+            dfs.FindCheapestPriceBFS(3, flights, 0, 2, 0);
 
+            //dfs.ValidPalindrome2("cbbcc");
             // var parentChildPairs = new List<int[]>() {
             // new int[]{1, 3},
             // new int[]{2, 3},
