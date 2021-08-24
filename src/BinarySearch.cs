@@ -621,27 +621,6 @@ namespace Interview
 
         }
 
-
-        //287. Find the Duplicate Number
-        //Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
-        //Note: You must not modify the array(assume the array is read only).
-        //You must use only constant, O(1) extra space., less than O(n^2) 
-        public int FindDuplicate(int[] nums)
-        {
-
-            if (nums == null && nums.Length == 0)
-                return -1;
-
-            Array.Sort(nums);
-
-            for (int i = 0; i < nums.Length - 1; i++)
-            {
-                if (nums[i] == nums[i + 1])
-                    return nums[i];
-            }
-            return nums[nums.Length - 1];
-        }
-
         //50. Pow(x, n)
         //Implement pow(x, n). smart solution
         public double MyPow(double x, int n)
