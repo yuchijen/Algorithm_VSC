@@ -8,6 +8,50 @@ namespace Interview
 {
     public class HashTable
     {
+        //155. Min Stack (get min in O(1))
+        //Input ["MinStack","push","push","push","getMin","pop","top","getMin"] 
+        //                    [-2],[0],[-3]
+        //Output[null,null,null,null,-3,null,0,-2]
+        //使用两个栈来实现，一个栈来按顺序存储 push 进来的数据，另一个用来存出现过的最小值
+        public class MinStack
+        {
+            Stack<int> st;
+            Stack<int> st2;
+            public MinStack()
+            {   
+                st = new Stack<int>();                
+                st2 = new Stack<int>();                
+            }
+
+            public void Push(int val)
+            {
+                st.Push(val);
+                if(st2.Count ==0 || val <= st2.Peek())
+                    st2.Push(val);
+            }
+
+            public void Pop()
+            {
+                if(st.Count > 0){
+                    var temp = st.Pop();
+                    if(st2.Count > 0 && temp == st2.Peek())
+                        st2.Pop();
+                }
+            }
+
+            public int Top()
+            {
+                return st.Count > 0 ? st.Peek() : int.MaxValue;
+            }
+
+            public int GetMin()
+            {
+                return st2.Count > 0 ? st2.Peek() : int.MaxValue;
+            }
+        }
+
+
+
         //1268. Search Suggestions System
         // Input: products = ["mobile","mouse","moneypot","monitor","mousepad"], searchWord = "mouse"
         // Output: [
@@ -19,7 +63,7 @@ namespace Interview
         // ]
         public IList<IList<string>> SuggestedProducts(string[] products, string searchWord)
         {
-            if(products==null || products.Length==0 || string.IsNullOrEmpty(searchWord))
+            if (products == null || products.Length == 0 || string.IsNullOrEmpty(searchWord))
                 return null;
 
             Array.Sort(products);
@@ -27,56 +71,68 @@ namespace Interview
             int maxCnt = 3;
             var ret = new List<IList<string>>();
 
-            for(int i=1; i<=searchWord.Length; i++){
+            for (int i = 1; i <= searchWord.Length; i++)
+            {
                 var cur = new List<string>();
-                var curSearch = searchWord.Substring(0,i);
+                var curSearch = searchWord.Substring(0, i);
 
-                foreach(var p in products){
-                    if(p.StartsWith(curSearch)){
+                foreach (var p in products)
+                {
+                    if (p.StartsWith(curSearch))
+                    {
                         cur.Add(p);
                     }
-                    if(cur.Count==maxCnt)
+                    if (cur.Count == maxCnt)
                         break;
                 }
                 ret.Add(cur);
             }
             return ret;
         }
-        class Trie {
+        class Trie
+        {
             public Dictionary<char, Trie> next = new Dictionary<char, Trie>();
             public List<string> Storage = new List<string>();
         }
         public IList<IList<string>> SuggestedProductsWithTrie(string[] products, string searchWord)
         {
-            if(products==null || products.Length==0 || string.IsNullOrEmpty(searchWord))
+            if (products == null || products.Length == 0 || string.IsNullOrEmpty(searchWord))
                 return null;
 
             Array.Sort(products);
 
             //build trie graph
             var root = new Trie();
-            for(int i=0; i<products.Length; i++){
+            for (int i = 0; i < products.Length; i++)
+            {
                 var pt = root;
-                for(int j =0; j< products[i].Length; j++){
+                for (int j = 0; j < products[i].Length; j++)
+                {
                     char key = products[i][j];
                     pt.next.TryAdd(key, new Trie());
-                    if(pt.next[key].Storage.Count <3){                    
+                    if (pt.next[key].Storage.Count < 3)
+                    {
                         pt = pt.next[key];
-                        pt.Storage.Add(products[i]);                                                                                        
+                        pt.Storage.Add(products[i]);
                     }
-                    else{
+                    else
+                    {
                         break;
                     }
                 }
             }
             //search
             var ret = new List<IList<string>>();
-            for(int i=0; i<searchWord.Length; i++){
+            for (int i = 0; i < searchWord.Length; i++)
+            {
                 //var cur = new List<string>();
-                if(root.next.ContainsKey(searchWord[i])){
+                if (root.next.ContainsKey(searchWord[i]))
+                {
                     root = root.next[searchWord[i]];
                     ret.Add(root.Storage);
-                }else{
+                }
+                else
+                {
                     ret.Add(new List<string>());
                 }
             }
@@ -162,9 +218,68 @@ namespace Interview
             }
 
             return true;
-
         }
 
+        //37. Sudoku Solver
+        public void SolveSudoku(char[][] board)
+        {
+            SudokuHelp(board, 0, 0);
+        }
+        // like N-Queens solution, each empty spot, try 1-9 possible answer, and assign possible answer
+        // if next /future not valid, then try next possible number.
+        bool SudokuHelp(char[][] board, int i, int j)
+        {
+            if (i == 9)  //scan to end of board
+                return true;
+            if (j == 9)
+                return SudokuHelp(board, i + 1, 0);
+            if (board[i][j] != '.')
+            {
+                return SudokuHelp(board, i, j + 1);
+            }
+
+            for (char v = '1'; v <= '9'; v++)
+            { //try 1 to 9 possible answer in cur empty spot
+                if (isSudokuValid(board, i, j, v))
+                {
+                    board[i][j] = v;
+                }
+                if (SudokuHelp(board, i, j + 1))
+                { //if next is valid return true
+                    return true;
+                }
+                board[i][j] = '.';  //if not, try next possible value
+            }
+
+            return false;  //try all possible 1-9, none of valid.
+        }
+
+        bool isSudokuValid(char[][] board, int i, int j, char val)
+        {
+            for (int a = 0; a < 9; a++)
+            {  //check valid row 
+                if (board[i][a] == val)
+                    return false;
+            }
+            for (int a = 0; a < 9; a++)
+            {  //check valid col
+                if (board[a][j] == val)
+                    return false;
+            }
+
+            //check sub area
+            int areaRowStart = i - i % 3;
+            int areaColStart = j - j % 3;
+            for (int a = 0; a < 3; a++)
+            {  //check sub area
+                for (int b = 0; b < 3; b++)
+                {
+                    if (board[areaRowStart + a][areaColStart + b] == val)
+                        return false;
+                }
+            }
+            return true;
+        }
 
         //387. First Unique Character in a String
         public int FirstUniqChar(string s)
@@ -747,24 +862,25 @@ namespace Interview
                 else
                     map2.Add(s[i], 1);
 
-                while(map.All(kv=> map2.ContainsKey(kv.Key)) && map.All(kv => map[kv.Key] <= map2[kv.Key]))
+                while (map.All(kv => map2.ContainsKey(kv.Key)) && map.All(kv => map[kv.Key] <= map2[kv.Key]))
                 {
-                    if(i - backPtr +1 < len){
+                    if (i - backPtr + 1 < len)
+                    {
                         stIdx = backPtr;
-                        len = i - backPtr +1 ;
+                        len = i - backPtr + 1;
                     }
                     // shrank back
                     if (map2.ContainsKey(s[backPtr]))
                     {
                         if (map2[s[backPtr]] == 1)
                             map2.Remove(s[backPtr]);
-                        else    
+                        else
                             map2[s[backPtr]]--;
                     }
-                    backPtr++;    
+                    backPtr++;
                 }
             }
-            return len == int.MaxValue ? "" : s.Substring(stIdx, len);    
+            return len == int.MaxValue ? "" : s.Substring(stIdx, len);
         }
 
         public string minWindow2(string s, string t)

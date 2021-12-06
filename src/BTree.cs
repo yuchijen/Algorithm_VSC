@@ -33,6 +33,29 @@ namespace Interview
     }
     public class BTree
     {
+        //1448. Count Good Nodes in Binary Tree [MS] 
+        //Given a binary tree root, a node X in the tree is named good if in the path from root 
+        //to X there are no nodes with a value greater than X.
+        //Return the number of good nodes in the binary tree.
+        public int GoodNodes(TreeNode root) {
+        //count incremental value node (need to compare with the max in path), travesal tree
+            if(root ==null)
+                return 0;
+        
+            return goodNodesHelper(root, int.MinValue);
+        }
+        int  goodNodesHelper (TreeNode n, int parentVal) {
+            if(n ==null)
+                return 0;
+            int topVal = Math.Max(n.val, parentVal);
+        
+            if(n.val >= parentVal) {    
+                return 1 + goodNodesHelper(n.left, topVal) + goodNodesHelper(n.right, topVal);
+            }
+        
+            return goodNodesHelper(n.left, topVal) + goodNodesHelper(n.right, topVal);
+        }
+
         //129. Sum Root to Leaf Numbers
         //Input: root = [1,2,3]  Output: 25
         // Explanation:
@@ -180,6 +203,7 @@ namespace Interview
         }
 
         //572. Subtree of Another Tree
+        // Time: NxN N: no. of s  
         public bool IsSubtree2(TreeNode s, TreeNode t)
         {
             if (s == null)
@@ -195,13 +219,13 @@ namespace Interview
             var l1 = new List<string>();
             var l2 = new List<string>();
 
-            inorder(s, l1);
-            inorder(t, l2);
+            preOrder(s, l1);
+            preOrder(t, l2);
             string s1 = string.Join(',', l1.ToArray());
             string s2 = string.Join(',', l2.ToArray());
             return s1.IndexOf(s2) != -1;
         }
-        private void inorder(TreeNode s, List<string> ret)
+        private void preOrder(TreeNode s, List<string> ret)
         {
             if (s == null)
             {
@@ -209,8 +233,8 @@ namespace Interview
                 return;
             }
             ret.Add("," + s.val.ToString());
-            inorder(s.left, ret);
-            inorder(s.right, ret);
+            preOrder(s.left, ret);
+            preOrder(s.right, ret);
         }
 
 

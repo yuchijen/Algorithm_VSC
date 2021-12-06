@@ -7,6 +7,64 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //1235. Maximum Profit in Job Scheduling
+        //dp[i]: max profit from 0 to ith jobs
+        //dp[i] = Math.max(dp[i - 1], max profit from 0 to ith jobs, including the ith job)
+        class job {
+            public int StartTime; 
+            public int EndTime;
+            public  int Profit;
+
+            public job(int startTime, int endTime, int profit){
+                StartTime = startTime;
+                EndTime = endTime;
+                Profit = profit;
+            }
+        }
+
+        public int JobScheduling(int[] startTime, int[] endTime, int[] profit) {            
+            // set dp[i] i is from 0 to i max profit
+            // so it depends on (pick last non overlapping profit + current profit) or dp[n-1]
+            // dp[i] = max(dp[i-1], dp[lastNonOverlapIdx](if any)+ current profit)
+            int n = profit.Length;
+            var jobs = new job[n];
+            for(int i=0; i<n; i++) {
+                jobs[i] = new job(startTime[i], endTime[i], profit[i]);        
+            }
+
+            jobs=jobs.OrderBy(x=>x.EndTime).ToArray();
+
+            int[] dp = new int[profit.Length];
+            dp[0] = profit[0];
+
+            for(int i=1; i<n; i++){
+                int lastNonOverlapJob = findLastNonOverlap(jobs, 0, i-1, jobs[i].StartTime);
+                int curProfit = lastNonOverlapJob == -1? 0 + jobs[i].Profit : dp[lastNonOverlapJob] + jobs[i].Profit;
+                dp[i] = Math.Max(dp[i-1], curProfit);
+            }
+            return dp[n-1];
+        }
+
+        int findLastNonOverlap(job[] jobs, int left, int right, int nonOverlapStart){
+            
+            while(left < right){
+                int mid = (left + right)/2;
+                if(jobs[mid].EndTime <= nonOverlapStart){
+                    left =mid;
+                }
+                else{
+                    right = mid-1;
+                }
+            } 
+            if(jobs[right].EndTime <= nonOverlapStart){
+                return right;
+            }
+            if(jobs[left].EndTime <= nonOverlapStart){
+                return left;
+            }
+            return -1;
+        }
+
         //1062. Longest Repeating Substring
         //Given a string S, find out the length of the longest repeating substring(s). Return 0 if no 
         //repeating substring exists.

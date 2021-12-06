@@ -316,6 +316,9 @@ namespace Interview
         //Output: 5
         //Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
         //return its length 5.
+        //跟迷宫遍历很像啊，你想啊，迷宫中每个点有上下左右四个方向可以走，而这里有26个字母，就是二十六个方向可以走，
+        //本质上没有啥区别啊！如果熟悉迷宫遍历的童鞋们应该知道，应该用BFS来求最短路径的长度，这也不难理解啊，
+        //DFS相当于一条路走到黑啊，你走的那条道不一定是最短的啊。而BFS相当于一个小圈慢慢的一层一层扩大
         public int LadderLengthBFS(string beginWord, string endWord, IList<string> wordList)
         {
             var hs = new HashSet<string>(wordList);
@@ -331,10 +334,14 @@ namespace Interview
             while (q.Count > 0)
             {
                 ret += 1;
+                int cnt = q.Count;
                 //each leyer (possible candidates in hashset on last layer search)
-                for (int l = q.Count; l > 0; l--)
+                for (int l = 0 ; l < cnt; l++)
                 {
                     var str = q.Dequeue();
+                    if (str == endWord)
+                        return ret;
+
                     char[] curStr = str.ToCharArray();
                     for (int i = 0; i < curStr.Length; i++)
                     {
@@ -345,8 +352,7 @@ namespace Interview
                                 continue;
                             curStr[i] = j;
                             string newStr = new string(curStr);
-                            if (newStr == endWord)
-                                return ret + 1;
+                            
                             if (hs.Contains(newStr))
                             {
                                 q.Enqueue(newStr);
@@ -362,47 +368,109 @@ namespace Interview
 
         public int LadderLength(string beginWord, string endWord, IList<string> wordList)
         {
-            if (string.IsNullOrEmpty(beginWord) || string.IsNullOrEmpty(endWord) || wordList == null || wordList.Count == 0)
+            if (string.IsNullOrEmpty(beginWord) 
+                    || string.IsNullOrEmpty(endWord) 
+                    || wordList == null 
+                    || wordList.Count == 0 
+                    || !wordList.Contains(endWord))
                 return 0;
 
             var chars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
             var hs = new HashSet<string>(wordList);
+            hs.Add(beginWord);
             var map = new Dictionary<string, bool>();
             foreach (var str in hs)
                 map.Add(str, false);
 
-            return DFSLadderHelper(beginWord, endWord, 0, chars, hs, map);
+            var ret = new int[1]{0};
+            DFSLadderHelper(beginWord, endWord, ret, chars, hs, map);
+            return ret[0];
         }
 
-        int DFSLadderHelper(string st, string end, int ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
+        void DFSLadderHelper(string st, string end, int[] ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
         {
             if (st == end)
-                return ret;
+                return;
 
             if (!visited.ContainsKey(st))
-                return 0;
+                return;
 
-            if (visited[st])
-                return 0;
-
+            if(visited.All(x=>x.Equals(true))){
+                ret[0]=0;
+                return;
+            }
+            if (visited[st]){
+                ret[0] = ret[0] > 0 ? --ret[0]: ret[0];
+                return;
+            }
+                
             visited[st] = true;
 
-            for (int i = 0; i < st.Length - 1; i++)
+            int maxLen = st.Length == 1? 1 : st.Length - 1;
+            for (int i = 0; i < maxLen; i++)
             {
                 foreach (var c in chs)
                 {
                     string possiStr = st.Substring(0, i) + c + st.Substring(i + 1);
-                    if (st != possiStr && hs.Contains(possiStr))
+                    if (st != possiStr && hs.Contains(possiStr) && !visited[possiStr])
                     {
-                        return DFSLadderHelper(possiStr, end, ret + 1, chs, hs, visited);
+                        ret[0]+=1;
+                        DFSLadderHelper(possiStr, end, ret, chs, hs, visited);
                     }
                 }
             }
             visited[st] = false;
-
-            return ret;
         }
+
+        //126. Word Ladder II
+        // public IList<IList<string>> FindLadders(string beginWord, string endWord, IList<string> wordList) {
+        //     var ret = new List<IList<string>>();
+
+        //     if (string.IsNullOrEmpty(beginWord) 
+        //             || string.IsNullOrEmpty(endWord) 
+        //             || wordList == null 
+        //             || wordList.Count == 0 
+        //             || !wordList.Contains(endWord))
+        //         return ret;
+
+        //     var hs = new HashSet<string>(wordList);
+        //     Dictionary<string, bool> map = wordList.GroupBy(x=>x).ToDictionary(x=>x.Key, x=> false);
+        //     map.Add(beginWord, false);
+
+        //     var q = new Queue<string>();
+        //     q.Enqueue(beginWord);
+        //     int qLev = 0;
+        //     while(q.Count > 0){
+        //         int qCnt = q.Count;
+        //         if(ret[qLev].Count <= qLev){
+        //             ret.Add(new List<string>());
+        //         }
+        //         qLev += 1;
+                
+        //         for(int l =0; l< qCnt; l++){
+        //             var cur = q.Dequeue();
+        //             map[cur] = true;
+                    
+        //             char[] curArr = cur.ToCharArray();
+        //             for(int i=0; i< curArr.Length; i++){
+        //                 char originChar = curArr[i];                        
+
+        //                 for(var j = 'a'; j<='z'; j++){
+        //                     if(j== originChar)
+        //                         continue;
+        //                     curArr[i] = j;    
+        //                     string newWord = curArr.ToString();     
+        //                     if(hs.Contains(newWord)){
+        //                         q.Enqueue(newWord);
+        //                     }
+        //                 }                    
+        //                 curArr[i] = originChar;
+        //             }
+        //         }
+        //     }
+
+        // }
 
         //647. Palindromic Substrings
         //Given a string, your task is to count how many palindromic substrings in this string.
@@ -1203,8 +1271,40 @@ namespace Interview
         //Note: The input string may contain letters other than the parentheses (and ).
         //Example 1: Input: "()())()"  Output: ["()()()", "(())()"]
         //Example 2: Input: "(a)())()" Output: ["(a)()()", "(a())()"]
-        //time: O(n!) worst case, or O(2^(l+r))
+        //DFS time: O(n!) worst case, or O(2^(l+r))
         //space: O((l+r)^2) or O(n^2)
+        public IList<string> RemoveInvalidParenthesesBFS(string s)
+        {
+            var q =  new Queue<string>();
+            q.Enqueue(s);
+            var ret = new List<string>();
+            var visited = new HashSet<string>();
+            bool isValid = false;
+
+            while(q.Count > 0){
+                //isValid = false; just require remove min number of ()
+                var cur = q.Dequeue();
+                if(isValidParenthses(cur)){
+                    ret.Add(cur);
+                    isValid = true;
+                }
+                if(isValid)
+                    continue;
+
+                //enqueue all possible remove 1 parenthesis string
+                for(int i=0; i< cur.Length-1; i++){
+                    if(cur[i]== '(' || cur[i] == ')') {
+                        string newStr = cur.Substring(0, i) + cur.Substring(i+1);
+                        if(!visited.Contains(newStr)){
+                            visited.Add(newStr);
+                            q.Enqueue(newStr);
+                        }
+                    }
+                }    
+            }
+            return ret;
+        }
+
         public IList<string> RemoveInvalidParentheses(string s)
         {
             int removeLeft = 0;
@@ -1230,9 +1330,7 @@ namespace Interview
             {
                 if (s[i] == '(')
                     count++;
-                if (s[i] == ')')
-                    count--;
-                if (count < 0)
+                else if (s[i] == ')' && --count < 0)
                     return false;
             }
             return count == 0;
@@ -1248,12 +1346,16 @@ namespace Interview
             }
 
             for (int i = startIdx; i < s.Length; i++)
-            {   //just remove the first one if have repeated 
-                if (i != startIdx && s[i] == s[i - 1])
-                    continue;
-
+            {   
                 if (s[i] == '(' || s[i] == ')')
                 {
+                    //just remove the first one if have repeated 
+                    //对于多个相同的半括号在一起，只删除第一个，比如 "())"，这里有两个右括号，不管删第一个还是删第二个右括号都会得到 "()"，没有区别，所以只用算一次就行了
+                    //otherwise you will get duplicated results, because every recursive layer, we only have 2 choice (remove this char or not)
+                    //so for repeated parenthese, delete any one it will get same string on next recursive layer.
+                    if (i != startIdx && s[i] == s[i - 1])
+                        continue;
+
                     var curStr = s.Remove(i, 1);
                     if (left > 0 && s[i] == '(')
                         dfsFindValidParentheses(curStr, i, left - 1, right, ret);
@@ -1261,10 +1363,9 @@ namespace Interview
                         dfsFindValidParentheses(curStr, i, left, right - 1, ret);
                 }
             }
-
         }
-        //follow up : just return 1 possible result
-        //正着删一次close,反着删一次close
+        //follow up : just return 1 possible result , which means remove invalid ( and )
+        //正着删一次 :remove extra ')' , 反着删一次:remove extra '('
         public string RemoveInvalidParentheses2(string s)
         {
             if (string.IsNullOrEmpty(s))

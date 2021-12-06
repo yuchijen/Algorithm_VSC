@@ -103,6 +103,36 @@ namespace Interview
                 return head;
             }
         }
+        public ListNode RemoveNthFromEnd3(ListNode head, int n)
+        {
+            if(head==null || n<0)
+                return null;
+
+            //count number nodes
+            var pt1 = head;
+            int total = 0;
+            while (pt1 != null) {
+                pt1 = pt1.next;
+                total += 1;
+            }
+            if(total == n)
+                return head.next;
+            int step = total -n -1;
+            var pt2 = head;
+            
+            while(step > 0){
+                pt2 = pt2.next;
+                step-=1;
+            }
+
+            if(pt2==null || pt2.next==null)
+                return null;
+
+            pt2.next = pt2.next.next;
+            return head;    
+        }
+
+
 
         public ListNode RemoveNthFromEnd2(ListNode head, int n)
         {

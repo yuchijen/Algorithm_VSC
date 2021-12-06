@@ -26,10 +26,79 @@ namespace Interview
     }
 
     [Serializable]
-    public class SomeComxClass{
+    public class SomeComxClass
+    {
 
-        public int Prop {get;set;}
-        public Codec ComxProp {get;set;}
+        public int Prop { get; set; }
+        public Codec ComxProp { get; set; }
+    }
+
+    //622. Design Circular Queue
+    public class MyCircularQueue
+    {
+        int total = 0;
+        //List<int> li;
+        int[] arr;
+        int rearIdx;
+        int headIdx;
+        int cnt =0 ;
+        public MyCircularQueue(int k)
+        {
+            total = k;
+            //li = new List<int>();
+            arr = new int[k];
+            headIdx = 0;
+            rearIdx = k - 1;            
+        }
+
+        public bool EnQueue(int value)
+        {
+            if (IsFull())
+                return false;
+
+            //li.Add(value);
+            rearIdx = (rearIdx+1) % total;
+            arr[rearIdx] = value;
+            cnt+=1;
+            return true;
+        }
+
+        public bool DeQueue()
+        {
+            if (IsEmpty())
+                return false;
+            // li.RemoveAt(li.Count - 1);
+            arr[headIdx] =-1 ;
+            headIdx = (headIdx +1) % total;
+            cnt-=1;
+            return true;
+        }
+
+        public int Front()
+        {
+            if (IsEmpty())
+                return -1;
+            return arr[headIdx];
+            //return li[li.Count - 1];
+        }
+
+        public int Rear()
+        {
+            if (IsEmpty())
+                return -1;
+
+            return arr[rearIdx];
+        }
+
+        public bool IsEmpty()
+        {
+            return cnt == 0;
+        }
+
+        public bool IsFull()
+        {
+            return cnt == total;
+        }
     }
 
     //1114. Print in Order
@@ -1013,12 +1082,12 @@ namespace Interview
         public void TestAsync2()
         {
             var task3 = RunSingleTask3(3);
-            
+
             Console.WriteLine("Something in between");
             var task2 = RunSingleTask2(2);
             //Task.WhenAll(task3, task2);
             Task.WaitAll(task2, task3);
-            Console.WriteLine("All tasks done");            
+            Console.WriteLine("All tasks done");
             Console.WriteLine(task2.Result);
             Console.WriteLine(task3.Result);
         }
@@ -1050,26 +1119,28 @@ namespace Interview
             return ret;
         }
 
-        async Task<string> RunSingleTask2(int i){
+        async Task<string> RunSingleTask2(int i)
+        {
             // int x = rd.Next(i);
             await Task.Delay(2000);
-            Console.WriteLine("task 2 running. No: "); 
+            Console.WriteLine("task 2 running. No: ");
             // for(int j =0; j< i; j++){
             //     await Task.Delay(2000);
             //     Console.WriteLine("task 2 running. No: "+j);
             // }
-            return "task 2 done";           
+            return "task 2 done";
         }
 
-        async Task<string> RunSingleTask3(int i){
+        async Task<string> RunSingleTask3(int i)
+        {
             await Task.Delay(4000);
-            Console.WriteLine("task 3 running. No: ");         
+            Console.WriteLine("task 3 running. No: ");
             //int x = rd.Next(i);
             // for(int j =0; j< i; j++){
             //     await Task.Delay(2000);
             //     Console.WriteLine("task 3 running. No: "+j);
             // }
-            return "task 3 done";           
+            return "task 3 done";
         }
 
         private async Task<string> longRunTask(int i)

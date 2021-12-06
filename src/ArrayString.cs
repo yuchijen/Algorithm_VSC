@@ -8,6 +8,26 @@ namespace Interview
 {
     public class ArrayString
     {
+        //一道题，给“mon 11:30 am”, “mon 3:40 pm”，开始时间和结束时间，要求返回一个list，
+        //里面是五分钟时间的间隔，周一的话‍‌‍‍‌‌‍‌‌‌‍‍‍‍‌‌‍‍‍是11130 11135…… 11540
+        public List<string> TimeFrameConverter(string s){
+            var ret = new List<string>();
+            var weekArr = new Dictionary<string, int>(){{"mon", 1},{"tue", 2}};
+
+            Console.WriteLine(DateTime.Parse("11:30 pm").ToString("HHmm"));
+            
+            foreach(string frame in s.Split(',')) {
+                var frameArr = frame.Trim().Split(' ');
+                string week = weekArr[frameArr[0].Trim()].ToString();
+                var timeItem = $"{frameArr[1]} {frameArr[2]}"; 
+                string timeItemStr = DateTime.Parse(timeItem).ToString("HHmm");
+                ret.Add($"{week}{timeItemStr}");
+            }
+
+            ret.ForEach(x =>Console.WriteLine(x));
+            return ret;
+        }
+
         //408. Valid Word Abbreviation
         //Given a non-empty string s and an abbreviation abbr, return whether the string matches
         // with the given abbreviation.
@@ -3726,6 +3746,30 @@ namespace Interview
                     max_profit = sum_price;
             }
             return Math.Max(max_profit, right_max[0]);
+        }
+
+
+        //1779. Find Nearest Point That Has the Same X or Y Coordinate
+        public int NearestValidPoint(int x, int y, int[][] points) {
+            if(points==null || points.Length==0)
+                return -1;
+
+            //find item match the requirment
+            var ans = points.Where(p => p[1] == y || p[0] == x).ToArray()
+            .OrderBy(p => Math.Abs(p[0] - x) + Math.Abs(p[1] - y)).Take(1).ToArray(); 
+            
+            if(ans==null || ans.Length==0)
+                return -1;
+        
+            //find matched item index in original array
+            return points.Select((item, index) => new {item, index})
+            .Where(pair => pair.item[0] == ans[0][0] && pair.item[1] ==ans[0][1])  
+            .Select(p=>p.index).FirstOrDefault();
+            // for(int i=0; i< points.Length; i++){
+            //     for(int j=0; j< points[i].Length; j++){
+            //         Console.WriteLine(points[i][j]);
+            //     }
+            // }
         }
 
 
