@@ -41,14 +41,14 @@ namespace Interview
         int[] arr;
         int rearIdx;
         int headIdx;
-        int cnt =0 ;
+        int cnt = 0;
         public MyCircularQueue(int k)
         {
             total = k;
             //li = new List<int>();
             arr = new int[k];
             headIdx = 0;
-            rearIdx = k - 1;            
+            rearIdx = k - 1;
         }
 
         public bool EnQueue(int value)
@@ -57,9 +57,9 @@ namespace Interview
                 return false;
 
             //li.Add(value);
-            rearIdx = (rearIdx+1) % total;
+            rearIdx = (rearIdx + 1) % total;
             arr[rearIdx] = value;
-            cnt+=1;
+            cnt += 1;
             return true;
         }
 
@@ -68,9 +68,9 @@ namespace Interview
             if (IsEmpty())
                 return false;
             // li.RemoveAt(li.Count - 1);
-            arr[headIdx] =-1 ;
-            headIdx = (headIdx +1) % total;
-            cnt-=1;
+            arr[headIdx] = -1;
+            headIdx = (headIdx + 1) % total;
+            cnt -= 1;
             return true;
         }
 
@@ -237,7 +237,7 @@ namespace Interview
             }
         }
 
-        //211. Add and Search Word - Data structure design
+        //211. design Add and Search Word - Data structure design
         //Example:
         //addWord("bad")
         //addWord("dad")
@@ -250,72 +250,115 @@ namespace Interview
         //Time Complexity:  addWord - O(L) ,   search - O(26L)，  Space Complexity - O(26L)   这里 L是单词的平均长度
         public class WordDictionary
         {
-            public class WordNode
+            private TrieNode root;
+            public WordDictionary()
             {
-                public char val;
-                public WordNode[] children;
-                public bool isWordFinished = false;
-
-                public WordNode()
-                {
-                    children = new WordNode[26];
-                }
-                public WordNode(char c)
-                {
-                    val = c;
-                    children = new WordNode[26];
-                }
+                root = new TrieNode();
             }
 
-            WordNode root = new WordNode();
-
-            // Adds a word into the data structure.
-            public void AddWord(String word)
+            public void AddWord(string word)
             {
-                WordNode node = root;
-                for (int i = 0; i < word.Length; i++)
-                {
-                    char c = word[i];
-                    if (node.children[c - 'a'] == null)
-                        node.children[c - 'a'] = new WordNode(c);
+                var pt = root;
+                for(int i=0; i< word.Length; i++){
+                    int idx = word[i]-'a';
+                    if(pt.Children[idx]==null)
+                        pt.Children[idx]= new TrieNode();
 
-                    node = node.children[c - 'a'];
+                    pt = pt.Children[idx];    
                 }
-                node.isWordFinished = true;
+                pt.IsWord = true;
             }
 
-            // Returns if the word is in the data structure. A word could
-            // contain the dot character '.' to represent any one letter.
             public bool Search(string word)
             {
-                return SearchNode(word, root, 0);
+                var pt = root;
+                return searchHelp(pt, 0, word);
             }
-
-            public bool SearchNode(string word, WordNode node, int level)
-            {
-                if (node == null)
-                    return false;
-
-                if (level == word.Length)
-                    return node.isWordFinished;
-
-                char c = word[level];
-                if (c != '.')
-                {
-                    return node.children[c - 'a'] != null && SearchNode(word, node.children[c - 'a'], level + 1);
-                }
-                else
-                {
-                    for (int i = 0; i < 26; i++)
+            bool searchHelp(TrieNode node, int idx, string word) {
+                if(idx == word.Length)
+                    return node.IsWord;
+                if(word[idx]=='.'){
+                    for(int i=0; i<26; i++)
                     {
-                        if (node.children[i] != null && SearchNode(word, node.children[i], level + 1))
+                        if(node.Children[i]!=null && searchHelp(node.Children[i], idx+1, word))
                             return true;
                     }
                 }
+                else
+                {
+                    return node.Children[word[idx]-'a']!=null && searchHelp(node.Children[word[idx]-'a'], idx+1, word);
+                }
                 return false;
             }
-
         }
+        // public class WordDictionary
+        // {
+        //     public class WordNode
+        //     {
+        //         public char val;
+        //         public WordNode[] children;
+        //         public bool isWordFinished = false;
+
+        //         public WordNode()
+        //         {
+        //             children = new WordNode[26];
+        //         }
+        //         public WordNode(char c)
+        //         {
+        //             val = c;
+        //             children = new WordNode[26];
+        //         }
+        //     }
+
+        //     WordNode root = new WordNode();
+
+        //     // Adds a word into the data structure.
+        //     public void AddWord(String word)
+        //     {
+        //         WordNode node = root;
+        //         for (int i = 0; i < word.Length; i++)
+        //         {
+        //             char c = word[i];
+        //             if (node.children[c - 'a'] == null)
+        //                 node.children[c - 'a'] = new WordNode(c);
+
+        //             node = node.children[c - 'a'];
+        //         }
+        //         node.isWordFinished = true;
+        //     }
+
+        //     // Returns if the word is in the data structure. A word could
+        //     // contain the dot character '.' to represent any one letter.
+        //     public bool Search(string word)
+        //     {
+        //         return SearchNode(word, root, 0);
+        //     }
+
+        //     public bool SearchNode(string word, WordNode node, int level)
+        //     {
+        //         if (node == null)
+        //             return false;
+
+        //         if (level == word.Length)
+        //             return node.isWordFinished;
+
+        //         char c = word[level];
+        //         if (c != '.')
+        //         {
+        //             return node.children[c - 'a'] != null && SearchNode(word, node.children[c - 'a'], level + 1);
+        //         }
+        //         else
+        //         {
+        //             for (int i = 0; i < 26; i++)
+        //             {
+        //                 if (node.children[i] != null && SearchNode(word, node.children[i], level + 1))
+        //                     return true;
+        //             }
+        //         }
+        //         return false;
+        //     }
+
+        // }
 
         //VIZIO OA: implement Hairachy sort (topological sort), first by ancestors , then by name
         public class Genre
@@ -692,6 +735,17 @@ namespace Interview
         //208. Implement Trie (Prefix Tree)    
         //Implement a trie with insert, search, and startsWith methods.
         //Note: You may assume that all inputs are consist of lowercase letters a-z.
+        class TrieNode
+        {
+            public TrieNode[] Children { get; set; }
+            public bool IsWord { get; set; }
+            public TrieNode()
+            {
+                Children = new TrieNode[26];
+                //IsWord = false;
+            }
+        }
+
         public class Trie
         {
             private TrieNode root;
@@ -699,67 +753,118 @@ namespace Interview
             {
                 root = new TrieNode();
             }
-            // Inserts a word into the trie.
-            public void Insert(String word)
+
+            public void Insert(string word)
             {
-                TrieNode trieNode = root;
+                var pt = root;
                 for (int i = 0; i < word.Length; i++)
                 {
-                    if (trieNode.children[word[i] - 'a'] == null)
-                        trieNode.children[word[i] - 'a'] = new TrieNode();
+                    int idx = word[i] - 'a';
+                    if (pt.Children[idx] == null)
+                        pt.Children[idx] = new TrieNode();
 
-                    trieNode = trieNode.children[word[i] - 'a'];
+                    pt = pt.Children[idx];
                 }
-                trieNode.word = word;
+                pt.IsWord = true;
             }
 
-            // Returns if the word is in the trie.
             public bool Search(string word)
             {
-                return match(root, 0, word);
-            }
-
-            private bool match(TrieNode root, int idx, string word)
-            {
-                if (root == null)
-                    return false;
-
-                if (idx == word.Length)
+                var pt = root;
+                for (int i = 0; i < word.Length; i++)
                 {
-                    return root.word == word;
+                    int idx = word[i] - 'a';
+                    if (pt.Children[idx] == null)
+                        return false;
+
+                    pt = pt.Children[idx];
                 }
-                root = root.children[word[idx] - 'a'];
-                return match(root, idx + 1, word);
+                return pt.IsWord;
             }
 
-            //Returns if there is any word in the trie, that starts with the given prefix.
-            public bool StartsWith(string pre)
+            public bool StartsWith(string prefix)
             {
-                return matchPrefix(root, 0, pre);
-            }
+                var pt = root;
+                for (int i = 0; i < prefix.Length; i++)
+                {
+                    int idx = prefix[i] - 'a';
+                    if (pt.Children[idx] == null)
+                        return false;
 
-            private bool matchPrefix(TrieNode root, int idx, string pre)
-            {
-                if (root == null)
-                    return false;
-
-                if (idx == pre.Length)
-                    return true;
-                root = root.children[pre[idx] - 'a'];
-
-                return matchPrefix(root, idx + 1, pre);
+                    pt = pt.Children[idx];
+                }
+                return true;
             }
         }
-        class TrieNode
-        {
-            // Initialize your data structure here.
-            public TrieNode()
-            {
-                children = new TrieNode[26];
-            }
-            public TrieNode[] children { get; set; }
-            public string word { get; set; }
-        }
+
+        // public class Trie
+        // {
+        //     private TrieNode root;
+        //     public Trie()
+        //     {
+        //         root = new TrieNode();
+        //     }
+        //     // Inserts a word into the trie.
+        //     public void Insert(String word)
+        //     {
+        //         TrieNode trieNode = root;
+        //         for (int i = 0; i < word.Length; i++)
+        //         {
+        //             if (trieNode.children[word[i] - 'a'] == null)
+        //                 trieNode.children[word[i] - 'a'] = new TrieNode();
+
+        //             trieNode = trieNode.children[word[i] - 'a'];
+        //         }
+        //         trieNode.word = word;
+        //     }
+
+        //     // Returns if the word is in the trie.
+        //     public bool Search(string word)
+        //     {
+        //         return match(root, 0, word);
+        //     }
+
+        //     private bool match(TrieNode root, int idx, string word)
+        //     {
+        //         if (root == null)
+        //             return false;
+
+        //         if (idx == word.Length)
+        //         {
+        //             return root.word == word;
+        //         }
+        //         root = root.children[word[idx] - 'a'];
+        //         return match(root, idx + 1, word);
+        //     }
+
+        //     //Returns if there is any word in the trie, that starts with the given prefix.
+        //     public bool StartsWith(string pre)
+        //     {
+        //         return matchPrefix(root, 0, pre);
+        //     }
+
+        //     private bool matchPrefix(TrieNode root, int idx, string pre)
+        //     {
+        //         if (root == null)
+        //             return false;
+
+        //         if (idx == pre.Length)
+        //             return true;
+        //         root = root.children[pre[idx] - 'a'];
+
+        //         return matchPrefix(root, idx + 1, pre);
+        //     }
+        // }
+        // class TrieNode
+        // {
+        //     // Initialize your data structure here.
+        //     public TrieNode()
+        //     {
+        //         children = new TrieNode[26];
+        //     }
+        //     public TrieNode[] children { get; set; }
+        //     public string word { get; set; }
+        // }
 
     }
 
@@ -860,7 +965,7 @@ namespace Interview
     //Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and put.
     //get(key) - Get the value(will always be positive) of the key if the key exists in the cache, otherwise return -1.
     //put(key, value) - Set or insert the value if the key is not already present.When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
-
+    //** The functions get and put must each run in O(1) average time complexity.
     public class LRUCache
     {
         class DLinkedList

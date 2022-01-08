@@ -103,36 +103,37 @@ namespace Interview
                 return head;
             }
         }
+
         public ListNode RemoveNthFromEnd3(ListNode head, int n)
         {
-            if(head==null || n<0)
+            if (head == null || n < 0)
                 return null;
 
             //count number nodes
             var pt1 = head;
             int total = 0;
-            while (pt1 != null) {
+            while (pt1 != null)
+            {
                 pt1 = pt1.next;
                 total += 1;
             }
-            if(total == n)
+            if (total == n)
                 return head.next;
-            int step = total -n -1;
+            int step = total - n - 1;
             var pt2 = head;
-            
-            while(step > 0){
+
+            while (step > 0)
+            {
                 pt2 = pt2.next;
-                step-=1;
+                step -= 1;
             }
 
-            if(pt2==null || pt2.next==null)
+            if (pt2 == null || pt2.next == null)
                 return null;
 
             pt2.next = pt2.next.next;
-            return head;    
+            return head;
         }
-
-
 
         public ListNode RemoveNthFromEnd2(ListNode head, int n)
         {
@@ -159,6 +160,36 @@ namespace Interview
             if (ptr2 == null || ptr2.next == null)
                 return null;
             ptr2.next = ptr2.next.next;
+            return head;
+        }
+
+        public ListNode RemoveNthFromEnd_InOnePass(ListNode head, int n)
+        {
+            if (head == null)
+                return null;
+
+            var ptr1 = head;
+            var ptr2 = head;
+
+            //ptr1 goes n step, if ptr1 is null means n size = list size, first item need to remove
+            for (int i = 0; i < n; i++)
+            {
+                ptr1 = ptr1.next;
+            }
+            if (ptr1 == null)
+            {
+                return head.next;
+            }
+            //then ptr1 continue to the end, ptr2 follow with the same steps, ptr2 should land on good spot to delete next
+            while (ptr1.next != null)
+            {
+                ptr1 = ptr1.next;
+                ptr2 = ptr2.next;
+            }
+            //if(ptr2.next!=null){
+            ptr2.next = ptr2.next.next;
+            //}
+
             return head;
         }
 
@@ -215,7 +246,37 @@ namespace Interview
         //143. Reorder List
         //Given a singly linked list L: L0→L1→…→Ln-1→Ln, reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
         //You may not modify the values in the list's nodes, only nodes itself may be changed.
-        //Example 1:  Given 1->2->3->4->5, reorder it to 1->5->2->4->3.
+        //Example 1:  Given 1->2->3->4->5, reorder it to 1->5->2->4->3.        
+        public void ReorderList2(ListNode head)
+        {   
+            // save into stack and just use half of stack items to insert into original link
+            if (head == null)
+                return;
+            ListNode pt1 = head;
+            var st = new Stack<ListNode>();
+            while (pt1 != null)
+            {
+                st.Push(pt1);
+                pt1 = pt1.next;
+            }
+
+            int halfCnt = (st.Count - 1) / 2;
+            ListNode pt2 = head;
+
+            while (halfCnt > 0)
+            {
+                ListNode cur = pt2.next;
+                var n = st.Pop();
+                pt2.next = n;
+                n.next = cur;
+                pt2=cur;
+                
+                halfCnt--;
+            }
+            if (st.Count > 0)
+                st.Peek().next = null;
+        }
+
         public void ReorderList(ListNode head)
         {
             if (head == null || head.next == null)
@@ -259,7 +320,6 @@ namespace Interview
             }
         }
 
-
         //Doubly linkedlist contains 0 and 1 only, sort it in O(n), in-space
         // e.g.  0 <-> 1 <-> 1 <-> 0 <-> 1 <-> 0  
         //return 0 <-> 0 <-> 0 <-> 1 <-> 1 <-> 1
@@ -291,7 +351,7 @@ namespace Interview
         }
 
 
-        //21 Merge Two Sorted Lists
+        //21. Merge Two Sorted Lists
         public ListNode MergeTwoLists(ListNode l1, ListNode l2)
         {
             if (l1 == null)
@@ -401,36 +461,38 @@ namespace Interview
             return lists[0];
         }
 
-
         //这种解法利用了最小堆这种数据结构，我们首先把k个链表的首元素都加入最小堆中，它们会自动排好序。
         //然后我们每次取出最小的那个元素加入我们最终结果的链表中，然后把取出元素的下一个元素再加入堆中，
         //下次仍从堆中取出最小的元素做相同的操作，以此类推，直到堆中没有元素了，此时k个链表也合并为了一个链表，返回首节点即可
         // O(klog(k))
         public ListNode MergeKListsPQ(ListNode[] lists)
         {
-            if(lists==null || lists.Length==0)
+            if (lists == null || lists.Length == 0)
                 return null;
-            var pq =new  List<ListNode>();            
-            for(int i=0; i< lists.Length; i++){
+            var pq = new List<ListNode>();
+            for (int i = 0; i < lists.Length; i++)
+            {
                 pq.Add(lists[i]);
             }
-            if(pq.Count==0)
+            if (pq.Count == 0)
                 return null;
             var ptr = new ListNode(-1);
             var cur = ptr;
-            pq.Sort((x,y)=>x.val -y.val);
+            pq.Sort((x, y) => x.val - y.val);
 
-            while(pq.Count>0){
+            while (pq.Count > 0)
+            {
                 var node = pq[0];
-                pq.RemoveAt(0);    
-                if(node==null)
-                    continue;                
+                pq.RemoveAt(0);
+                if (node == null)
+                    continue;
                 cur.next = node;
-                cur= cur.next;
-                if(cur.next!=null){
+                cur = cur.next;
+                if (cur.next != null)
+                {
                     pq.Add(cur.next);
-                    pq.Sort((x,y)=>x.val -y.val);        
-                }                
+                    pq.Sort((x, y) => x.val - y.val);
+                }
             }
             return ptr.next;
         }

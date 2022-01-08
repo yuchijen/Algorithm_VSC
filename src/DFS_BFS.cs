@@ -9,6 +9,12 @@ namespace Interview
 
     public class Point
     {
+        public Point(int i, int j){
+            x = i;
+            y = j;
+        }
+        public Point(){            
+        }
         public int x { get; set; }
         public int y { get; set; }
         public int dist { get; set; }
@@ -79,7 +85,7 @@ namespace Interview
             }
 
             var q = new Queue<List<int>>();
-            q.Enqueue(new List<int> { src, 0});
+            q.Enqueue(new List<int> { src, 0 });
             int curMin = 0;
             //int cost =0;
             int pathCnt = 0;
@@ -93,7 +99,8 @@ namespace Interview
                         curMin = Math.Min(curMin, curNode[1]);
                         //return curMin;
                     }
-                    if(curNode[2] >k){
+                    if (curNode[2] > k)
+                    {
                         continue;
                     }
                     else
@@ -102,7 +109,7 @@ namespace Interview
                         {
                             if (curNode[1] + child[1] > curMin)
                                 continue;
-                            q.Enqueue(new List<int> { child[0], curNode[1] + child[1]});
+                            q.Enqueue(new List<int> { child[0], curNode[1] + child[1] });
                         }
                     }
                 }
@@ -137,24 +144,25 @@ namespace Interview
             int curMin = 0;
             while (q.Count > 0)
             {
-                    q = new Queue<List<int>>(q.OrderBy(Node=>Node[1]));   
-                    var curNode = q.Dequeue();
-                    if (curNode[0] == dst)
+                q = new Queue<List<int>>(q.OrderBy(Node => Node[1]));
+                var curNode = q.Dequeue();
+                if (curNode[0] == dst)
+                {
+                    return curNode[1];
+                }
+                if (curNode[2] > k)
+                {
+                    continue;
+                }
+                else
+                {
+                    foreach (var child in map[curNode[0]])
                     {
-                        return curNode[1];
+                        if (curNode[1] + child[1] > curMin)
+                            continue;
+                        q.Enqueue(new List<int> { child[0], curNode[1] + child[1], curNode[2] + 1 });
                     }
-                    if(curNode[2] > k){
-                        continue;
-                    }
-                    else
-                    {
-                        foreach (var child in map[curNode[0]])
-                        {
-                            if (curNode[1] + child[1] > curMin)
-                                continue;
-                            q.Enqueue(new List<int> { child[0], curNode[1] + child[1], curNode[2]+1 });
-                        }
-                    }
+                }
             }
             return curMin == int.MaxValue ? -1 : curMin;
         }
@@ -336,7 +344,7 @@ namespace Interview
                 ret += 1;
                 int cnt = q.Count;
                 //each leyer (possible candidates in hashset on last layer search)
-                for (int l = 0 ; l < cnt; l++)
+                for (int l = 0; l < cnt; l++)
                 {
                     var str = q.Dequeue();
                     if (str == endWord)
@@ -352,7 +360,7 @@ namespace Interview
                                 continue;
                             curStr[i] = j;
                             string newStr = new string(curStr);
-                            
+
                             if (hs.Contains(newStr))
                             {
                                 q.Enqueue(newStr);
@@ -368,10 +376,10 @@ namespace Interview
 
         public int LadderLength(string beginWord, string endWord, IList<string> wordList)
         {
-            if (string.IsNullOrEmpty(beginWord) 
-                    || string.IsNullOrEmpty(endWord) 
-                    || wordList == null 
-                    || wordList.Count == 0 
+            if (string.IsNullOrEmpty(beginWord)
+                    || string.IsNullOrEmpty(endWord)
+                    || wordList == null
+                    || wordList.Count == 0
                     || !wordList.Contains(endWord))
                 return 0;
 
@@ -383,7 +391,7 @@ namespace Interview
             foreach (var str in hs)
                 map.Add(str, false);
 
-            var ret = new int[1]{0};
+            var ret = new int[1] { 0 };
             DFSLadderHelper(beginWord, endWord, ret, chars, hs, map);
             return ret[0];
         }
@@ -396,18 +404,20 @@ namespace Interview
             if (!visited.ContainsKey(st))
                 return;
 
-            if(visited.All(x=>x.Equals(true))){
-                ret[0]=0;
+            if (visited.All(x => x.Equals(true)))
+            {
+                ret[0] = 0;
                 return;
             }
-            if (visited[st]){
-                ret[0] = ret[0] > 0 ? --ret[0]: ret[0];
+            if (visited[st])
+            {
+                ret[0] = ret[0] > 0 ? --ret[0] : ret[0];
                 return;
             }
-                
+
             visited[st] = true;
 
-            int maxLen = st.Length == 1? 1 : st.Length - 1;
+            int maxLen = st.Length == 1 ? 1 : st.Length - 1;
             for (int i = 0; i < maxLen; i++)
             {
                 foreach (var c in chs)
@@ -415,7 +425,7 @@ namespace Interview
                     string possiStr = st.Substring(0, i) + c + st.Substring(i + 1);
                     if (st != possiStr && hs.Contains(possiStr) && !visited[possiStr])
                     {
-                        ret[0]+=1;
+                        ret[0] += 1;
                         DFSLadderHelper(possiStr, end, ret, chs, hs, visited);
                     }
                 }
@@ -447,11 +457,11 @@ namespace Interview
         //             ret.Add(new List<string>());
         //         }
         //         qLev += 1;
-                
+
         //         for(int l =0; l< qCnt; l++){
         //             var cur = q.Dequeue();
         //             map[cur] = true;
-                    
+
         //             char[] curArr = cur.ToCharArray();
         //             for(int i=0; i< curArr.Length; i++){
         //                 char originChar = curArr[i];                        
@@ -538,10 +548,95 @@ namespace Interview
             public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
         }
 
+        public class Node2
+        {
+            public int val;
+            public IList<Node2> neighbors;
+
+            public Node2()
+            {
+                val = 0;
+                neighbors = new List<Node2>();
+            }
+
+            public Node2(int _val)
+            {
+                val = _val;
+                neighbors = new List<Node2>();
+            }
+
+            public Node2(int _val, List<Node2> _neighbors)
+            {
+                val = _val;
+                neighbors = _neighbors;
+            }
+        }
+
         //133. Clone Graph
         //Given the head of a graph, return a deep copy(clone) of the graph.Each node in the graph 
         //contains a label(int) and a list(List[UndirectedGraphNode]) of its neighbors.There is an 
         //edge between the given node and each of the nodes in its neighbors.
+        public Node2 CloneGraph2(Node2 node)
+        {
+            if (node == null)
+                return null;
+
+            var map = new Dictionary<Node2, Node2>();
+            map.Add(node, new Node2(node.val));
+
+            return CloneGraphDFS(node, map);
+        }
+        public Node2 CloneGraphBFS(Node2 node)
+        {
+            if (node == null)
+                return null;
+
+            var map = new Dictionary<Node2, Node2>();
+            map.Add(node, new Node2(node.val));
+
+            var q = new Queue<Node2>();
+            q.Enqueue(node);
+
+            while (q.Count > 0)
+            {
+                var curNode = q.Dequeue();
+                if (!map.ContainsKey(curNode))
+                {
+                    var cloneNode = new Node2(curNode.val);
+                    map.Add(curNode, cloneNode);
+                }
+                foreach (var n in curNode.neighbors)
+                {
+                    if (!map.ContainsKey(n))
+                    {
+                        map.Add(n, new Node2(n.val));
+                        q.Enqueue(n);
+                    }
+                    map[curNode].neighbors.Add(map[n]);
+                }
+            }
+            return map[node];
+        }
+
+
+        public Node2 CloneGraphDFS(Node2 node, Dictionary<Node2, Node2> map)
+        {
+            if (node == null)
+                return null;
+
+            if (map.ContainsKey(node))
+            {
+                return map[node];
+            }
+            var newNode = new Node2(node.val);
+            map.Add(node, newNode);
+            foreach (var n in node.neighbors)
+            {
+                newNode.neighbors.Add(CloneGraphDFS(n, map));
+            }
+            return newNode;
+        }
+
         public UndirectedGraphNode CloneGraph(UndirectedGraphNode node)
         {
             if (node == null)
@@ -1275,32 +1370,37 @@ namespace Interview
         //space: O((l+r)^2) or O(n^2)
         public IList<string> RemoveInvalidParenthesesBFS(string s)
         {
-            var q =  new Queue<string>();
+            var q = new Queue<string>();
             q.Enqueue(s);
             var ret = new List<string>();
             var visited = new HashSet<string>();
             bool isValid = false;
 
-            while(q.Count > 0){
+            while (q.Count > 0)
+            {
                 //isValid = false; just require remove min number of ()
                 var cur = q.Dequeue();
-                if(isValidParenthses(cur)){
+                if (isValidParenthses(cur))
+                {
                     ret.Add(cur);
                     isValid = true;
                 }
-                if(isValid)
+                if (isValid)
                     continue;
 
                 //enqueue all possible remove 1 parenthesis string
-                for(int i=0; i< cur.Length-1; i++){
-                    if(cur[i]== '(' || cur[i] == ')') {
-                        string newStr = cur.Substring(0, i) + cur.Substring(i+1);
-                        if(!visited.Contains(newStr)){
+                for (int i = 0; i < cur.Length - 1; i++)
+                {
+                    if (cur[i] == '(' || cur[i] == ')')
+                    {
+                        string newStr = cur.Substring(0, i) + cur.Substring(i + 1);
+                        if (!visited.Contains(newStr))
+                        {
                             visited.Add(newStr);
                             q.Enqueue(newStr);
                         }
                     }
-                }    
+                }
             }
             return ret;
         }
@@ -1346,7 +1446,7 @@ namespace Interview
             }
 
             for (int i = startIdx; i < s.Length; i++)
-            {   
+            {
                 if (s[i] == '(' || s[i] == ')')
                 {
                     //just remove the first one if have repeated 
@@ -1450,49 +1550,45 @@ namespace Interview
         //Given word = "ABCCED", return true.
         //Given word = "SEE", return true.
         //Given word = "ABCB", return false.
-        public bool Exist(char[,] board, string word)
+        public bool Exist2(char[][] board, string word)
         {
-            if (board == null || string.IsNullOrEmpty(word))
-                return false;
-            int row = board.GetLength(0);
-            int col = board.GetLength(1);
-            var visited = new bool[row, col];
+            int lenR = board.Length;
+            int lenC = board[0].Length;
+            var visited = new bool[lenR, lenC];
 
-            for (int i = 0; i < row; i++)
+            for (int i = 0; i < lenR; i++)
             {
-                for (int j = 0; j < col; j++)
+                for (int j = 0; j < lenC; j++)
                 {
-                    if (existHelper(board, word, visited, 0, i, j))
+                    if (searchHelper(board, word, i, j, visited, 0))
                         return true;
                 }
             }
             return false;
         }
 
-
-        bool existHelper(char[,] board, string word, bool[,] visited, int wordIdx, int i, int j)
+        bool searchHelper(char[][] board, string word, int i, int j, bool[,] visited, int curIdx)
         {
-            if (word.Length == wordIdx)
+            if (curIdx == word.Length)
                 return true;
 
-            if (i >= board.GetLength(0) || j >= board.GetLength(1) || i < 0 || j < 0)
+            if (i >= board.Length ||
+                j >= board[0].Length ||
+                i < 0 || j < 0 ||
+                visited[i, j] ||
+                word[curIdx] != board[i][j])
+            {
                 return false;
-
-            if (visited[i, j] || board[i, j] != word[wordIdx])
-                return false;
+            }
 
             visited[i, j] = true;
-            if (existHelper(board, word, visited, wordIdx + 1, i + 1, j) ||
-            existHelper(board, word, visited, wordIdx + 1, i, j + 1) ||
-            existHelper(board, word, visited, wordIdx + 1, i - 1, j) ||
-            existHelper(board, word, visited, wordIdx + 1, i, j - 1))
-                return true;
-
+            bool ret = searchHelper(board, word, i + 1, j, visited, curIdx + 1) ||
+                        searchHelper(board, word, i, j + 1, visited, curIdx + 1) ||
+                        searchHelper(board, word, i - 1, j, visited, curIdx + 1) ||
+                        searchHelper(board, word, i, j - 1, visited, curIdx + 1);
             visited[i, j] = false;
-            return false;
+            return ret;
         }
-
-
 
         //212. Word Search II
         //Given a 2D board and a list of words from the dictionary, find all words in the board.
@@ -1507,26 +1603,26 @@ namespace Interview
         //  ['i', 'f', 'l', 'v']
         //  ]
         //        Output: ["eat","oath"]
-        public IList<string> FindWords2(char[,] board, string[] words)
-        {
-            var ret = new HashSet<string>();
-            int row = board.GetLength(0);
-            int col = board.GetLength(1);
-            bool[,] visited = new bool[row, col];
-            foreach (var word in words)
-            {
-                visited = new bool[row, col];
-                for (int i = 0; i < row; i++)
-                {
-                    for (int j = 0; j < col; j++)
-                    {
-                        if (existHelper(board, word, visited, 0, i, j))
-                            ret.Add(word);
-                    }
-                }
-            }
-            return ret.ToList();
-        }
+        // public IList<string> FindWords2(char[,] board, string[] words)
+        // {
+        //     var ret = new HashSet<string>();
+        //     int row = board.GetLength(0);
+        //     int col = board.GetLength(1);
+        //     bool[,] visited = new bool[row, col];
+        //     foreach (var word in words)
+        //     {
+        //         visited = new bool[row, col];
+        //         for (int i = 0; i < row; i++)
+        //         {
+        //             for (int j = 0; j < col; j++)
+        //             {
+        //                 if (existHelper(board, word, visited, 0, i, j))
+        //                     ret.Add(word);
+        //             }
+        //         }
+        //     }
+        //     return ret.ToList();
+        // }
         public IList<string> FindWords(char[,] board, string[] words)
         {
             var ret = new List<string>();
@@ -1725,6 +1821,7 @@ namespace Interview
         //Return true because "leetcode" can be segmented as "leet code".
         public bool WordBreak(string s, IList<string> wordDict)
         {
+            //time takes O(n!) 
             if (wordDict == null || s == null)
                 return false;
             if (s.Length == 0)
@@ -1734,14 +1831,71 @@ namespace Interview
             {
                 string front = s.Substring(0, i);
 
-                if (wordDict.Contains(front))
+                if (wordDict.Contains(front) && WordBreak(s.Substring(i), wordDict))
                 {
-                    if (WordBreak(s.Substring(i), wordDict))
-                        return true;
+                    return true;
                 }
             }
             return false;
         }
+        bool WordBreakBetterDFS(string s, IList<string> wordDict)
+        {
+            var map = new Dictionary<string, bool>();
+            var hs = new HashSet<string>(wordDict);
+
+            return wbHelpDFS(s, hs, map);
+
+        }
+        bool wbHelpDFS(string s, HashSet<string> dict, Dictionary<string, bool> map)
+        {
+            if (s.Length == 0)
+                return true;
+
+            if (map.ContainsKey(s))
+                return map[s];
+
+            if (dict.Contains(s))
+                map.TryAdd(s, true);
+            else
+                map.TryAdd(s, false);
+
+            for (int i = 0; i <= s.Length; i++)
+            {
+                string front = s.Substring(0, i);
+                if (dict.Contains(front) && wbHelpDFS(s.Substring(i), dict, map))
+                    return true;
+            }
+            return false;
+        }
+
+        bool WordBreakBFS(string s, IList<string> wordDict)
+        {
+            var visited = new bool[s.Length];
+            var hs = new HashSet<string>(wordDict);
+
+            var q = new Queue<int>();
+            q.Enqueue(0);
+
+            while (q.Count > 0)
+            {
+                var curIdx = q.Dequeue();
+                if (!visited[curIdx])
+                {
+                    for (int i = curIdx + 1; i <= s.Length; i++)
+                    {
+                        if (hs.Contains(s.Substring(curIdx, i - curIdx)))
+                        {
+                            q.Enqueue(i);
+                            if (i == s.Length)
+                                return true;
+                        }
+                    }
+                    visited[curIdx] = true;
+                }
+            }
+            return false;
+        }
+
         public bool WordBreakBetter(string s, IList<string> wordDict)
         {
             var map = new Dictionary<string, bool>();
@@ -1776,7 +1930,6 @@ namespace Interview
             map.TryAdd(s, false);
             return false;
         }
-
 
         //140. Word Break II
         //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
@@ -1915,6 +2068,79 @@ namespace Interview
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
         //An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. 
         //You may assume all four edges of the grid are all surrounded by water.
+        public int NumIslandsBFS(char[][] grid)
+        {   // with visited table , no need to change orignal grid
+            if (grid == null)
+                return 0;
+            int lenR = grid.Length;
+            int lenC = grid[0].Length;
+            int ret = 0;
+            var visited = new bool[lenR, lenC];
+            var q = new Queue<Point>();
+            
+            for (int i = 0; i < lenR; i++)
+            {
+                for (int j = 0; j < lenC; j++)
+                {
+                    if(!visited[i,j]&& grid[i][j]=='1'){
+                        ret+=1;
+                        q.Enqueue(new Point(i,j));
+
+                        while(q.Count>0){
+                            var curNode = q.Dequeue();
+                            
+                            if(curNode.x < 0 || curNode.x >= lenR || curNode.y <0 || curNode.y >= lenC || grid[curNode.x][curNode.y]=='0' || visited[curNode.x,curNode.y])
+                                continue;
+
+                            visited[curNode.x,curNode.y]=true;
+                            q.Enqueue(new Point(curNode.x+1,curNode.y));
+                            q.Enqueue(new Point(curNode.x-1,curNode.y));
+                            q.Enqueue(new Point(curNode.x,curNode.y+1));
+                            q.Enqueue(new Point(curNode.x,curNode.y-1));
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public int NumIslandsDFS(char[][] grid)
+        {   // with visited table , no need to change orignal grid
+            if (grid == null)
+                return 0;
+            int lenR = grid.Length;
+            int lenC = grid[0].Length;
+            int ret = 0;
+            var visited = new bool[lenR, lenC];
+
+            for (int i = 0; i < lenR; i++)
+            {
+                for (int j = 0; j < lenC; j++)
+                {
+                    if (grid[i][j] == '1' && !visited[i, j])
+                    {
+                        ret += 1;
+                        islandHelp(i, j, grid, visited);
+                    }
+                }
+            }
+            return ret;
+        }
+
+        void islandHelp(int i, int j, char[][] grid, bool[,] visited)
+        {
+            int lenR = grid.Length;
+            int lenC = grid[0].Length;
+            if (i < 0 || j < 0 || i >= lenR || j >= lenC || grid[i][j] == '0' || visited[i, j])
+                return;
+
+            visited[i, j] = true;
+            islandHelp(i + 1, j, grid, visited);
+            islandHelp(i - 1, j, grid, visited);
+            islandHelp(i, j + 1, grid, visited);
+            islandHelp(i, j - 1, grid, visited);
+            //visited[i,j]=false;
+        }
         public int NumIslands(char[,] grid)
         {
             int ret = 0;
@@ -2189,6 +2415,5 @@ namespace Interview
             }
             return ret;
         }
-
     }
 }

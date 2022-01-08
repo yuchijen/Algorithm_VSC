@@ -7,6 +7,62 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //62. Unique Paths
+        public int UniquePaths(int m, int n) {
+            if(m<2 || n<2)
+                return 1;
+            int[,] dp = new int[m+1, n+1];
+        
+            for(int i = 1; i<=m;i++){
+                dp[i,1]=1;
+            }
+            for(int j = 1; j<=n; j++){
+                dp[1,j]=1;
+            }
+
+            for(int i = 2; i<=m; i++){
+                for(int j = 2; j<=n; j++){
+                    // final step depends on previous step from up 1 or left 1
+                    dp[i,j] = dp[i-1, j]+dp[i, j-1];
+                }
+            }
+            return dp[m,n];
+        }
+
+        //5. Longest Palindromic Substring
+        //Given a string s, find the longest palindromic substring in s.You may assume that the maximum length of s is 1000.
+        //Example 1:
+        //Input: "babad"
+        //Output: "bab"
+        //Note: "aba" is also a valid answer.
+        // O(n^2)
+        public string LongestPalindromeDp(string s){
+            if(s.Length <2){
+                return s;                
+            }
+
+            int len = s.Length;
+            int left =0;
+            int maxLen = 1;
+            var dp = new bool[len, len];
+            // transform function:
+            // dp[i, j] = 1  if i == j , (from i to j is palindrom)
+            // s[i] == s[j]  && j-i <2
+            // s[i] == s[j] && dp[i + 1][j - 1]     
+
+            for(int j=0; j<len; j++) {
+                dp[j,j] = true;
+                for(int i =0; i<j; i++) {
+                    dp[i,j] = (s[i] == s[j] && dp[i+1, j-1]) || (s[i] == s[j] && (j-i<2));
+                    if(dp[i,j] && j-i+1 > maxLen) {
+                        maxLen = j-i+1;
+                        left = i;                         
+                    }
+                }        
+            }
+            return s.Substring(left, maxLen);
+        }
+
         //1235. Maximum Profit in Job Scheduling
         //dp[i]: max profit from 0 to ith jobs
         //dp[i] = Math.max(dp[i - 1], max profit from 0 to ith jobs, including the ith job)
@@ -560,6 +616,34 @@ namespace Interview
         //Given an encoded message containing digits, determine the total number of ways to decode it.
         //For example,Given encoded message "12", it could be decoded as "AB" (1 2) or "L" (12).
         //The number of ways decoding "12" is 2.
+        //DP其中 dp[i] 表示s中前i个字符组成的子串的解码方法的个数，长度比输入数组长多多1，并将 dp[0] 初始化为1。
+        public int NumDecodings2(string s)
+        {
+            if(s[0]=='0')
+                return 0;
+        
+            int len = s.Length;
+            var dp = new int[len+1];
+            dp[0]=1;
+            dp[1]=1;
+            
+            for(int i=2; i<=len; i++){
+                int prev2 = 0;
+                int prev1 = 0;
+                // if previous 2 digits in 1-26, prev2 is dp[i-2] ways;
+                if(s[i-2]-'0' > 0 && s[i-2]-'0' <= 2 && s[i-1]-'0' <= 6){
+                    prev2 = dp[i-2];
+                }
+                // if previous 1 digit is Not 0, prev1 is to plus dp[i-1], otherwise should be 0 way
+                // e.g. 10 
+                if(s[i-1] != '0'){
+                    prev1 = dp[i-1];
+                }
+                dp[i] = prev2 + prev1;
+            }
+            return dp[len];
+        }
+
         public int NumDecodings(string s)
         {
             if (s == null || s.Length == 0 || s[0] == '0')

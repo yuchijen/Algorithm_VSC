@@ -36,7 +36,15 @@ namespace Interview
             //****************************************/
 
             var asa = new ArrayString();
-            asa.TimeFrameConverter("mon 11:30 am, mon 3:40 pm");
+            Console.WriteLine(asa.UniqSub("aaa"));
+
+            // var newInterval = new int[]{2,5};
+            // var intv1 =  new int[]{1,3};
+            // var intv2 =  new int[]{6,9};
+            // int[][] existingInter = new int[][]{ intv1, intv2 };
+            // asa.InsertInterval(existingInter, newInterval);
+
+            // asa.TimeFrameConverter("mon 11:30 am, mon 3:40 pm");
             //Console.WriteLine( asa.rotationalCipher("Zebra-493?", 3));
             //asa.MinRemoveToMakeValid2("lee(t(c)o)de)");
             
@@ -145,8 +153,8 @@ namespace Interview
             // //Console.WriteLine("4th bit:" + bm.FourthBit(-23));
             // bm.CountOneBit(4294967295);
 
-            // var bk = new BackTracking();
-
+            var bk = new BackTracking();
+            bk.Subsets(new []{1,2,3});
 
             //bk.SubarraysDivByK(new int[] { 4, 5, 0, -2, -3, 1 }, 5);
 
@@ -184,8 +192,8 @@ namespace Interview
 
             // bt.VerticalTraversal(root);
 
-            // var ht = new HashTable();
-
+            var ht = new HashTable();
+            Console.WriteLine(ht.LongestSubstringEvenCount("abzabcddc"));
             // ht.PartitionLabels("ababcbacadefegdehijhklij");
 
             // Console.WriteLine("find anagrams:");

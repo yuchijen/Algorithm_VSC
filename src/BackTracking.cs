@@ -7,6 +7,28 @@ namespace Interview
 {
     public class BackTracking
     {
+        public IList<IList<int>> CombinationSum(int[] candidates, int target) {
+            Array.Sort(candidates);
+            var ret = new List<IList<int>>();
+            bk(candidates, 0, target, ret, new List<int>());
+            return ret;
+        }
+    
+        void bk(int[] nums, int st, int target, List<IList<int>> ret, List<int> subSet){
+            if(target == subSet.Sum()){
+                ret.Add(new List<int>(subSet));
+                return;
+            }else if(target < subSet.Sum()){
+                return;
+            }
+        
+            for(int i=st; i < nums.Length; i++){
+                subSet.Add(nums[i]);
+                bk(nums, i, target, ret, subSet);
+                subSet.RemoveAt(subSet.Count-1);            
+            }
+        }
+
         //494. Target Sum
         //You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -. For each integer, you should choose one from + and - as its new symbol.
         //Find out how many ways to assign symbols to make sum of integers equal to target S
@@ -127,11 +149,13 @@ namespace Interview
             ret.Add(new List<int>(list));
             for (int i = curIdx; i < nums.Length; i++)
             {
-                if (i > curIdx && nums[i] == nums[i - 1])   //key point note: i>curIdx
-                    continue;
+                // if (i > curIdx && nums[i] == nums[i - 1])   //key point note: i>curIdx
+                //    continue;
                 list.Add(nums[i]);
                 subsetHelperWithoutDuplicate2(i + 1, nums, list, ret);
                 list.Remove(nums[i]);
+                while(i+1 < nums.Length && nums[i]==nums[i+1])
+                    i++;
             }
         }
 

@@ -33,10 +33,32 @@ namespace Interview
     }
     public class BTree
     {
+        public bool IsPalindrome(string s) {
+        
+        int st = 0;
+        int end = s.Length-1;
+        s= s.ToLower();
+        while(st<end){
+            while(s[st]-'a' >=26 && s[st]-'a' <0){
+                st++;
+            }
+            while(s[end]-'a' >=26 && s[end]-'a' <0){
+                end--;
+            }
+            
+            if(s[st]!=s[end]){
+                return false;
+            }
+            st++;
+            end--;
+        }
+        return true;
+    }
         //1448. Count Good Nodes in Binary Tree [MS] 
         //Given a binary tree root, a node X in the tree is named good if in the path from root 
         //to X there are no nodes with a value greater than X.
         //Return the number of good nodes in the binary tree.
+        // Time :O(n); space O(n)
         public int GoodNodes(TreeNode root) {
         //count incremental value node (need to compare with the max in path), travesal tree
             if(root ==null)
@@ -645,15 +667,17 @@ namespace Interview
         }
         TreeNode buildTreeHelper(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd)
         {
+            if(preStart > preEnd || inStart > inEnd)
+                return null;
             int pivValue = preorder[preStart];
-
+            // find index of pivVal in inOrder array, then can split left and right tree in inOrder array            
             int inOrderPivIdx = Array.FindIndex(inorder, v => v == pivValue);
 
             var rootNode = new TreeNode(pivValue);
+            // preorder st end left/right distance depends on pivIdx and inSt
             rootNode.left = buildTreeHelper(preorder, preStart + 1, preStart + (inOrderPivIdx - inStart), inorder, inStart, inOrderPivIdx - 1);
             rootNode.right = buildTreeHelper(preorder, preStart + (inOrderPivIdx - inStart) + 1, preEnd, inorder, inOrderPivIdx + 1, inEnd);
             return rootNode;
-
         }
 
         //285.	Inorder Successor in BST
@@ -1532,36 +1556,30 @@ namespace Interview
         }
 
         //102. Binary Tree Level Order Traversal
-        public IList<IList<int>> LevelOrder2(TreeNode root)
-        {
-            // use queue to iterate level, this approach can process level by level
+        public IList<IList<int>> LevelOrder2(TreeNode root) {
             var ret = new List<IList<int>>();
-            if (root == null)
+            if(root==null)
                 return ret;
             var q = new Queue<TreeNode>();
-            // int level = 0;
             q.Enqueue(root);
-            while (q.Count > 0)
-            {
-                int levelCnt = q.Count;
-                ret.Add(new List<int>());
-                while (--levelCnt >= 0)
-                {
-                    var cur = q.Dequeue();
 
-                    if (cur != null)
-                    {
-                        ret[ret.Count - 1].Add(cur.val);
-                        q.Enqueue(cur.left);
-                        q.Enqueue(cur.right);
-
-                    }
+            while(q.Count > 0) {
+                int curLevelLen = q.Count;
+                var curLevel = new List<int>();
+                for(int i =0; i<curLevelLen; i++) {
+                    var curNode = q.Dequeue();
+                    curLevel.Add(curNode.val);
+                    if(curNode.left!=null) 
+                        q.Enqueue(curNode.left);
+                    if(curNode.right!=null) 
+                        q.Enqueue(curNode.right);
                 }
+
+                ret.Add(curLevel);
             }
-            if (ret.Count > 0)
-                ret.RemoveAt(ret.Count - 1);
             return ret;
         }
+
         public IList<IList<int>> LevelOrder(TreeNode root)
         {
             var ret = new List<IList<int>>();
@@ -1571,12 +1589,13 @@ namespace Interview
             levelHelp(ret, root, 0);
             return ret;
         }
+
         public void levelHelp(IList<IList<int>> ret, TreeNode root, int level)
         {
             if (root == null)
                 return;
 
-            if (level >= ret.Count)
+            if (level == ret.Count)
             {
                 ret.Add(new List<int>());
             }

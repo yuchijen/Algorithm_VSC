@@ -8,6 +8,36 @@ namespace Interview
 {
     public class HashTable
     {
+        // 第三题给一个string，让你求最长的substring里面所有的character出现次数是偶数，
+        // ‍‌‍‍‌‌‍‌‌‌‍‍‍‍‌‌‍‍‍想到特别好的方法，直接暴力解，不知道有没有更好的方法
+        // e.g. ababcd => 4 ; cababd => 4 ; ababdcdc => 8
+        public string LongestSubstringEvenCount(string s){
+            if(string.IsNullOrEmpty(s))
+                return "";
+
+            var map = new Dictionary<char, int>();
+            int maxLen = 0;
+            int stIdx = 0;
+            for(int i=0; i<s.Length; i++){
+                map.Clear();
+                for(int j = i; j<s.Length; j++){
+                    if(!map.ContainsKey(s[j])){
+                        map.Add(s[j],1);
+                    }else{
+                        map[s[j]]+=1;
+                    }
+                    if(map.Values.All(x=> x%2 ==0)){
+                        if(j-i+1 > maxLen){
+                            maxLen = j-i +1;
+                            stIdx = i;
+                        }
+                    }
+                }
+            }
+            return s.Substring(stIdx, maxLen);
+        }
+
+
         //155. Min Stack (get min in O(1))
         //Input ["MinStack","push","push","push","getMin","pop","top","getMin"] 
         //                    [-2],[0],[-3]
@@ -372,7 +402,6 @@ namespace Interview
                 return true;
             }
         }
-
 
         //340. Find the longest substring with k unique characters in a given string 
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
@@ -840,17 +869,41 @@ namespace Interview
         //Example: Input: S = "ADOBECODEBANC", T = "ABC"
         //Output: "BANC"
         //O(n)
+        public string MinWindow4(string s, string t) {        
+            //build lookup map
+            var lookup = t.GroupBy(c=>c).ToDictionary(g=>g.Key, g=>g.Count());
+            var map = new Dictionary<char, int>();
+            int backPtr = 0;
+            int idxSt = 0;
+            int len = int.MaxValue;
+
+            for(int i=0; i< s.Length; i++){
+                if(!map.ContainsKey(s[i])){
+                    map.Add(s[i],1);
+                }else{
+                    map[s[i]]+=1;
+                }
+                // if match the map match lookup table, try to shrink tail to find min len
+                while(lookup.All(kv => map.ContainsKey(kv.Key)) && lookup.All(kv => map[kv.Key] <= kv.Value)){
+                    if(i-backPtr +1 < len){
+                        len = i-backPtr+1;
+                        idxSt = backPtr;
+                    }
+                    if(map.ContainsKey(s[backPtr])){
+                        if(map[s[backPtr]]==1)
+                            map.Remove(s[backPtr]);
+                        else
+                            map[s[backPtr]]-=1;    
+                    }
+                    backPtr--;
+                }            
+            }
+            return len == int.MaxValue ? "" : s.Substring(idxSt, len);
+        }
+
         public string minWindow3(string s, string t)
         {
-            var map = new Dictionary<char, int>();
-
-            for (int i = 0; i < t.Length; i++)
-            {
-                if (map.ContainsKey(t[i]))
-                    map[t[i]]++;
-                else
-                    map.Add(t[i], 1);
-            }
+            var map = t.GroupBy(c=>c).ToDictionary(g=>g.Key, g=>g.Count());
             var map2 = new Dictionary<char, int>();
             int len = int.MaxValue;
             int stIdx = 0;

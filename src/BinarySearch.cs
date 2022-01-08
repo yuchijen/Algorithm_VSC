@@ -411,8 +411,8 @@ namespace Interview
             return -1;
         }
         //anayse 2 cases : 
-        // 34567012   start to mid are sorted 
-        // 67012345   mid to end are sorted
+        // 3,4,5,6,7,0,1,2   start to mid are sorted 
+        // 6,7,0,1,2,3,4,5   mid to end are sorted
         public int SearchRotatedSortedArray2(int[] nums, int target)
         {
             if (nums == null || nums.Length == 0)
@@ -425,7 +425,7 @@ namespace Interview
                 int mid = st + (end - st) / 2;
                 if (nums[mid] == target)
                     return mid;
-                if (nums[mid] < nums[end]) //right side sorted
+                if (nums[mid] < nums[end]) //right side sorted, OR use nums[st] <= nums[mid] (edge case:[3,1] t=1)
                 {
                     if (nums[mid] < target && target <= nums[end])
                         st = mid + 1;  //go right
@@ -477,7 +477,6 @@ namespace Interview
             }
             return false;
         }
-
 
         //278. First Bad Version
         //You are a product manager and currently leading a team to develop a new product. Unfortunately, the 
@@ -642,8 +641,31 @@ namespace Interview
 
         // 153. Find Minimum in Rotated Sorted Array
         //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+        // in O(logN)
         //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).Find the minimum element.
         //You may assume no duplicate exists in the array.
+        public int FindMin2(int[] nums){
+            if (nums.Length == 1)
+                return nums[0];
+
+            int st = 0; int end = nums.Length - 1;
+
+            while(st <end){
+                int piv = st + (end-st)/2;
+                if(piv +1 <=end && nums[piv] > nums[piv+1])
+                    return nums[piv+1];
+                
+                if(nums[st] < nums[piv]) { //left sorted, min should be in right side
+                    st= piv+1;
+                }
+                else{
+                    end = piv;
+                }
+            }
+            return nums[0];
+            
+        }
+
         public int FindMin(int[] nums)
         {
             if (nums == null || nums.Length == 0)
@@ -764,14 +786,14 @@ namespace Interview
                 if (target == nums[pivol])
                     return pivol;
 
-                if (nums[pivol] >= nums[st])
+                if (nums[pivol] >= nums[st]) //left sorted
                 {
                     if (target < nums[pivol] && target >= nums[st])
                         end = pivol - 1;
                     else
                         st = pivol + 1;
                 }
-                else
+                else  // right side sorted
                 {
                     if (target > nums[pivol] && target <= nums[end])
                         st = pivol + 1;

@@ -1,22 +1,117 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Interview
 {
     public class Math2
     {
+        //190. Reverse Bits
+        public uint reverseBits(uint n)
+        {
+            uint ret = 0;
+
+            for (int i = 0; i < 32; i++)
+            {
+                ret <<= 1;
+                ret += (n&1);
+                n >>= 1;    
+            }
+
+            return ret;
+        }
+
+        //55. Jump Game
+        //Input: nums = [2,3,1,1,4] Output: true
+        //Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+        // greedy approach, 
+        public bool CanJump(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return false;
+            int reach = 0;
+            int len = nums.Length;
+            for (int i = 0; i < len; i++)
+            {
+                // if idx over reach, means impossible to reach, if reach >= len-1 means reach the end
+                if (reach < i || reach >= len - 1)
+                {
+                    break;
+                }
+                reach = Math.Max(reach, i + nums[i]);
+            }
+
+            return reach >= len - 1;
+        }
+
         //973. K Closest Points to Origin
         //We have a list of points on the plane.  Find the K closest points to the origin (0, 0).
         //Input: points = [[1,3],[-2,2]], K = 1 ;Output: [[-2,2]]
-        public int[][] KClosest(int[][] points, int K) {
-            return points.OrderBy(p => p[0]*p[0] + p[1]*p[1]).Take(K).ToArray();
+        public int[][] KClosest(int[][] points, int K)
+        {
+            return points.OrderBy(p => p[0] * p[0] + p[1] * p[1]).Take(K).ToArray();
             // Array.Sort(points, (p1, p2) => (p1[0]*p1[0] + p1[1]*p1[1] - p2[0]*p2[0] - p2[1]*p2[1]));
             // return points.Take(K).ToArray();
-        }         
-        
+        }
+
         //152. Maximum Product Subarray
+        public int MaxProduct3(int[] nums)
+        {
+            // 1->2->3->4
+            int ret = 1;
+            int prod = 1;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                prod *= nums[i];
+                ret = Math.Max(ret, prod);
+                if (nums[i] == 0)
+                {
+                    prod = 1;
+                }
+            }
+
+            prod = 1;
+
+            for (int i = nums.Length - 1; i >= 0; i--)
+            {
+                prod *= nums[i];
+                ret = Math.Max(ret, prod);
+                if (nums[i] == 0)
+                {
+                    prod = 1;
+                }
+            }
+
+            return ret;
+        }
+        // timout ...
+        public int MaxProduct2(int[] nums)
+        {
+            if (nums == null)
+                return 0;
+            if (nums.Length == 1)
+                return nums[0];
+
+            int len = nums.Length;
+            var dp = new int[len, len];
+            int ret = nums.Max();
+
+            for (int i = 0; i < len; i++)
+            {
+                dp[i, i] = nums[i];
+            }
+
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = i + 1; j < len; j++)
+                {
+                    dp[i, j] = nums[j] * dp[i, j - 1];
+                    ret = Math.Max(ret, dp[i, j]);
+                }
+            }
+            return ret;
+        }
         public int MaxProduct(int[] nums)
         {
             int max = nums[0];

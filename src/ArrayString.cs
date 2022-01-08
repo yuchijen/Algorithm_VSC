@@ -8,6 +8,108 @@ namespace Interview
 {
     public class ArrayString
     {
+        //MS OA
+        //1. 判断array里的数是否全都能配对成双，例如[1,2,2,1] 可以配对成[1,1], [2,2]。[1,2,2]则不行，因为没有额外的来跟1配对
+        public bool IsPair(int[] A){
+            if(A==null|| A.Length==0)
+                return false;
+
+            var map = new Dictionary<int, int>();
+            foreach(var i in A){
+                if(map.ContainsKey(A[i])){
+                    map[A[i]]+=1;
+                }else{
+                    map.Add(A[i],1);
+                }
+            }
+            // all values (count of number) should be even which means can be paired
+            return map.Values.All(v => v%2 == 0);
+        }
+        
+        //2. 给了一个从数组中找最小值的函数find_min，min_ = 0，然后从第2个数开始去跟min_比较 min_ = min(min_, array)。需要写一个method return一个反例使得find_min得到的结果是错误
+        public int[] WrongExample(int size){
+            var rd = new Random();
+            int[] ret = new int[size];
+            for(int i=0; i<size;i++){
+                ret[i] = rd.Next(1,size);
+                Console.WriteLine(ret[i]);
+            }
+
+            return ret;
+        } 
+        //3. 给一个string需要把它拆分，使得每一个subst‍‌‍‍‍‍‍‌‌‌‍‌‍‌‌‌‍‌‌‌ring里面的char都是unique的。求最小拆分。例如 ”abcab“ 应拆分为"abc", "ab"结果返回2。 “aaa”则返回3： “a","a","a"
+        public int UniqSub(string s){
+            if(string.IsNullOrEmpty(s))
+                return 0;
+
+            var hs = new HashSet<char>();
+            int ret = 0;
+            for(int i=0; i<s.Length; i++) {
+                if(hs.Contains(s[i])){
+                    ret+=1;
+                    hs.Clear();
+                }
+                hs.Add(s[i]);
+            }
+            return hs.Count > 0 ? ret+1: ret;
+        }
+
+        public bool CanJump(int[] nums) {
+           if(nums ==null ||nums.Length ==0)
+                return false;
+
+            var ret = new bool[1]{false};
+            helper(nums, 0, ret);        
+            return ret[0];
+        }
+        void helper(int[] nums, int st, bool[] ret){
+            if(st == nums.Length-1)
+                ret[0] =true;
+        
+            for(int i=st+1; i< st+nums[st] && i< nums.Length; i++){
+                helper(nums, i, ret);
+            }
+        }
+
+        //11. Container With Most Water
+        public int MaxArea(int[] height) {        
+            if(height ==null || height.Length ==0)
+                return 0;
+        
+            int i=0;
+            int j =height.Length-1;
+            int max = 0;
+
+            while(i<j){
+                max = Math.Max(max, Math.Min(height[i],height[j]) * (j-i));
+                if(height[i] < height[j]    )
+                    i++;
+                else
+                    j--;            
+            }
+            return max;
+        }
+
+        //1822. Sign of the Product of an Array [MS]
+        public int ArraySign(int[] nums) {
+            if(nums==null || nums.Length ==0 || nums.Any(x => x == 0))
+                return 0;
+        
+            return nums.Count(x => x < 0) %2 == 0 ? -1 : 1;            
+        }
+        public int ArraySign2(int[] nums) {
+            if(nums==null || nums.Length ==0)
+                return 0;
+            int sign = 1;    
+            for(int i =0; i< nums.Length; i++){
+                if(nums[i]==0)
+                    return 0;
+                if(nums[i] < 0)
+                    sign *= -1;                        
+            }
+            return sign;
+        }
+
         //一道题，给“mon 11:30 am”, “mon 3:40 pm”，开始时间和结束时间，要求返回一个list，
         //里面是五分钟时间的间隔，周一的话‍‌‍‍‌‌‍‌‌‌‍‍‍‍‌‌‍‍‍是11130 11135…… 11540
         public List<string> TimeFrameConverter(string s){
@@ -1692,6 +1794,7 @@ namespace Interview
 
             while (i < j)
             {
+                // or !Regex.IsMatch(s[i].ToString(), "[a-zA-Z0-9]{1}");
                 while (i < s.Length && !(char.IsLetter(s[i]) || char.IsNumber(s[i])))
                     i++;
 
@@ -1900,6 +2003,37 @@ namespace Interview
             public Interval(int s, int e) { start = s; end = e; }
         }
 
+        //57. Insert Interval
+        public int[][] InsertInterval(int[][] intervals, int[] newInterval) {
+            if(intervals==null)
+                return new int[][]{newInterval};
+
+            var ret = new List<List<int>>();
+            int st = newInterval[0];
+            int end = newInterval[1];
+            int i = 0;
+            int len = intervals.Length;
+            // new interval st > interval[i].end , just add to ret            
+            while(i< len && newInterval[0] > intervals[i][1]){
+                ret.Add(new List<int>(){intervals[i][0], intervals[i][1]});
+                i++;
+            }
+            //**key: new interval end >= interval[i].st, need to merge
+            while(i< len && end >= intervals[i][0]){
+                st = Math.Min(st, intervals[i][0]);
+                end = Math.Max(end, intervals[i][1]);                
+                i++;
+            }
+            ret.Add(new List<int>(){st, end});
+
+            //the rest
+            while(i< len){
+                ret.Add(new List<int>(){intervals[i][0], intervals[i][1]});
+                i++;
+            } 
+
+            return ret.Select(x => x.ToArray()).ToArray();
+        }
 
         //Flexe onsite: merge 2 people's time schedule and filter out both available time by given time frame 
         public List<Interval2> AvialbleTime(List<Interval2> c1, List<Interval2> c2, float start, float end, float duration)
@@ -2290,6 +2424,7 @@ namespace Interview
         //Input: "babad"
         //Output: "bab"
         //Note: "aba" is also a valid answer.
+        // O(n^2)
         public string LongestPalindrome(string s)
         {
             if (s.Length < 2)
@@ -2318,8 +2453,7 @@ namespace Interview
                 ed++;
             }
         }
-
-
+        
         //(amazon) Find the longest unbroken series of increasing numbers in a list of random numbers 
         //i.e. if given[15, 2, 38, 71, 2, 524, 98], return [2, 38, 71] (longest increasing sub array)
         public int[] LongestIncreasingSubArray(int[] nums)
@@ -2349,7 +2483,7 @@ namespace Interview
                     end = st;
                 }
             }
-
+            
             if (max > 0)
             {
                 int[] ret = new int[max + 1];
@@ -2758,27 +2892,6 @@ namespace Interview
                     zIdxx++;
                 }
             }
-        }
-
-
-        //153. Find Minimum in Rotated Sorted Array
-        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).Find the minimum element.
-        //You may assume no duplicate exists in the array.
-        public int FindMin(int[] nums)
-        {
-            if (nums == null || nums.Length == 0)
-                return -1;
-
-            if (nums.Length == 1)
-                return nums[0];
-
-            for (int i = 0; i < nums.Length - 1; i++)
-            {
-                if (nums[i] > nums[i + 1])
-                    return nums[i + 1];
-            }
-            return nums[0];
         }
 
         //191. Number of 1 Bits
@@ -3352,6 +3465,33 @@ namespace Interview
         //20. Valid Parentheses
         //Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
         //The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+        public bool IsValid2(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return true;
+
+            Stack<char> st = new Stack<char>();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '{' || s[i] == '[' || s[i] == '(')
+                {
+                    st.Push(s[i]);
+                }
+                else{
+                    if(st.Count == 0)
+                        return false;
+                    if(s[i] == '}' && st.Peek() != '{')
+                        return false;
+                    if(s[i] == ']' && st.Peek() != '[')
+                        return false;    
+                    if(s[i] == ')' && st.Peek() != '(')
+                        return false;    
+                    st.Pop();    
+                }
+            }
+            return st.Count==0;
+        }
+
         public bool IsValid(string s)
         {
             if (string.IsNullOrEmpty(s))
@@ -3468,32 +3608,6 @@ namespace Interview
         //use priority queue
         // O(nlog(m))  n is total numbers m is how many rows  
 
-
-        public int LengthOfLongestSubstring2(string s)
-        {
-            if (string.IsNullOrEmpty(s))
-                return 0;
-            int max = 0;
-            var map = new HashSet<int>();
-            int left = 0;
-            int i = 0;
-            while (i < s.Length)
-            {
-                if (!map.Contains(s[i]))
-                {
-                    map.Add(s[i]);
-                    i++;
-                    max = Math.Max(max, map.Count);
-                }
-                else
-                {
-                    map.Remove(s[left]);
-                    left++;
-                }
-            }
-            return max;
-        }
-
         //3. Longest Substring Without Repeating Characters
         //Examples:  Given "abcabcbb", the answer is "abc", which the length is 3.
         //Given "bbbbb", the answer is "b", with the length of 1.
@@ -3525,7 +3639,31 @@ namespace Interview
             return max;
         }
 
-
+        public int LengthOfLongestSubstring2(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+            int max = 0;
+            var hs = new HashSet<int>();
+            int left = 0;
+            int i = 0;
+            while (i < s.Length)
+            {
+                if (!hs.Contains(s[i]))
+                {
+                    hs.Add(s[i]);
+                    i++;
+                    max = Math.Max(max, hs.Count);
+                }
+                else
+                {
+                    hs.Remove(s[left]);
+                    left++;
+                }
+            }
+            return max;
+        }
+        
         //54. Spiral Matrix
         //Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
         //For example,  Given the following matrix:
@@ -3584,7 +3722,41 @@ namespace Interview
 
         }
 
+        public IList<int> SpiralOrder2(int[][] matrix)
+        {
+            if(matrix == null){
+                return null;
+            }   
+            var ret = new List<int>();
+            int up = 0;
+            int down = matrix.Length-1;
+            int left = 0;
+            int right = matrix[0].Length-1;
 
+            // any time if up > down or left > right, means end of circle, can break
+            while(true){
+                for(int j=left; j<= right; j++) {
+                    ret.Add(matrix[up][j]);
+                }
+                if(++up > down) break;
+
+                for(int i =up; i<=down; i++){
+                    ret.Add(matrix[i][right]);
+                }
+                if(--right < left) break;
+
+                for(int j = right; j>=left; j--){
+                    ret.Add(matrix[down][j]);
+                }    
+                if(--down < up) break;
+
+                for(int i = down; i>=up ; i--){
+                    ret.Add(matrix[i][left]);
+                }
+                if(++left > right) break;
+            }
+            return ret;
+        }
 
         //186. Reverse Words in a String II  
         //Given an input string, reverse the string word by word. A word is defined as a sequence of non-space characters.
@@ -3872,43 +4044,38 @@ namespace Interview
             return ret;
         }
 
-
-
         //leetcode 15. 3Sum
         //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? 
         //Find all unique triplets in the array which gives the sum of zero.
         //For example, given array S = [-1, 0, 1, 2, -1, -4],  A solution set is:
         //[  [-1, 0, 1],  [-1, -1, 2]  ]
-        public IList<IList<int>> ThreeSum2(int[] nums)
+        public IList<IList<int>> ThreeSum3(int[] nums)
         {
-            List<IList<int>> ret = new List<IList<int>>();
-            if (nums == null)
-                return ret;
-
+            var ret = new List<IList<int>>();
             Array.Sort(nums);
-            for (int i = 0; i < nums.Length; i++)
-            {
-                if (i > 0 && nums[i] == nums[i - 1])
+            for(int i = 0; i< nums.Length -2; i++){
+                if(i > 0 && nums[i]==nums[i-1]) // slip duplicate item to prevent duplicate set
                     continue;
-
-                int j = i + 1;
-                int k = nums.Length - 1;
-                while (j < k)
-                {
-                    if (nums[i] + nums[j] + nums[k] == 0)
-                    {
-                        ret.Add(new List<int> { nums[i], nums[j], nums[k] });
+                
+                int j = i+1;
+                int k = nums.Length-1;
+                int target = 0 - nums[i];
+                while(j < k){
+                    if(nums[j] + nums[k] == target) {
+                        ret.Add(new List<int>(){nums[i], nums[j], nums[k] });
                         j++;
                         k--;
-                        while (j < k && nums[j] == nums[j - 1])
+                        while(j < k && nums[j]==nums[j-1])
                             j++;
-                        while (j < k && nums[k] == nums[k + 1])
-                            k--;
+                        while(j < k && nums[k]==nums[k+1])
+                            k--;    
                     }
-                    else if (nums[i] + nums[j] + nums[k] > 0)
-                        k--;
-                    else
+                    else if(nums[j] + nums[k] < target) {
                         j++;
+                    }
+                    else {
+                        k--;
+                    }
                 }
             }
             return ret;
@@ -4106,7 +4273,6 @@ namespace Interview
             nums[j] = temp;
         }
 
-
         //48. Rotate Image
         //You are given an n x n 2D matrix representing an image.Rotate the image by 90 degrees(clockwise).
         //Follow up: Could you do this in-place?
@@ -4162,7 +4328,7 @@ namespace Interview
 
             bool isRowZero = false;
             bool isColZero = false;
-
+            
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 if (matrix[i, 0] == 0)
