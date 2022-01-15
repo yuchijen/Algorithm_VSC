@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Interview
 {
-
     public class Point
     {
-        public Point(int i, int j){
+        public Point(int i, int j)
+        {
             x = i;
             y = j;
         }
-        public Point(){            
+        public Point()
+        {
         }
         public int x { get; set; }
         public int y { get; set; }
         public int dist { get; set; }
     }
+
     public class DFS_BFS
-    {
+    {    
         //787. Cheapest Flights Within K Stops (FB) 
         int curMin = int.MaxValue;
         public int FindCheapestPrice(int n, int[][] flights, int src, int dst, int k)
@@ -857,6 +858,52 @@ namespace Interview
             return true;
         }
 
+        public bool CanFinish(int numCourses, int[][] prerequisites)
+        {
+            // build graph 
+            var g = new List<int>[numCourses];
+
+            for (int i = 0; i < prerequisites.Length; i++)
+            {
+                if (g[prerequisites[i][0]] == null)
+                    g[prerequisites[i][0]] = new List<int>();
+
+                g[prerequisites[i][0]].Add(prerequisites[i][1]);
+            }
+            var visit = new int[numCourses];
+            for (int i = 0; i < numCourses; i++)
+            {
+                if (hasCycle(i, g, visit))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool hasCycle(int n, List<int>[] g, int[] visit)
+        {
+            if (visit[n] == 1) //in middle of path
+                return true;
+
+            if (visit[n] == 2)  // this node is the end of graph
+                return false;
+
+            visit[n] = 1;
+            if (g[n] != null)
+            {
+                foreach (var i in g[n])
+                {
+                    if (hasCycle(i, g, visit))
+                        return true;
+                }
+            }
+
+            visit[n] = 2;
+            return false;
+        }
+
         //269. Alien Dictionary (topological sort)
         //There is a new alien language which uses the latin alphabet. However, the order among letters 
         //are unknown to you. You receive a list of non-empty words from the dictionary, where words 
@@ -886,63 +933,13 @@ namespace Interview
         {
             if (words == null)
                 return null;
-
-            var map = genAlienMap(words);
-            var allSet = new HashSet<char>();
-            for (int i = 0; i < words.Length; i++)
-            {
-                foreach (var c in words[i])
-                    allSet.Add(c);
-            }
-
-            var visited = new Dictionary<char, int>();
-            // if value == 1 means this is in visiting process from a char
-            // if value == 2 means this char is visited already
-
-            var ret = new StringBuilder();
-            foreach (var c in allSet)
-            {
-                if (FindOrder(c, ret, map, visited)) //if cycle happened
-                {
-                    return "";
-                }
-            }
-            return allSet.Count == ret.Length ? ret.ToString() : "";
-
-        }
-
-        //return true if found cycle
-        bool FindOrder(char c, StringBuilder ret, Dictionary<char, HashSet<char>> map, Dictionary<char, int> visited)
-        {
-            if (visited.ContainsKey(c))
-            {
-                if (visited[c] == 1)
-                    return true;
-
-                return false;
-            }
-            visited.Add(c, 1);
-
-            foreach (var cc in map[c])
-            {
-                if (FindOrder(cc, ret, map, visited))
-                    return true;
-            }
-
-            visited[c] = 2;
-            ret.Append(c);
-            return false;
-        }
-
-        Dictionary<char, HashSet<char>> genAlienMap(string[] words)
-        {
-            if (words == null)
-                return null;
+            //build graph
             var map = new Dictionary<char, HashSet<char>>();
             for (int i = 0; i < words.Length - 1; i++)
             {
                 int idx = 0;
-                while (idx < Math.Min(words[i].Length, words[i + 1].Length))
+                int len = Math.Min(words[i].Length, words[i + 1].Length);
+                while (idx < len)
                 {
                     if (words[i][idx] != words[i + 1][idx])
                     {
@@ -955,11 +952,54 @@ namespace Interview
                     }
                     idx++;
                 }
+                if (idx == len && words[i].Length > words[i + 1].Length)
+                    return "";
             }
-            return map;
+            // Console.WriteLine("alien graph:");
+            // foreach(var kv in map){
+            //     Console.Write(kv.Key +":");
+            //     foreach(var v in kv.Value)
+            //         Console.Write(v+" ");
+
+            //     Console.WriteLine("");                    
+            // }
+            var allSet = new String(string.Join("", words).Distinct().ToArray());
+
+            var visited = new int[26];
+
+            var ret = new HashSet<char>();
+            foreach (var c in allSet)
+            {
+                if (FindCycle(c, ret, map, visited)) //if cycle happened
+                    return "";
+            }
+            return string.Join("", ret.ToArray().Reverse());
         }
 
-        //by Hunrey Liu
+        //return true if found cycle
+        bool FindCycle(char c, HashSet<char> ret, Dictionary<char, HashSet<char>> map, int[] visited)
+        {
+            if (visited[c - 'a'] == 1)
+                return true;
+            if (visited[c - 'a'] == 2)
+                return false;
+
+            visited[c - 'a'] = 1;
+            if (map.ContainsKey(c))
+            {
+                foreach (var cc in map[c])
+                {
+                    if (FindCycle(cc, ret, map, visited))
+                        return true;
+                }
+            }
+
+            visited[c - 'a'] = 2;
+            ret.Add(c);
+            return false;
+        }
+
+        //by Hanrey Liu
         public String alienOrderBFS(String[] words)
         {
             if (words.Length == 0) return "";
@@ -1033,9 +1073,6 @@ namespace Interview
                 }
             }
         }
-
-
-
 
         //44. Wildcard Matching  (DFS not passed yet)
         //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
@@ -1320,7 +1357,6 @@ namespace Interview
             return Math.Max(tasks.Length, ret + p);
         }
 
-
         //282. Expression Add Operators
         //Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators(not unary) +, -, or* between the digits so they evaluate to the target value.
         //Example 1:
@@ -1359,7 +1395,6 @@ namespace Interview
             }
 
         }
-
 
         //301. Remove Invalid Parentheses
         //Remove the minimum number of invalid parentheses in order to make the input string valid.Return all possible results.
@@ -1603,29 +1638,9 @@ namespace Interview
         //  ['i', 'f', 'l', 'v']
         //  ]
         //        Output: ["eat","oath"]
-        // public IList<string> FindWords2(char[,] board, string[] words)
-        // {
-        //     var ret = new HashSet<string>();
-        //     int row = board.GetLength(0);
-        //     int col = board.GetLength(1);
-        //     bool[,] visited = new bool[row, col];
-        //     foreach (var word in words)
-        //     {
-        //         visited = new bool[row, col];
-        //         for (int i = 0; i < row; i++)
-        //         {
-        //             for (int j = 0; j < col; j++)
-        //             {
-        //                 if (existHelper(board, word, visited, 0, i, j))
-        //                     ret.Add(word);
-        //             }
-        //         }
-        //     }
-        //     return ret.ToList();
-        // }
         public IList<string> FindWords(char[,] board, string[] words)
         {
-            var ret = new List<string>();
+            var ret = new HashSet<string>();
             int row = board.GetLength(0);
             int col = board.GetLength(1);
 
@@ -1639,12 +1654,10 @@ namespace Interview
                     {
                         if (findWordsHelper(board, words[k], visited, i, j, 0))
                             ret.Add(words[k]);
-
                     }
                 }
             }
-
-            return ret;
+            return ret.ToList();
         }
         bool findWordsHelper(char[,] board, string word, bool[,] visited, int i, int j, int count)
         {
@@ -1665,7 +1678,6 @@ namespace Interview
             visited[i, j] = false;
             return false;
         }
-
 
         //419. Battleships in a Board
         //Given an 2D board, count how many battleships are in it. The battleships are represented with 'X's, 
@@ -2077,26 +2089,28 @@ namespace Interview
             int ret = 0;
             var visited = new bool[lenR, lenC];
             var q = new Queue<Point>();
-            
+
             for (int i = 0; i < lenR; i++)
             {
                 for (int j = 0; j < lenC; j++)
                 {
-                    if(!visited[i,j]&& grid[i][j]=='1'){
-                        ret+=1;
-                        q.Enqueue(new Point(i,j));
+                    if (!visited[i, j] && grid[i][j] == '1')
+                    {
+                        ret += 1;
+                        q.Enqueue(new Point(i, j));
 
-                        while(q.Count>0){
+                        while (q.Count > 0)
+                        {
                             var curNode = q.Dequeue();
-                            
-                            if(curNode.x < 0 || curNode.x >= lenR || curNode.y <0 || curNode.y >= lenC || grid[curNode.x][curNode.y]=='0' || visited[curNode.x,curNode.y])
+
+                            if (curNode.x < 0 || curNode.x >= lenR || curNode.y < 0 || curNode.y >= lenC || grid[curNode.x][curNode.y] == '0' || visited[curNode.x, curNode.y])
                                 continue;
 
-                            visited[curNode.x,curNode.y]=true;
-                            q.Enqueue(new Point(curNode.x+1,curNode.y));
-                            q.Enqueue(new Point(curNode.x-1,curNode.y));
-                            q.Enqueue(new Point(curNode.x,curNode.y+1));
-                            q.Enqueue(new Point(curNode.x,curNode.y-1));
+                            visited[curNode.x, curNode.y] = true;
+                            q.Enqueue(new Point(curNode.x + 1, curNode.y));
+                            q.Enqueue(new Point(curNode.x - 1, curNode.y));
+                            q.Enqueue(new Point(curNode.x, curNode.y + 1));
+                            q.Enqueue(new Point(curNode.x, curNode.y - 1));
                         }
                     }
                 }

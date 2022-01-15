@@ -36,7 +36,7 @@ namespace Interview
             //****************************************/
 
             var asa = new ArrayString();
-            Console.WriteLine(asa.UniqSub("aaa"));
+            // Console.WriteLine(asa.UniqSub("aaa"));
 
             // var newInterval = new int[]{2,5};
             // var intv1 =  new int[]{1,3};
@@ -193,7 +193,7 @@ namespace Interview
             // bt.VerticalTraversal(root);
 
             var ht = new HashTable();
-            Console.WriteLine(ht.LongestSubstringEvenCount("abzabcddc"));
+            //Console.WriteLine(ht.LongestSubstringEvenCount("abzabcddc"));
             // ht.PartitionLabels("ababcbacadefegdehijhklij");
 
             // Console.WriteLine("find anagrams:");
@@ -203,7 +203,9 @@ namespace Interview
             // }
 
             var dfs = new DFS_BFS();
-            dfs.LadderLength("a", "c", new string[]{"a","b","c"});
+            Console.WriteLine(dfs.alienOrder(new string[]{"wrt","wrf","er","ett","rftt"}));
+
+            //dfs.LadderLength("a", "c", new string[]{"a","b","c"});
 
             // var flights = new int[3][];
             // flights[0] = new int[]{0,1,100};

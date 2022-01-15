@@ -284,16 +284,15 @@ namespace Interview
                 return nums[0];
 
             //dp i is cur max value if rob this house or not  
-            var dp = new int[nums.Length + 1];
-            dp[0] = 0;
-            dp[1] = nums[0];
-            dp[2] = Math.Max(dp[1], nums[1] + dp[0]);
+            var dp = new int[nums.Length];
+            dp[0] = nums[0];
+            dp[1] = Math.Max(nums[0], nums[1]);
 
-            for (int i = 3; i < dp.Length; i++)
+            for (int i = 2; i < nums.Length; i++)
             {
-                dp[i] = Math.Max(dp[i - 1], nums[i - 1] + dp[i - 2]);
+                dp[i] = Math.Max(dp[i-1] , nums[i] + dp[i - 2]);
             }
-            return dp[nums.Length];
+            return dp[nums.Length-1];
         }
 
         //213. House Robber II
@@ -307,11 +306,12 @@ namespace Interview
             if (nums.Length == 1)
                 return nums[0];
 
-            var arr1 = new int[nums.Length - 1];
-            var arr2 = new int[nums.Length - 1];
+            int len = nums.Length;
+            var arr1 = new int[len-1];
+            var arr2 = new int[len-1];
 
-            Array.Copy(nums, 0, arr1, 0, nums.Length - 1);
-            Array.Copy(nums, 1, arr2, 0, nums.Length - 1);
+            Array.Copy(nums, 0, arr1, 0, len - 1);
+            Array.Copy(nums, 1, arr2, 0, len - 1);
 
             return Math.Max(Rob(arr1), Rob(arr2));
         }

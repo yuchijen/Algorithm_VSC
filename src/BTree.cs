@@ -33,6 +33,27 @@ namespace Interview
     }
     public class BTree
     {
+        //230. Kth Smallest Element in a BST
+        public int KthSmallest(TreeNode root, int k) {
+            //use iterator to count to k
+            if(root==null)
+                return 0;
+
+            var st = new Stack<TreeNode>();
+            int cnt = 0;
+            while(st.Count > 0 || root!=null){
+                while(root!=null){
+                    st.Push(root);
+                    root = root.left;                    
+                }
+                root = st.Pop();
+                if(++cnt == k)
+                    return root.val;
+                root = root.right;                
+            }
+            return -1;
+        }
+
         public bool IsPalindrome(string s) {
         
         int st = 0;
@@ -54,6 +75,7 @@ namespace Interview
         }
         return true;
     }
+
         //1448. Count Good Nodes in Binary Tree [MS] 
         //Given a binary tree root, a node X in the tree is named good if in the path from root 
         //to X there are no nodes with a value greater than X.
@@ -102,7 +124,6 @@ namespace Interview
             SumNumbersHelp(node.left, curVal, ret);
             SumNumbersHelp(node.right, curVal, ret);
         }
-
 
         //545. Boundary of Binary Tree
         List<int> leftB = new List<int>();

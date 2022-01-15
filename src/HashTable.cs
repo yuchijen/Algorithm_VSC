@@ -37,6 +37,83 @@ namespace Interview
             return s.Substring(stIdx, maxLen);
         }
 
+        //242. Valid Anagram
+        //For example,  s = "anagram", t = "nagaram", return true.
+        //s = "rat", t = "car", return false.
+        public bool IsAnagram2(string s, string t)
+        {
+            if(s.Length!=t.Length)
+                return false;
+
+            int[] arr1 = new int[26];
+            //int[] arr2 = new int[26];
+
+            for(int i =0; i<s.Length; i++){
+                arr1[s[i]-'a']+=1;
+            }
+            for(int i =0; i<t.Length; i++){
+                arr1[t[i]-'a']-=1;
+                if(arr1[t[i]-'a'] < 0)
+                    return false;
+            }    
+            return true;
+        }
+
+        public bool IsAnagram(string s, string t)
+        {
+            if (s == null || t == null || s.Length != t.Length)
+                return false;
+            if (s.Length == 0)
+                return true;
+
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                    map[s[i]]++;
+                else
+                    map.Add(s[i], 1);
+            }
+            for (int i = 0; i < t.Length; i++)
+            {
+                if (map.ContainsKey(t[i]))
+                {
+                    if (map[t[i]] == 0)
+                        return false;
+                    map[t[i]]--;
+                }
+                else
+                    return false;
+            }
+
+            return !map.Any(x => x.Value != 0);
+        }
+
+        //49. Group Anagrams  (Amazon onsite)
+        //Given an array of strings, group anagrams together.
+        //For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+        //Return:
+        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]        
+        public IList<List<string>> GroupAnagrams2(string[] strs)
+        {
+            var ret = new List<IList<string>>();
+            if (strs == null)
+                return null;
+
+            var map = new Dictionary<string, List<string>>();
+            for (int i = 0; i < strs.Length; i++)
+            {
+                var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
+
+                if (!map.ContainsKey(keyStr))
+                    map.Add(keyStr, new List<string>() { strs[i] });
+                else
+                    map[keyStr].Add(strs[i]);
+
+            }
+            return map.Values.ToList();
+        }
 
         //155. Min Stack (get min in O(1))
         //Input ["MinStack","push","push","push","getMin","pop","top","getMin"] 

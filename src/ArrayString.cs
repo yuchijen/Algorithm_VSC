@@ -10,123 +10,143 @@ namespace Interview
     {
         //MS OA
         //1. 判断array里的数是否全都能配对成双，例如[1,2,2,1] 可以配对成[1,1], [2,2]。[1,2,2]则不行，因为没有额外的来跟1配对
-        public bool IsPair(int[] A){
-            if(A==null|| A.Length==0)
+        public bool IsPair(int[] A)
+        {
+            if (A == null || A.Length == 0)
                 return false;
 
             var map = new Dictionary<int, int>();
-            foreach(var i in A){
-                if(map.ContainsKey(A[i])){
-                    map[A[i]]+=1;
-                }else{
-                    map.Add(A[i],1);
+            foreach (var i in A)
+            {
+                if (map.ContainsKey(A[i]))
+                {
+                    map[A[i]] += 1;
+                }
+                else
+                {
+                    map.Add(A[i], 1);
                 }
             }
             // all values (count of number) should be even which means can be paired
-            return map.Values.All(v => v%2 == 0);
+            return map.Values.All(v => v % 2 == 0);
         }
-        
+
         //2. 给了一个从数组中找最小值的函数find_min，min_ = 0，然后从第2个数开始去跟min_比较 min_ = min(min_, array)。需要写一个method return一个反例使得find_min得到的结果是错误
-        public int[] WrongExample(int size){
+        public int[] WrongExample(int size)
+        {
             var rd = new Random();
             int[] ret = new int[size];
-            for(int i=0; i<size;i++){
-                ret[i] = rd.Next(1,size);
+            for (int i = 0; i < size; i++)
+            {
+                ret[i] = rd.Next(1, size);
                 Console.WriteLine(ret[i]);
             }
 
             return ret;
-        } 
+        }
         //3. 给一个string需要把它拆分，使得每一个subst‍‌‍‍‍‍‍‌‌‌‍‌‍‌‌‌‍‌‌‌ring里面的char都是unique的。求最小拆分。例如 ”abcab“ 应拆分为"abc", "ab"结果返回2。 “aaa”则返回3： “a","a","a"
-        public int UniqSub(string s){
-            if(string.IsNullOrEmpty(s))
+        public int UniqSub(string s)
+        {
+            if (string.IsNullOrEmpty(s))
                 return 0;
 
             var hs = new HashSet<char>();
             int ret = 0;
-            for(int i=0; i<s.Length; i++) {
-                if(hs.Contains(s[i])){
-                    ret+=1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (hs.Contains(s[i]))
+                {
+                    ret += 1;
                     hs.Clear();
                 }
                 hs.Add(s[i]);
             }
-            return hs.Count > 0 ? ret+1: ret;
+            return hs.Count > 0 ? ret + 1 : ret;
         }
 
-        public bool CanJump(int[] nums) {
-           if(nums ==null ||nums.Length ==0)
+        public bool CanJump(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
                 return false;
 
-            var ret = new bool[1]{false};
-            helper(nums, 0, ret);        
+            var ret = new bool[1] { false };
+            helper(nums, 0, ret);
             return ret[0];
         }
-        void helper(int[] nums, int st, bool[] ret){
-            if(st == nums.Length-1)
-                ret[0] =true;
-        
-            for(int i=st+1; i< st+nums[st] && i< nums.Length; i++){
+        void helper(int[] nums, int st, bool[] ret)
+        {
+            if (st == nums.Length - 1)
+                ret[0] = true;
+
+            for (int i = st + 1; i < st + nums[st] && i < nums.Length; i++)
+            {
                 helper(nums, i, ret);
             }
         }
 
         //11. Container With Most Water
-        public int MaxArea(int[] height) {        
-            if(height ==null || height.Length ==0)
+        public int MaxArea(int[] height)
+        {
+            if (height == null || height.Length == 0)
                 return 0;
-        
-            int i=0;
-            int j =height.Length-1;
+
+            int i = 0;
+            int j = height.Length - 1;
             int max = 0;
 
-            while(i<j){
-                max = Math.Max(max, Math.Min(height[i],height[j]) * (j-i));
-                if(height[i] < height[j]    )
+            while (i < j)
+            {
+                max = Math.Max(max, Math.Min(height[i], height[j]) * (j - i));
+                if (height[i] < height[j])
                     i++;
                 else
-                    j--;            
+                    j--;
             }
             return max;
         }
 
         //1822. Sign of the Product of an Array [MS]
-        public int ArraySign(int[] nums) {
-            if(nums==null || nums.Length ==0 || nums.Any(x => x == 0))
+        public int ArraySign(int[] nums)
+        {
+            if (nums == null || nums.Length == 0 || nums.Any(x => x == 0))
                 return 0;
-        
-            return nums.Count(x => x < 0) %2 == 0 ? -1 : 1;            
+
+            return nums.Count(x => x < 0) % 2 == 0 ? -1 : 1;
         }
-        public int ArraySign2(int[] nums) {
-            if(nums==null || nums.Length ==0)
+        public int ArraySign2(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
                 return 0;
-            int sign = 1;    
-            for(int i =0; i< nums.Length; i++){
-                if(nums[i]==0)
+            int sign = 1;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] == 0)
                     return 0;
-                if(nums[i] < 0)
-                    sign *= -1;                        
+                if (nums[i] < 0)
+                    sign *= -1;
             }
             return sign;
         }
 
         //一道题，给“mon 11:30 am”, “mon 3:40 pm”，开始时间和结束时间，要求返回一个list，
         //里面是五分钟时间的间隔，周一的话‍‌‍‍‌‌‍‌‌‌‍‍‍‍‌‌‍‍‍是11130 11135…… 11540
-        public List<string> TimeFrameConverter(string s){
+        public List<string> TimeFrameConverter(string s)
+        {
             var ret = new List<string>();
-            var weekArr = new Dictionary<string, int>(){{"mon", 1},{"tue", 2}};
+            var weekArr = new Dictionary<string, int>() { { "mon", 1 }, { "tue", 2 } };
 
             Console.WriteLine(DateTime.Parse("11:30 pm").ToString("HHmm"));
-            
-            foreach(string frame in s.Split(',')) {
+
+            foreach (string frame in s.Split(','))
+            {
                 var frameArr = frame.Trim().Split(' ');
                 string week = weekArr[frameArr[0].Trim()].ToString();
-                var timeItem = $"{frameArr[1]} {frameArr[2]}"; 
+                var timeItem = $"{frameArr[1]} {frameArr[2]}";
                 string timeItemStr = DateTime.Parse(timeItem).ToString("HHmm");
                 ret.Add($"{week}{timeItemStr}");
             }
 
-            ret.ForEach(x =>Console.WriteLine(x));
+            ret.ForEach(x => Console.WriteLine(x));
             return ret;
         }
 
@@ -135,23 +155,27 @@ namespace Interview
         // with the given abbreviation.
         //Example 1: Given s = "internationalization", abbr = "i12iz4n": Return true.
         //题目中限定了单词中只有小写字母和数字，所以我们只要对这两种情况分别处理即可。我们使用双指针分别指向两个单词的开头，循环的条件是两个指针都没有到各自的末尾，如果指向缩写单词的指针指的是一个数字的话，如果当前数字是0，返回false，因为数字不能以0开头，然后我们要把该数字整体取出来，所以我们用一个while循环将数字整体取出来，然后指向原单词的指针也要对应的向后移动这么多位数。如果指向缩写单词的指针指的是一个字母的话，那么我们只要比两个指针指向的字母是否相同，不同则返回false，相同则两个指针均向后移动一位
-        public bool validWordAbbreviation(string word, string abbr) {
-            if(string.IsNullOrEmpty(word))
+        public bool validWordAbbreviation(string word, string abbr)
+        {
+            if (string.IsNullOrEmpty(word))
                 return false;
-            int i = 0, j =0;
+            int i = 0, j = 0;
             int wordLen = word.Length;
             int abbrLen = abbr.Length;
-            int digitLen = 0;                
-            while(i < wordLen && j < abbrLen){
-                if(abbr[j] >= 0 && abbr[j] <= 9){
+            int digitLen = 0;
+            while (i < wordLen && j < abbrLen)
+            {
+                if (abbr[j] >= 0 && abbr[j] <= 9)
+                {
                     digitLen = digitLen * 10 + abbr[j] - '0';
                     j++;
                 }
-                else{
+                else
+                {
                     i += digitLen;
-                    if(word[i++] != abbr[j++])
+                    if (word[i++] != abbr[j++])
                         return false;
-                    digitLen =0;
+                    digitLen = 0;
                 }
             }
             return i == wordLen && j == abbrLen;
@@ -188,23 +212,25 @@ namespace Interview
             int i = S.Length - 1, j = T.Length - 1, cnt1 = 0, cnt2 = 0;
             while (i >= 0 || j >= 0)
             {
-                while (i >= 0 && (S[i] == '#' || cnt1 > 0)) {
-                    if(S[i--] == '#') 
-                        ++cnt1; 
+                while (i >= 0 && (S[i] == '#' || cnt1 > 0))
+                {
+                    if (S[i--] == '#')
+                        ++cnt1;
                     else
                         --cnt1;
                 }
 
-                while (j >= 0 && (T[j] == '#' || cnt2 > 0)){
-                    if(T[j--] == '#') 
-                        ++cnt2; 
+                while (j >= 0 && (T[j] == '#' || cnt2 > 0))
+                {
+                    if (T[j--] == '#')
+                        ++cnt2;
                     else
                         --cnt2;
                 }
                 if (i < 0 || j < 0) return i == j;
                 if (S[i--] != T[j--]) return false;
             }
-            return S.Substring(0,i+1) == T.Substring(0,j+1);
+            return S.Substring(0, i + 1) == T.Substring(0, j + 1);
         }
 
         //input = Zebra-493?  rotationFactor = 3   output = Cheud-726?    
@@ -1946,7 +1972,7 @@ namespace Interview
         //Given an array of meeting time intervals consisting of start and end times
         //[[s1, e1],[s2, e2],...] (si<ei), determine if a person could attend all meetings.
         //For example,
-        //Given[[0, 30],[5, 10],[15, 20]],return false.
+        //Given[[0, 30],[5, 10],[15, 20]],return false.    
         public bool canAttendMeetings(Interval[] intervals)
         {
             if (intervals == null || intervals.Length == 0)
@@ -2004,9 +2030,10 @@ namespace Interview
         }
 
         //57. Insert Interval
-        public int[][] InsertInterval(int[][] intervals, int[] newInterval) {
-            if(intervals==null)
-                return new int[][]{newInterval};
+        public int[][] InsertInterval(int[][] intervals, int[] newInterval)
+        {
+            if (intervals == null)
+                return new int[][] { newInterval };
 
             var ret = new List<List<int>>();
             int st = newInterval[0];
@@ -2014,23 +2041,26 @@ namespace Interview
             int i = 0;
             int len = intervals.Length;
             // new interval st > interval[i].end , just add to ret            
-            while(i< len && newInterval[0] > intervals[i][1]){
-                ret.Add(new List<int>(){intervals[i][0], intervals[i][1]});
+            while (i < len && newInterval[0] > intervals[i][1])
+            {
+                ret.Add(new List<int>() { intervals[i][0], intervals[i][1] });
                 i++;
             }
             //**key: new interval end >= interval[i].st, need to merge
-            while(i< len && end >= intervals[i][0]){
+            while (i < len && end >= intervals[i][0])
+            {
                 st = Math.Min(st, intervals[i][0]);
-                end = Math.Max(end, intervals[i][1]);                
+                end = Math.Max(end, intervals[i][1]);
                 i++;
             }
-            ret.Add(new List<int>(){st, end});
+            ret.Add(new List<int>() { st, end });
 
             //the rest
-            while(i< len){
-                ret.Add(new List<int>(){intervals[i][0], intervals[i][1]});
+            while (i < len)
+            {
+                ret.Add(new List<int>() { intervals[i][0], intervals[i][1] });
                 i++;
-            } 
+            }
 
             return ret.Select(x => x.ToArray()).ToArray();
         }
@@ -2237,65 +2267,6 @@ namespace Interview
             }
         }
 
-        //242. Valid Anagram
-        //For example,  s = "anagram", t = "nagaram", return true.
-        //s = "rat", t = "car", return false.
-        public bool IsAnagram(string s, string t)
-        {
-            if (s == null || t == null || s.Length != t.Length)
-                return false;
-            if (s.Length == 0)
-                return true;
-
-            var map = new Dictionary<char, int>();
-
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (map.ContainsKey(s[i]))
-                    map[s[i]]++;
-                else
-                    map.Add(s[i], 1);
-            }
-            for (int i = 0; i < t.Length; i++)
-            {
-                if (map.ContainsKey(t[i]))
-                {
-                    if (map[t[i]] == 0)
-                        return false;
-                    map[t[i]]--;
-                }
-                else
-                    return false;
-            }
-
-            return !map.Any(x => x.Value != 0);
-        }
-
-        //49. Group Anagrams  (Amazon onsite)
-        //Given an array of strings, group anagrams together.
-        //For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
-        //Return:
-        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]        
-        public IList<List<string>> GroupAnagrams2(string[] strs)
-        {
-            var ret = new List<IList<string>>();
-            if (strs == null)
-                return null;
-
-            var map = new Dictionary<string, List<string>>();
-            for (int i = 0; i < strs.Length; i++)
-            {
-                var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
-
-                if (!map.ContainsKey(keyStr))
-                    map.Add(keyStr, new List<string>() { strs[i] });
-                else
-                    map[keyStr].Add(strs[i]);
-
-            }
-            return map.Values.ToList();
-        }
-
         //14. Longest Common Prefix
         //Write a function to find the longest common prefix string amongst an array of strings
         public string LongestCommonPrefix(string[] strs)
@@ -2453,7 +2424,7 @@ namespace Interview
                 ed++;
             }
         }
-        
+
         //(amazon) Find the longest unbroken series of increasing numbers in a list of random numbers 
         //i.e. if given[15, 2, 38, 71, 2, 524, 98], return [2, 38, 71] (longest increasing sub array)
         public int[] LongestIncreasingSubArray(int[] nums)
@@ -2483,7 +2454,7 @@ namespace Interview
                     end = st;
                 }
             }
-            
+
             if (max > 0)
             {
                 int[] ret = new int[max + 1];
@@ -3477,19 +3448,20 @@ namespace Interview
                 {
                     st.Push(s[i]);
                 }
-                else{
-                    if(st.Count == 0)
+                else
+                {
+                    if (st.Count == 0)
                         return false;
-                    if(s[i] == '}' && st.Peek() != '{')
+                    if (s[i] == '}' && st.Peek() != '{')
                         return false;
-                    if(s[i] == ']' && st.Peek() != '[')
-                        return false;    
-                    if(s[i] == ')' && st.Peek() != '(')
-                        return false;    
-                    st.Pop();    
+                    if (s[i] == ']' && st.Peek() != '[')
+                        return false;
+                    if (s[i] == ')' && st.Peek() != '(')
+                        return false;
+                    st.Pop();
                 }
             }
-            return st.Count==0;
+            return st.Count == 0;
         }
 
         public bool IsValid(string s)
@@ -3663,7 +3635,7 @@ namespace Interview
             }
             return max;
         }
-        
+
         //54. Spiral Matrix
         //Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
         //For example,  Given the following matrix:
@@ -3724,36 +3696,42 @@ namespace Interview
 
         public IList<int> SpiralOrder2(int[][] matrix)
         {
-            if(matrix == null){
+            if (matrix == null)
+            {
                 return null;
-            }   
+            }
             var ret = new List<int>();
             int up = 0;
-            int down = matrix.Length-1;
+            int down = matrix.Length - 1;
             int left = 0;
-            int right = matrix[0].Length-1;
+            int right = matrix[0].Length - 1;
 
             // any time if up > down or left > right, means end of circle, can break
-            while(true){
-                for(int j=left; j<= right; j++) {
+            while (true)
+            {
+                for (int j = left; j <= right; j++)
+                {
                     ret.Add(matrix[up][j]);
                 }
-                if(++up > down) break;
+                if (++up > down) break;
 
-                for(int i =up; i<=down; i++){
+                for (int i = up; i <= down; i++)
+                {
                     ret.Add(matrix[i][right]);
                 }
-                if(--right < left) break;
+                if (--right < left) break;
 
-                for(int j = right; j>=left; j--){
+                for (int j = right; j >= left; j--)
+                {
                     ret.Add(matrix[down][j]);
-                }    
-                if(--down < up) break;
+                }
+                if (--down < up) break;
 
-                for(int i = down; i>=up ; i--){
+                for (int i = down; i >= up; i--)
+                {
                     ret.Add(matrix[i][left]);
                 }
-                if(++left > right) break;
+                if (++left > right) break;
             }
             return ret;
         }
@@ -3922,21 +3900,22 @@ namespace Interview
 
 
         //1779. Find Nearest Point That Has the Same X or Y Coordinate
-        public int NearestValidPoint(int x, int y, int[][] points) {
-            if(points==null || points.Length==0)
+        public int NearestValidPoint(int x, int y, int[][] points)
+        {
+            if (points == null || points.Length == 0)
                 return -1;
 
             //find item match the requirment
             var ans = points.Where(p => p[1] == y || p[0] == x).ToArray()
-            .OrderBy(p => Math.Abs(p[0] - x) + Math.Abs(p[1] - y)).Take(1).ToArray(); 
-            
-            if(ans==null || ans.Length==0)
+            .OrderBy(p => Math.Abs(p[0] - x) + Math.Abs(p[1] - y)).Take(1).ToArray();
+
+            if (ans == null || ans.Length == 0)
                 return -1;
-        
+
             //find matched item index in original array
-            return points.Select((item, index) => new {item, index})
-            .Where(pair => pair.item[0] == ans[0][0] && pair.item[1] ==ans[0][1])  
-            .Select(p=>p.index).FirstOrDefault();
+            return points.Select((item, index) => new { item, index })
+            .Where(pair => pair.item[0] == ans[0][0] && pair.item[1] == ans[0][1])
+            .Select(p => p.index).FirstOrDefault();
             // for(int i=0; i< points.Length; i++){
             //     for(int j=0; j< points[i].Length; j++){
             //         Console.WriteLine(points[i][j]);
@@ -4053,27 +4032,32 @@ namespace Interview
         {
             var ret = new List<IList<int>>();
             Array.Sort(nums);
-            for(int i = 0; i< nums.Length -2; i++){
-                if(i > 0 && nums[i]==nums[i-1]) // slip duplicate item to prevent duplicate set
+            for (int i = 0; i < nums.Length - 2; i++)
+            {
+                if (i > 0 && nums[i] == nums[i - 1]) // slip duplicate item to prevent duplicate set
                     continue;
-                
-                int j = i+1;
-                int k = nums.Length-1;
+
+                int j = i + 1;
+                int k = nums.Length - 1;
                 int target = 0 - nums[i];
-                while(j < k){
-                    if(nums[j] + nums[k] == target) {
-                        ret.Add(new List<int>(){nums[i], nums[j], nums[k] });
+                while (j < k)
+                {
+                    if (nums[j] + nums[k] == target)
+                    {
+                        ret.Add(new List<int>() { nums[i], nums[j], nums[k] });
                         j++;
                         k--;
-                        while(j < k && nums[j]==nums[j-1])
+                        while (j < k && nums[j] == nums[j - 1])
                             j++;
-                        while(j < k && nums[k]==nums[k+1])
-                            k--;    
+                        while (j < k && nums[k] == nums[k + 1])
+                            k--;
                     }
-                    else if(nums[j] + nums[k] < target) {
+                    else if (nums[j] + nums[k] < target)
+                    {
                         j++;
                     }
-                    else {
+                    else
+                    {
                         k--;
                     }
                 }
@@ -4156,32 +4140,31 @@ namespace Interview
             return ret;
         }
 
-
         //268. Missing Number
         //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
         //For example, Given nums = [0, 1, 3] return 2.
         // Input: [3,0,1]    Output: 2
-        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?        
-        public int MissingNumber(int[] nums)
+        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?
+        public int MissingNumberBit(int[] nums)
         {
-            if (nums == null || nums.Length == 0)
-                return -1;
+            int size = nums.Length;
+            int total = size * (size + 1) / 2;
 
-            if (nums.Length == 1 && nums[0] == 0)
-                return 1;
-            if (nums.Length == 1 && nums[0] == 1)
-                return 0;
-
-            int realsum = 0;
-            for (int i = 0; i < nums.Length; i++)
+            int ret = 0;
+            for (int i = 1; i <= size; i++)
             {
-                realsum += nums[i];
+                ret ^= i ^ nums[i - 1];
             }
-            int ideasum = ((nums.Length) * (1 + nums.Length)) / 2;
-
-            return ideasum - realsum;
+            return ret;
         }
+        public int MissingNumberMath(int[] nums)
+        {
+            int size = nums.Length;
+            int total = size * (size + 1) / 2;
 
+            return total - nums.Sum();
+        }
+        
         //[-2,0, 1,2] missing -1 
         int missingNumberII(int[] nums)
         {
@@ -4328,7 +4311,7 @@ namespace Interview
 
             bool isRowZero = false;
             bool isColZero = false;
-            
+
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 if (matrix[i, 0] == 0)
