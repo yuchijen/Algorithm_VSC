@@ -203,8 +203,7 @@ namespace Interview
             // }
 
             var dfs = new DFS_BFS();
-            Console.WriteLine(dfs.alienOrder(new string[]{"wrt","wrf","er","ett","rftt"}));
-
+            
             //dfs.LadderLength("a", "c", new string[]{"a","b","c"});
 
             // var flights = new int[3][];

@@ -21,7 +21,7 @@ namespace Interview
     }
 
     public class DFS_BFS
-    {    
+    {
         //787. Cheapest Flights Within K Stops (FB) 
         int curMin = int.MaxValue;
         public int FindCheapestPrice(int n, int[][] flights, int src, int dst, int k)
@@ -402,131 +402,6 @@ namespace Interview
             return CanPartitionDPS(nums, n - 1, target - nums[n - 1]) || CanPartitionDPS(nums, n - 1, target);
         }
 
-
-        public class UndirectedGraphNode
-        {
-            public int label;
-            public IList<UndirectedGraphNode> neighbors;
-            public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
-        }
-
-        public class Node2
-        {
-            public int val;
-            public IList<Node2> neighbors;
-
-            public Node2()
-            {
-                val = 0;
-                neighbors = new List<Node2>();
-            }
-
-            public Node2(int _val)
-            {
-                val = _val;
-                neighbors = new List<Node2>();
-            }
-
-            public Node2(int _val, List<Node2> _neighbors)
-            {
-                val = _val;
-                neighbors = _neighbors;
-            }
-        }
-
-        //133. Clone Graph
-        //Given the head of a graph, return a deep copy(clone) of the graph.Each node in the graph 
-        //contains a label(int) and a list(List[UndirectedGraphNode]) of its neighbors.There is an 
-        //edge between the given node and each of the nodes in its neighbors.
-        public Node2 CloneGraph2(Node2 node)
-        {
-            if (node == null)
-                return null;
-
-            var map = new Dictionary<Node2, Node2>();
-            map.Add(node, new Node2(node.val));
-
-            return CloneGraphDFS(node, map);
-        }
-        public Node2 CloneGraphBFS(Node2 node)
-        {
-            if (node == null)
-                return null;
-
-            var map = new Dictionary<Node2, Node2>();
-            map.Add(node, new Node2(node.val));
-
-            var q = new Queue<Node2>();
-            q.Enqueue(node);
-
-            while (q.Count > 0)
-            {
-                var curNode = q.Dequeue();
-                if (!map.ContainsKey(curNode))
-                {
-                    var cloneNode = new Node2(curNode.val);
-                    map.Add(curNode, cloneNode);
-                }
-                foreach (var n in curNode.neighbors)
-                {
-                    if (!map.ContainsKey(n))
-                    {
-                        map.Add(n, new Node2(n.val));
-                        q.Enqueue(n);
-                    }
-                    map[curNode].neighbors.Add(map[n]);
-                }
-            }
-            return map[node];
-        }
-
-
-        public Node2 CloneGraphDFS(Node2 node, Dictionary<Node2, Node2> map)
-        {
-            if (node == null)
-                return null;
-
-            if (map.ContainsKey(node))
-            {
-                return map[node];
-            }
-            var newNode = new Node2(node.val);
-            map.Add(node, newNode);
-            foreach (var n in node.neighbors)
-            {
-                newNode.neighbors.Add(CloneGraphDFS(n, map));
-            }
-            return newNode;
-        }
-
-        public UndirectedGraphNode CloneGraph(UndirectedGraphNode node)
-        {
-            if (node == null)
-                return null;
-
-            Dictionary<UndirectedGraphNode, UndirectedGraphNode> dic = new Dictionary<UndirectedGraphNode, UndirectedGraphNode>();
-            dic.Add(node, new UndirectedGraphNode(node.label));
-            Queue<UndirectedGraphNode> qu = new Queue<UndirectedGraphNode>();
-            qu.Enqueue(node);
-
-            while (qu.Count != 0)
-            {
-                var curNode = qu.Dequeue();
-
-                foreach (var nei in curNode.neighbors)
-                {
-                    if (!dic.ContainsKey(nei))
-                    {
-                        qu.Enqueue(nei);
-                        dic.Add(nei, new UndirectedGraphNode(nei.label));
-                    }
-                    dic[curNode].neighbors.Add(dic[nei]);
-                }
-            }
-            return dic[node];
-        }
-
-
         //953. Verifying an Alien Dictionary
         //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
         //Given a sequence of words written in the alien language, and the order of the alphabet, return true if and only if the given words are sorted lexicographicaly in this alien language.
@@ -539,6 +414,27 @@ namespace Interview
         //Explanation: As 'd' comes after 'l' in this language, then words[0] > words[1], hence the sequence is unsorted.
         //Input: words = ["apple","app"], order = "abcdefghijklmnopqrstuvwxyz"
         //Output: false
+        public bool IsAlienSorted3(string[] words, string order)
+        {
+            for (int i = 0; i < words.Length - 1; i++)
+            {
+                int len = Math.Min(words[i].Length, words[i + 1].Length);
+                int j = 0;
+                for (; j < len; j++)
+                {
+                    if (words[i][j] == words[i + 1][j])
+                        continue;
+                    if (order.IndexOf(words[i][j]) > order.IndexOf(words[i + 1][j]))
+                        return false;
+                    else
+                        break;
+                }
+                if (words[i].Length > len && j == len)
+                    return false;
+            }
+            return true;
+        }
+
         public bool IsAlienSorted2(string[] words, string order)
         {
             if (words == null || words.Length == 0)
@@ -644,7 +540,6 @@ namespace Interview
             return true;
         }
 
-
         //785. Is Graph Bipartite?
         //Given an undirected graph, return true if and only if it is bipartite.
         //Recall that a graph is bipartite if we can split it's set of nodes into two independent subsets A and B such that every edge in the graph has one node in A and another node in B.
@@ -717,222 +612,6 @@ namespace Interview
                 }
             }
             return true;
-        }
-
-        public bool CanFinish(int numCourses, int[][] prerequisites)
-        {
-            // build graph 
-            var g = new List<int>[numCourses];
-
-            for (int i = 0; i < prerequisites.Length; i++)
-            {
-                if (g[prerequisites[i][0]] == null)
-                    g[prerequisites[i][0]] = new List<int>();
-
-                g[prerequisites[i][0]].Add(prerequisites[i][1]);
-            }
-            var visit = new int[numCourses];
-            for (int i = 0; i < numCourses; i++)
-            {
-                if (hasCycle(i, g, visit))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        bool hasCycle(int n, List<int>[] g, int[] visit)
-        {
-            if (visit[n] == 1) //in middle of path
-                return true;
-
-            if (visit[n] == 2)  // this node is the end of graph
-                return false;
-
-            visit[n] = 1;
-            if (g[n] != null)
-            {
-                foreach (var i in g[n])
-                {
-                    if (hasCycle(i, g, visit))
-                        return true;
-                }
-            }
-
-            visit[n] = 2;
-            return false;
-        }
-
-        //269. Alien Dictionary (topological sort)
-        //There is a new alien language which uses the latin alphabet. However, the order among letters 
-        //are unknown to you. You receive a list of non-empty words from the dictionary, where words 
-        //are sorted lexicographically by the rules of this new language. Derive the order of letters 
-        //in this language.
-        //Example 1:  
-        //Input:[
-        //      "wrt",
-        //      "wrf",
-        //      "er",
-        //      "ett",
-        //      "rftt"
-        //      ]    Output: "wertf"
-        //e.g.2 Input:
-        //[
-        //  "z",
-        //  "x",
-        //  "z"
-        //]   Output: ""   cycle not allowed
-        //Note:
-        //You may assume all letters are in lowercase.
-        //You may assume that if a is a prefix of b, then a must appear before b in the given dictionary.
-        //If the order is invalid, return an empty string.
-        //There may be multiple valid order of letters, return any one of them is fine.
-        //space O(V+E), time: DFS which is O(V+E)
-        public string alienOrder(string[] words)
-        {
-            if (words == null)
-                return null;
-            //build graph
-            var map = new Dictionary<char, HashSet<char>>();
-            for (int i = 0; i < words.Length - 1; i++)
-            {
-                int idx = 0;
-                int len = Math.Min(words[i].Length, words[i + 1].Length);
-                while (idx < len)
-                {
-                    if (words[i][idx] != words[i + 1][idx])
-                    {
-                        if (map.ContainsKey(words[i][idx]))
-                            map[words[i][idx]].Add(words[i + 1][idx]);
-                        else
-                            map.Add(words[i][idx], new HashSet<char> { words[i + 1][idx] });
-
-                        break;
-                    }
-                    idx++;
-                }
-                if (idx == len && words[i].Length > words[i + 1].Length)
-                    return "";
-            }
-            // Console.WriteLine("alien graph:");
-            // foreach(var kv in map){
-            //     Console.Write(kv.Key +":");
-            //     foreach(var v in kv.Value)
-            //         Console.Write(v+" ");
-
-            //     Console.WriteLine("");                    
-            // }
-            var allSet = new String(string.Join("", words).Distinct().ToArray());
-
-            var visited = new int[26];
-
-            var ret = new HashSet<char>();
-            foreach (var c in allSet)
-            {
-                if (FindCycle(c, ret, map, visited)) //if cycle happened
-                    return "";
-            }
-            return string.Join("", ret.ToArray().Reverse());
-        }
-
-        //return true if found cycle
-        bool FindCycle(char c, HashSet<char> ret, Dictionary<char, HashSet<char>> map, int[] visited)
-        {
-            if (visited[c - 'a'] == 1)
-                return true;
-            if (visited[c - 'a'] == 2)
-                return false;
-
-            visited[c - 'a'] = 1;
-            if (map.ContainsKey(c))
-            {
-                foreach (var cc in map[c])
-                {
-                    if (FindCycle(cc, ret, map, visited))
-                        return true;
-                }
-            }
-
-            visited[c - 'a'] = 2;
-            ret.Add(c);
-            return false;
-        }
-
-        //by Hanrey Liu
-        public String alienOrderBFS(String[] words)
-        {
-            if (words.Length == 0) return "";
-            var map = new Dictionary<char, HashSet<char>>();
-            var indegree = new Dictionary<char, int>();
-
-            //Map<Character, Integer> indegree = new HashMap<>();
-
-            foreach (String word in words)
-            {
-                foreach (char c in word)
-                {
-                    indegree.Add(c, 0);
-                }
-            }
-            for (int i = 0; i < words.Length - 1; i++)
-            {
-                String curr = words[i];
-                String next = words[i + 1];
-                addDependency(curr, next, words, indegree, map);
-            }
-            Queue<char> queue = new Queue<char>();
-            StringBuilder sb = new StringBuilder();
-            foreach (char c in indegree.Keys)
-            {
-                if (indegree[c] == 0)
-                {
-                    queue.Enqueue(c);
-                }
-            }
-            while (queue.Count > 0)
-            {
-                char curr = queue.Dequeue();
-                sb.Append(curr);
-                HashSet<char> child = map[curr];
-                if (child != null)
-                {
-                    foreach (char node in child)
-                    {
-                        indegree.Add(node, indegree[node] - 1);
-                        if (indegree[node] == 0)
-                        {
-                            queue.Enqueue(node);
-                        }
-                    }
-                }
-            }
-            return sb.Length == indegree.Count ? sb.ToString() : "";
-        }
-        private void addDependency(String curr, String next, String[] words, Dictionary<char, int> indegree,
-                                   Dictionary<char, HashSet<char>> map)
-        {
-            int len = Math.Min(curr.Length, next.Length);
-            for (int i = 0; i < len; i++)
-            {
-                char c1 = curr[i];
-                char c2 = next[i];
-                if (c1 != c2)
-                {
-                    if (!map.ContainsKey(c1))
-                    {
-                        map.Add(c1, new HashSet<char>());
-                    }
-                    if (!map[c1].Add(c2))
-                    {
-                        break;
-                    }
-                    indegree[c2] += 1;
-                    //indegree.Add(c2, indegree[c2] + 1);
-                    break;
-                }
-            }
         }
 
         //44. Wildcard Matching  (DFS not passed yet)
@@ -1233,7 +912,6 @@ namespace Interview
 
             //time complex O( 4^(n-1)) = O(4^n)  (n= length of num, 4 possible operator (including none) put between numbers (n-1) between space 
 
-
             operatorDFS("", 0, 0, 0, num, target, ret);
             return ret;
         }
@@ -1254,7 +932,6 @@ namespace Interview
                 operatorDFS(expr + '-', position + i, -n, curSum - n, num, target, ret);
                 operatorDFS(expr + '*', position + i, prev * n, curSum + prev * n - prev, num, target, ret);
             }
-
         }
 
         //301. Remove Invalid Parentheses
@@ -1301,6 +978,19 @@ namespace Interview
             return ret;
         }
 
+        bool isValidParenthses(string s)
+        {
+            int count = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
+                    count++;
+                else if (s[i] == ')' && --count < 0)
+                    return false;
+            }
+            return count == 0;
+        }
+
         public IList<string> RemoveInvalidParentheses(string s)
         {
             int removeLeft = 0;
@@ -1319,18 +1009,7 @@ namespace Interview
             dfsFindValidParentheses(s, 0, removeLeft, removeRight, ret);
             return ret;
         }
-        bool isValidParenthses(string s)
-        {
-            int count = 0;
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (s[i] == '(')
-                    count++;
-                else if (s[i] == ')' && --count < 0)
-                    return false;
-            }
-            return count == 0;
-        }
+        
         void dfsFindValidParentheses(string s, int startIdx, int left, int right, List<string> ret)
         {
             if (left == 0 && right == 0)
@@ -1901,42 +1580,6 @@ namespace Interview
             }
         }
 
-        //323. Number of Connected Components in an Undirected Graph
-        public int CountComponents(int n, int[][] edges)
-        {
-            var ret = new int[1];
-            var visited = new bool[n];
-            var map = new Dictionary<int, List<int>>();
-            for (int i = 0; i < edges.GetLength(0); i++)
-            {
-                map.TryAdd(edges[i][0], new List<int>());
-                map.TryAdd(edges[i][1], new List<int>());
-                map[edges[i][0]].Add(edges[i][1]);
-                map[edges[i][1]].Add(edges[i][0]);
-            }
-
-            foreach (var kv in map)
-            {
-                if (!visited[kv.Key])
-                {
-                    ret[0] += 1;
-                    DFSComponentHelper(visited, map, kv.Key);
-                }
-            }
-            ret[0] += visited.Count(c => c == false);
-            return ret[0];
-        }
-        void DFSComponentHelper(bool[] visited, Dictionary<int, List<int>> map, int key)
-        {
-            if (visited[key])
-                return;
-            visited[key] = true;
-            foreach (var node in map[key])
-            {
-                DFSComponentHelper(visited, map, node);
-            }
-        }
-
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
         //An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. 
@@ -2090,61 +1733,6 @@ namespace Interview
         }
 
 
-        //210 Course Schedule II
-        //There are a total of n courses you have to take, labeled from 0 to n - 1.
-        //Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
-        //Given the total number of courses and a list of prerequisite pairs, return the ordering of courses you should take to finish all courses.
-        //There may be multiple correct orders, you just need to return one of them.If it is impossible to finish all courses, return an empty array.
-        // For example: 2, [[1,0]]
-        //There are a total of 2 courses to take.To take course 1 you should have finished course 0. So the correct course order is [0,1]
-        //4, [[1,0],[2,0],[3,1],[3,2]]
-        //There are a total of 4 courses to take.To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be 
-        //taken after you finished course 0. So one correct course order is [0,1,2,3]. Another correct ordering is[0,2,1,3].
-        //Note: The input prerequisites is a graph represented by a list of edges, not adjacency matrices.Read more about how a graph is represented.
-        //You may assume that there are no duplicate edges in the input prerequisites.
-        public int[] FindOrder(int numCourses, int[,] prerequisites)
-        {
-            if (numCourses == 0)
-                return null;
-
-            List<int> ret = new List<int>();
-            //build graph
-            List<int>[] graph = new List<int>[numCourses];
-            for (int i = 0; i < numCourses; i++)
-                graph[i] = new List<int>();
-
-            for (int i = 0; i < prerequisites.GetLength(0); i++)
-                graph[prerequisites[i, 0]].Add(prerequisites[i, 1]);
-
-            var visit = new int[numCourses];
-
-            for (int i = 0; i < numCourses; i++)
-            {
-                if (IsCourseCycle(graph, ret, visit, i))
-                    return new int[] { };
-            }
-            return ret.ToArray();
-        }
-        bool IsCourseCycle(List<int>[] graph, List<int> ret, int[] visit, int idx)
-        {
-            if (visit[idx] == 1)  //if visiting node 
-                return true;
-
-            if (visit[idx] == 2)  //if visited node 
-                return false;
-
-            visit[idx] = 1;
-
-            foreach (int x in graph[idx])
-            {
-                if (IsCourseCycle(graph, ret, visit, x))
-                    return true;
-            }
-
-            visit[idx] = 2;  //already visited
-            ret.Add(idx);
-            return false;
-        }
 
 
         //339. Nested List Weight Sum

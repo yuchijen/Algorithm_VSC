@@ -178,8 +178,7 @@ namespace Interview
             hs.Add(x);
             return true;
         }
-
-
+        
         //50. Pow(x, n)
         //Implement pow(x, n). in log(n)
         //Example 1:Input: 2.00000, 10

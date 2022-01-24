@@ -1342,7 +1342,6 @@ namespace Interview
             return root;
         }
 
-
         //297. Serialize and Deserialize Binary Tree 
         //For example, you may serialize the following tree
         //    1         as "[1,2,3,null,null,4,5]", just the same as how LeetCode OJ 

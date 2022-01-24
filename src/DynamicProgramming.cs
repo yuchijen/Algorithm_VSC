@@ -1,32 +1,142 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Interview
 {
     public class DynamicProgramming
     {
-        //62. Unique Paths
-        public int UniquePaths(int m, int n) {
-            if(m<2 || n<2)
+        //1048. Longest String Chain
+        // time O(NlogN + NxM) M is average length of word
+        public int LongestStrChain(string[] words)
+        {
+            int len = words.Length;
+            if (len == 1)
                 return 1;
-            int[,] dp = new int[m+1, n+1];
-        
-            for(int i = 1; i<=m;i++){
-                dp[i,1]=1;
-            }
-            for(int j = 1; j<=n; j++){
-                dp[1,j]=1;
-            }
 
-            for(int i = 2; i<=m; i++){
-                for(int j = 2; j<=n; j++){
-                    // final step depends on previous step from up 1 or left 1
-                    dp[i,j] = dp[i-1, j]+dp[i, j-1];
+            words = words.OrderBy(x => x.Length).ToArray();
+            var dp = new Dictionary<string, int>();
+
+            // map's key是一个词，value是从小到大能变换到这个词的最大长度。
+
+            foreach (var s in words)
+            {
+                for (int i=0; i<s.Length; i++)
+                {
+                    string prev = s.Substring(0, i)+s.Substring(i+1);
+                    int dpPrev = dp.ContainsKey(prev) ? dp[prev]:0;
+                    dp.TryAdd(s,1);
+                    int val = Math.Max(dp[s], dpPrev+1);
+                    dp[s] = val;
                 }
             }
-            return dp[m,n];
+            return dp.Values.Max();
+        }
+
+        //64. Minimum Path Sum
+        public int MinPathSum(int[][] grid)
+        {
+            int rLen = grid.Length;
+            int cLen = grid[0].Length;
+            //dp[i][j] 表示到达当前位置的最小路径和
+            int[,] dp = new int[rLen + 1, cLen + 1];
+            //但是有些特殊情况要提前赋值，比如起点位置，直接赋值为 grid[0][0]，还有就是第一行和第一列，其中第一行的位置只能从左边过来
+            //initialize 1st col 
+            for (int i = 1; i <= rLen; i++)
+            {
+                dp[i, 1] = grid[i - 1][0] + dp[i - 1, 1];
+            }
+            //initialize 1st row 
+            for (int j = 1; j <= cLen; j++)
+            {
+                dp[1, j] = grid[0][j - 1] + dp[1, j - 1];
+            }
+            for (int i = 2; i <= rLen; i++)
+            {
+                for (int j = 2; j <= cLen; j++)
+                {
+                    dp[i, j] = grid[i - 1][j - 1] + Math.Min(dp[i - 1, j], dp[i, j - 1]);
+                }
+            }
+
+            return dp[rLen, cLen];
+        }
+
+        //304. Range Sum Query 2D - Immutable
+        public class NumMatrix
+        {
+            private int[,] dp;
+            public NumMatrix(int[][] matrix)
+            {
+                int rLen = matrix.Length;
+                int cLen = matrix[0].Length;
+                dp = new int[rLen + 1, cLen + 1];
+
+                for (int i = 1; i <= rLen; i++)
+                {
+                    for (int j = 1; j <= cLen; j++)
+                    {
+                        dp[i, j] = matrix[i - 1][j - 1] + dp[i - 1, j] + dp[i, j - 1] - dp[i - 1, j - 1];
+                    }
+                }
+            }
+
+            public int SumRegion(int row1, int col1, int row2, int col2)
+            {
+                //int minLeft = Math.Min()
+                return dp[row2 + 1, col2 + 1] - dp[row2 + 1, col1] - dp[row1, col2 + 1] + dp[row1, col1];
+
+            }
+        }
+        //300. Longest Increasing Subsequence
+        //Given an integer array nums, return the length of the longest strictly increasing subsequence.
+        //Input: nums = [0,1,0,3,2,3] Output: 4
+        public int LengthOfLIS(int[] nums)
+        {
+            int ret = 0;
+            int len = nums.Length;
+            int[] dp = new int[len]; //dp[i] is max LIS until i idx 
+            for (int i = 0; i < len; i++)
+                dp[i] = 1;
+
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (nums[i] > nums[j])
+                        dp[i] = Math.Max(dp[i], dp[j] + 1);
+                }
+
+                ret = Math.Max(dp.Max(), ret);
+            }
+            return ret;
+        }
+
+        //62. Unique Paths
+        public int UniquePaths(int m, int n)
+        {
+            if (m < 2 || n < 2)
+                return 1;
+            int[,] dp = new int[m + 1, n + 1];
+
+            for (int i = 1; i <= m; i++)
+            {
+                dp[i, 1] = 1;
+            }
+            for (int j = 1; j <= n; j++)
+            {
+                dp[1, j] = 1;
+            }
+
+            for (int i = 2; i <= m; i++)
+            {
+                for (int j = 2; j <= n; j++)
+                {
+                    // final step depends on previous step from up 1 or left 1
+                    dp[i, j] = dp[i - 1, j] + dp[i, j - 1];
+                }
+            }
+            return dp[m, n];
         }
 
         //5. Longest Palindromic Substring
@@ -36,13 +146,15 @@ namespace Interview
         //Output: "bab"
         //Note: "aba" is also a valid answer.
         // O(n^2)
-        public string LongestPalindromeDp(string s){
-            if(s.Length <2){
-                return s;                
+        public string LongestPalindromeDp(string s)
+        {
+            if (s.Length < 2)
+            {
+                return s;
             }
 
             int len = s.Length;
-            int left =0;
+            int left = 0;
             int maxLen = 1;
             var dp = new bool[len, len];
             // transform function:
@@ -50,15 +162,18 @@ namespace Interview
             // s[i] == s[j]  && j-i <2
             // s[i] == s[j] && dp[i + 1][j - 1]     
 
-            for(int j=0; j<len; j++) {
-                dp[j,j] = true;
-                for(int i =0; i<j; i++) {
-                    dp[i,j] = (s[i] == s[j] && dp[i+1, j-1]) || (s[i] == s[j] && (j-i<2));
-                    if(dp[i,j] && j-i+1 > maxLen) {
-                        maxLen = j-i+1;
-                        left = i;                         
+            for (int j = 0; j < len; j++)
+            {
+                dp[j, j] = true;
+                for (int i = 0; i < j; i++)
+                {
+                    dp[i, j] = (s[i] == s[j] && dp[i + 1, j - 1]) || (s[i] == s[j] && (j - i < 2));
+                    if (dp[i, j] && j - i + 1 > maxLen)
+                    {
+                        maxLen = j - i + 1;
+                        left = i;
                     }
-                }        
+                }
             }
             return s.Substring(left, maxLen);
         }
@@ -66,56 +181,67 @@ namespace Interview
         //1235. Maximum Profit in Job Scheduling
         //dp[i]: max profit from 0 to ith jobs
         //dp[i] = Math.max(dp[i - 1], max profit from 0 to ith jobs, including the ith job)
-        class job {
-            public int StartTime; 
+        class job
+        {
+            public int StartTime;
             public int EndTime;
-            public  int Profit;
+            public int Profit;
 
-            public job(int startTime, int endTime, int profit){
+            public job(int startTime, int endTime, int profit)
+            {
                 StartTime = startTime;
                 EndTime = endTime;
                 Profit = profit;
             }
         }
 
-        public int JobScheduling(int[] startTime, int[] endTime, int[] profit) {            
+        public int JobScheduling(int[] startTime, int[] endTime, int[] profit)
+        {
             // set dp[i] i is from 0 to i max profit
             // so it depends on (pick last non overlapping profit + current profit) or dp[n-1]
             // dp[i] = max(dp[i-1], dp[lastNonOverlapIdx](if any)+ current profit)
             int n = profit.Length;
             var jobs = new job[n];
-            for(int i=0; i<n; i++) {
-                jobs[i] = new job(startTime[i], endTime[i], profit[i]);        
+            for (int i = 0; i < n; i++)
+            {
+                jobs[i] = new job(startTime[i], endTime[i], profit[i]);
             }
 
-            jobs=jobs.OrderBy(x=>x.EndTime).ToArray();
+            jobs = jobs.OrderBy(x => x.EndTime).ToArray();
 
             int[] dp = new int[profit.Length];
             dp[0] = profit[0];
 
-            for(int i=1; i<n; i++){
-                int lastNonOverlapJob = findLastNonOverlap(jobs, 0, i-1, jobs[i].StartTime);
-                int curProfit = lastNonOverlapJob == -1? 0 + jobs[i].Profit : dp[lastNonOverlapJob] + jobs[i].Profit;
-                dp[i] = Math.Max(dp[i-1], curProfit);
+            for (int i = 1; i < n; i++)
+            {
+                int lastNonOverlapJob = findLastNonOverlap(jobs, 0, i - 1, jobs[i].StartTime);
+                int curProfit = lastNonOverlapJob == -1 ? 0 + jobs[i].Profit : dp[lastNonOverlapJob] + jobs[i].Profit;
+                dp[i] = Math.Max(dp[i - 1], curProfit);
             }
-            return dp[n-1];
+            return dp[n - 1];
         }
 
-        int findLastNonOverlap(job[] jobs, int left, int right, int nonOverlapStart){
-            
-            while(left < right){
-                int mid = (left + right)/2;
-                if(jobs[mid].EndTime <= nonOverlapStart){
-                    left =mid;
+        int findLastNonOverlap(job[] jobs, int left, int right, int nonOverlapStart)
+        {
+
+            while (left < right)
+            {
+                int mid = (left + right) / 2;
+                if (jobs[mid].EndTime <= nonOverlapStart)
+                {
+                    left = mid;
                 }
-                else{
-                    right = mid-1;
+                else
+                {
+                    right = mid - 1;
                 }
-            } 
-            if(jobs[right].EndTime <= nonOverlapStart){
+            }
+            if (jobs[right].EndTime <= nonOverlapStart)
+            {
                 return right;
             }
-            if(jobs[left].EndTime <= nonOverlapStart){
+            if (jobs[left].EndTime <= nonOverlapStart)
+            {
                 return left;
             }
             return -1;
@@ -290,9 +416,9 @@ namespace Interview
 
             for (int i = 2; i < nums.Length; i++)
             {
-                dp[i] = Math.Max(dp[i-1] , nums[i] + dp[i - 2]);
+                dp[i] = Math.Max(dp[i - 1], nums[i] + dp[i - 2]);
             }
-            return dp[nums.Length-1];
+            return dp[nums.Length - 1];
         }
 
         //213. House Robber II
@@ -307,8 +433,8 @@ namespace Interview
                 return nums[0];
 
             int len = nums.Length;
-            var arr1 = new int[len-1];
-            var arr2 = new int[len-1];
+            var arr1 = new int[len - 1];
+            var arr2 = new int[len - 1];
 
             Array.Copy(nums, 0, arr1, 0, len - 1);
             Array.Copy(nums, 1, arr2, 0, len - 1);
@@ -619,25 +745,28 @@ namespace Interview
         //DP其中 dp[i] 表示s中前i个字符组成的子串的解码方法的个数，长度比输入数组长多多1，并将 dp[0] 初始化为1。
         public int NumDecodings2(string s)
         {
-            if(s[0]=='0')
+            if (s[0] == '0')
                 return 0;
-        
+
             int len = s.Length;
-            var dp = new int[len+1];
-            dp[0]=1;
-            dp[1]=1;
-            
-            for(int i=2; i<=len; i++){
+            var dp = new int[len + 1];
+            dp[0] = 1;
+            dp[1] = 1;
+
+            for (int i = 2; i <= len; i++)
+            {
                 int prev2 = 0;
                 int prev1 = 0;
                 // if previous 2 digits in 1-26, prev2 is dp[i-2] ways;
-                if(s[i-2]-'0' > 0 && s[i-2]-'0' <= 2 && s[i-1]-'0' <= 6){
-                    prev2 = dp[i-2];
+                if (s[i - 2] - '0' > 0 && s[i - 2] - '0' <= 2 && s[i - 1] - '0' <= 6)
+                {
+                    prev2 = dp[i - 2];
                 }
                 // if previous 1 digit is Not 0, prev1 is to plus dp[i-1], otherwise should be 0 way
                 // e.g. 10 
-                if(s[i-1] != '0'){
-                    prev1 = dp[i-1];
+                if (s[i - 1] != '0')
+                {
+                    prev1 = dp[i - 1];
                 }
                 dp[i] = prev2 + prev1;
             }

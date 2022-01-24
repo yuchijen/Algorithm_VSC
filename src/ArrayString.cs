@@ -526,7 +526,7 @@ namespace Interview
             return ret;
         }
 
-        //271	Encode and Decode String
+        //271.	Encode and Decode String
         //Design an algorithm to encode a list of strings to a string. 
         //The encoded string is then sent over the network and is decoded back to the original list of strings.
         // Machine 1 (sender) has the function:
@@ -648,7 +648,6 @@ namespace Interview
             int ret = 0;
             for (int i = 0; i < s.Length - 1; i++)
             {
-
                 if (s[i] == s[i + 1])
                 {
                     consecutive++;
@@ -755,7 +754,6 @@ namespace Interview
             return map.Values.Count(v => v == true) / map.Count();
         }
 
-
         //442. Find All Duplicates in an Array (in-space , not easy)
         //Given an array of integers, 1 ≤ a[i] ≤ n (n = size of array), some elements appear twice and others appear once.
         //Find all the elements that appear twice in this array.
@@ -777,7 +775,6 @@ namespace Interview
             }
             return ret;
         }
-
 
         //443. String Compression
         //Input: ["a","a","b","b","c","c","c"]
@@ -802,7 +799,6 @@ namespace Interview
             return cur;
 
         }
-
 
         //expedia OA
         //974. Subarray Sums Divisible by K
@@ -1994,6 +1990,24 @@ namespace Interview
         //56. Merge Intervals
         //Given a collection of intervals, merge all overlapping intervals.
         //For example,  Given[1, 3],[2, 6],[8, 10],[15, 18],  return [1,6],[8,10],[15,18].
+        public int[][] Merge(int[][] intervals) {
+            intervals = intervals.OrderBy(x=>x[0]).ToArray();
+            List<int[]> ret = new List<int[]>();
+            int st = intervals[0][0];
+                        int end = intervals[0][1];
+            for(int i=1; i<intervals.Length; i++){
+                if(intervals[i][0] <= end){
+                    end =Math.Max(end,intervals[i][1]);
+                }else{
+                    ret.Add(new int[2]{st, end});
+                    st = intervals[i][0];
+                    end = intervals[i][1];
+                }
+            }    
+                ret.Add(new int[2]{st, end});
+            return ret.ToArray();           
+        }
+
         public IList<Interval> Merge(IList<Interval> intervals)
         {
             List<Interval> ret = new List<Interval>();
@@ -2046,6 +2060,7 @@ namespace Interview
                 ret.Add(new List<int>() { intervals[i][0], intervals[i][1] });
                 i++;
             }
+
             //**key: new interval end >= interval[i].st, need to merge
             while (i < len && end >= intervals[i][0])
             {
@@ -2503,7 +2518,7 @@ namespace Interview
                 while (i < k)
                 {
                     int piv = (i + k) / 2;
-                    if (binaryMatrix.Get(piv, j) == 1)
+                    if (binaryMatrix.Get(piv, j) == 1 &&binaryMatrix.Get(piv-1, j) == 0)
                     {
                         return j;
                     }
@@ -4140,6 +4155,24 @@ namespace Interview
             return ret;
         }
 
+        // 271. Encode and Decode Strings
+        // Encodes a list of strings to a single string.
+        public string encode(IList<string> strs)
+        {
+            string str = "";
+            foreach (var s in strs)
+            {
+                str += s + '\0';
+            }
+            return str.Substring(0, str.Length - 1);
+        }
+
+        // Decodes a single string to a list of strings.
+        public IList<string> decode1(string s)
+        {
+            return s.Split('\0').ToList();// String.("#",s).ToList();
+        }
+
         //268. Missing Number
         //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
         //For example, Given nums = [0, 1, 3] return 2.
@@ -4164,7 +4197,7 @@ namespace Interview
 
             return total - nums.Sum();
         }
-        
+
         //[-2,0, 1,2] missing -1 
         int missingNumberII(int[] nums)
         {

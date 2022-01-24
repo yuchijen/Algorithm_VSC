@@ -7,25 +7,32 @@ namespace Interview
 {
     public class BackTracking
     {
-        public IList<IList<int>> CombinationSum(int[] candidates, int target) {
+        //39. Combination Sum
+        public IList<IList<int>> CombinationSum(int[] candidates, int target)
+        {
             Array.Sort(candidates);
             var ret = new List<IList<int>>();
             bk(candidates, 0, target, ret, new List<int>());
             return ret;
         }
-    
-        void bk(int[] nums, int st, int target, List<IList<int>> ret, List<int> subSet){
-            if(target == subSet.Sum()){
+
+        void bk(int[] nums, int st, int target, List<IList<int>> ret, List<int> subSet)
+        {
+            if (target == subSet.Sum())
+            {
                 ret.Add(new List<int>(subSet));
                 return;
-            }else if(target < subSet.Sum()){
-                return;
             }
-        
-            for(int i=st; i < nums.Length; i++){
+            if (target < subSet.Sum())
+                return;
+            
+            for (int i = st; i < nums.Length; i++)
+            {
+                if(nums[i] > target)
+                    break;
                 subSet.Add(nums[i]);
-                bk(nums, i, target, ret, subSet);
-                subSet.RemoveAt(subSet.Count-1);            
+                bk(nums, i, target, ret, subSet);  //note: here is i (not i+1, because number can be repeated)
+                subSet.RemoveAt(nums[i]);
             }
         }
 
@@ -58,7 +65,6 @@ namespace Interview
 
         }
 
-
         //254. Factor Combinations
         //Numbers can be regarded as product of its factors.For example,
         //input: 12        output:
@@ -69,7 +75,7 @@ namespace Interview
             List<IList<int>> ret = new List<IList<int>>();
             if (n <= 3)
                 return ret;
-         
+
             factorHelper(ret, new List<int>(), n, 2);
             return ret;
         }
@@ -106,6 +112,7 @@ namespace Interview
         //[2,3],
         //[1,2], 
         //]
+        // time complexity is O(2^N) for this bk-tracking approach
         public IList<IList<int>> Subsets(int[] nums)
         {
             var ret = new List<IList<int>>();
@@ -122,7 +129,6 @@ namespace Interview
                 list.RemoveAt(list.Count - 1);
             }
         }
-        
 
         //90. Subsets II
         //Given a collection of integers that might contain duplicates, nums, return all possible subsets.
@@ -154,11 +160,10 @@ namespace Interview
                 list.Add(nums[i]);
                 subsetHelperWithoutDuplicate2(i + 1, nums, list, ret);
                 list.Remove(nums[i]);
-                while(i+1 < nums.Length && nums[i]==nums[i+1])
+                while (i + 1 < nums.Length && nums[i] == nums[i + 1])
                     i++;
             }
         }
-
 
         //77. Combinations
         //Given two integers n and k, return all possible combinations of k numbers out of 1 ... n.
@@ -193,15 +198,15 @@ namespace Interview
             }
         }
 
-        void BTHelper(List<int> cur,int[] A, int K, List<List<int>> ret, int stIdx)
+        void BTHelper(List<int> cur, int[] A, int K, List<List<int>> ret, int stIdx)
         {
-            if(cur.Count>0 && cur.Sum()%K == 0)
+            if (cur.Count > 0 && cur.Sum() % K == 0)
             {
                 ret.Add(new List<int>(cur));
                 //return;
             }
 
-            for(int i= stIdx; i<A.Length; i++)
+            for (int i = stIdx; i < A.Length; i++)
             {
                 if (i > stIdx && A[i] == A[i - 1])
                     continue;
@@ -210,6 +215,30 @@ namespace Interview
                 cur.Remove(cur.Last());
             }
 
+        }
+
+        public IList<IList<int>> CombinationSum3(int[] candidates, int target)
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+            bk(ret, 0, new List<int>(), candidates, target);
+            return ret;
+        }
+        void bk(IList<IList<int>> ret, int idx, List<int> curList, int[] candidates, int t)
+        {
+            if (curList.Sum() == t)
+            {
+                ret.Add(new List<int>(curList));
+                return;
+            }
+            if (curList.Sum() > t)
+                return;
+
+            for (int i = idx; i < candidates.Length; i++)
+            {
+                curList.Add(candidates[i]);
+                bk(ret, i + 1, curList, candidates, t);
+                curList.Remove(candidates[i]);
+            }
         }
 
         //40. Combination Sum II
@@ -309,7 +338,7 @@ namespace Interview
         void backtrackPerm(int[] nums, int idx, HashSet<IList<int>> ret)
         {
             if (idx == nums.Length)
-            {                
+            {
                 ret.Add(new List<int>(nums));
                 return;
             }
@@ -348,10 +377,10 @@ namespace Interview
                 swap(nums, i, idx);
             }
         }
-    
 
 
-    #endregion
+
+        #endregion
     }
 }
 

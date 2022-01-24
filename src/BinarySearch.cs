@@ -6,8 +6,49 @@ using System.Text;
 namespace Interview
 {
     //34. Find First and Last Position of Element in Sorted Array
+
     public class BinarySearch
     {
+        //295. Find Median from Data Stream
+        public class MedianFinder
+        {
+            private List<int> arr;
+            public MedianFinder()
+            {
+                arr = new List<int>();
+            }
+
+            public void AddNum(int num)
+            {
+                //b-search find idx to insert to make it sorted list
+                int end = arr.Count - 1;
+                int st = 0;
+                // can use BinarySearch to find idx
+                //st = arr.BinarySearch(num); 
+                // if (st<0)
+                //     st = 0;
+                while (st <= end)
+                {
+                    int piv = (st + end) / 2;
+                    if (num > arr.ElementAt(piv))
+                        st = piv + 1;
+                    else
+                        end = piv - 1;
+                }
+                arr.Insert(st, num);
+            }
+
+            public double FindMedian()
+            {
+                int piv = arr.Count / 2;
+                if (arr.Count % 2 == 1)
+                {
+                    return (double)arr[piv];
+                }
+                return (double)(arr[piv] + arr[piv - 1]) * 0.5;
+            }
+        }
+
         //287. Find the Duplicate Number
         //Given an array  nums  containing  n  + 1 integers where each integer is between 1 and  n  (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
         // Example 1: Input: [1,3,4,2,2]  Output: 2
@@ -644,26 +685,30 @@ namespace Interview
         // in O(logN)
         //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).Find the minimum element.
         //You may assume no duplicate exists in the array.
-        public int FindMin2(int[] nums){
+        public int FindMin2(int[] nums)
+        {
             if (nums.Length == 1)
                 return nums[0];
 
             int st = 0; int end = nums.Length - 1;
 
-            while(st <end){
-                int piv = st + (end-st)/2;
-                if(piv +1 <=end && nums[piv] > nums[piv+1])
-                    return nums[piv+1];
-                
-                if(nums[st] < nums[piv]) { //left sorted, min should be in right side
-                    st= piv+1;
+            while (st < end)
+            {
+                int piv = st + (end - st) / 2;
+                if (piv + 1 <= end && nums[piv] > nums[piv + 1])
+                    return nums[piv + 1];
+
+                if (nums[st] < nums[piv])
+                { //left sorted, min should be in right side
+                    st = piv + 1;
                 }
-                else{
+                else
+                {
                     end = piv;
                 }
             }
             return nums[0];
-            
+
         }
 
         public int FindMin(int[] nums)

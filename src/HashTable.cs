@@ -8,27 +8,55 @@ namespace Interview
 {
     public class HashTable
     {
+        //1047. Remove All Adjacent Duplicates In String
+        public string RemoveDuplicates(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return s;
+
+            var ret = new Stack<char>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (ret.Count > 0 && ret.Peek() == s[i])
+                    ret.Pop();
+                else
+                    ret.Push(s[i]);                
+            }
+            char[] dd = String.Join("",ret).ToArray();
+            Array.Reverse(dd);
+            return new string(dd);
+        }
+
         // 第三题给一个string，让你求最长的substring里面所有的character出现次数是偶数，
         // ‍‌‍‍‌‌‍‌‌‌‍‍‍‍‌‌‍‍‍想到特别好的方法，直接暴力解，不知道有没有更好的方法
         // e.g. ababcd => 4 ; cababd => 4 ; ababdcdc => 8
-        public string LongestSubstringEvenCount(string s){
-            if(string.IsNullOrEmpty(s))
+        public string LongestSubstringEvenCount(string s)
+        {
+            if (string.IsNullOrEmpty(s))
                 return "";
 
             var map = new Dictionary<char, int>();
             int maxLen = 0;
             int stIdx = 0;
-            for(int i=0; i<s.Length; i++){
+            for (int i = 0; i < s.Length; i++)
+            {
                 map.Clear();
-                for(int j = i; j<s.Length; j++){
-                    if(!map.ContainsKey(s[j])){
-                        map.Add(s[j],1);
-                    }else{
-                        map[s[j]]+=1;
+                for (int j = i; j < s.Length; j++)
+                {
+                    if (!map.ContainsKey(s[j]))
+                    {
+                        map.Add(s[j], 1);
                     }
-                    if(map.Values.All(x=> x%2 ==0)){
-                        if(j-i+1 > maxLen){
-                            maxLen = j-i +1;
+                    else
+                    {
+                        map[s[j]] += 1;
+                    }
+                    if (map.Values.All(x => x % 2 == 0))
+                    {
+                        if (j - i + 1 > maxLen)
+                        {
+                            maxLen = j - i + 1;
                             stIdx = i;
                         }
                     }
@@ -42,20 +70,22 @@ namespace Interview
         //s = "rat", t = "car", return false.
         public bool IsAnagram2(string s, string t)
         {
-            if(s.Length!=t.Length)
+            if (s.Length != t.Length)
                 return false;
 
             int[] arr1 = new int[26];
             //int[] arr2 = new int[26];
 
-            for(int i =0; i<s.Length; i++){
-                arr1[s[i]-'a']+=1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                arr1[s[i] - 'a'] += 1;
             }
-            for(int i =0; i<t.Length; i++){
-                arr1[t[i]-'a']-=1;
-                if(arr1[t[i]-'a'] < 0)
+            for (int i = 0; i < t.Length; i++)
+            {
+                arr1[t[i] - 'a'] -= 1;
+                if (arr1[t[i] - 'a'] < 0)
                     return false;
-            }    
+            }
             return true;
         }
 
@@ -125,23 +155,24 @@ namespace Interview
             Stack<int> st;
             Stack<int> st2;
             public MinStack()
-            {   
-                st = new Stack<int>();                
-                st2 = new Stack<int>();                
+            {
+                st = new Stack<int>();
+                st2 = new Stack<int>();
             }
 
             public void Push(int val)
             {
                 st.Push(val);
-                if(st2.Count ==0 || val <= st2.Peek())
+                if (st2.Count == 0 || val <= st2.Peek())
                     st2.Push(val);
             }
 
             public void Pop()
             {
-                if(st.Count > 0){
+                if (st.Count > 0)
+                {
                     var temp = st.Pop();
-                    if(st2.Count > 0 && temp == st2.Peek())
+                    if (st2.Count > 0 && temp == st2.Peek())
                         st2.Pop();
                 }
             }
@@ -276,10 +307,36 @@ namespace Interview
             return ret;
         }
 
-        //347 Top K Frequent Elements
+        //347. Top K Frequent Elements
         //Given a non-empty array of integers, return the k most frequent elements.
         // Example 1: Input: nums = [1,1,1,2,2,3], k = 2, Output: [1,2]
         // Example 2: Input: nums = [1], k = 1 Output: [1]
+        public IList<int> TopKFrequent2(int[] nums, int k)
+        {
+            if (nums == null || nums.Count() == 0 || nums.Count() < k)
+                return null;
+
+            var map = new Dictionary<int, int>();
+            foreach (var x in nums)
+            {
+                if (map.ContainsKey(x))
+                    map[x]++;
+                else
+                    map.Add(x, 1);
+            }
+            return map.OrderByDescending(x => x.Value).Select(x => x.Key).Take(k).ToList<int>().ToArray();
+
+            // this O(N) approach not passed yet             
+            // PriorityQueue<KeyValuePair> pq = new PriorityQueue<KeyValuePair>(Comparer<KeyValuePair<int,int>>.Create((kv1, kv2)=>kv2.Value.CompareTo(kv1.Value)));            
+            // foreach(var kv in map){
+            //     pq.Enqueue(kv);            
+            // }
+            // for(int i=0; i<k; i++){
+            //     ret.Add(pq.Dequeue().Key);
+            // }
+            // return ret.ToArray();
+        }
+
         public IList<int> TopKFrequent(int[] nums, int k)
         {
             if (nums == null || nums.Count() == 0 || nums.Count() < k)
@@ -946,41 +1003,49 @@ namespace Interview
         //Example: Input: S = "ADOBECODEBANC", T = "ABC"
         //Output: "BANC"
         //O(n)
-        public string MinWindow4(string s, string t) {        
+        public string MinWindow4(string s, string t)
+        {
             //build lookup map
-            var lookup = t.GroupBy(c=>c).ToDictionary(g=>g.Key, g=>g.Count());
+            var lookup = t.GroupBy(c => c).ToDictionary(g => g.Key, g => g.Count());
             var map = new Dictionary<char, int>();
             int backPtr = 0;
             int idxSt = 0;
             int len = int.MaxValue;
 
-            for(int i=0; i< s.Length; i++){
-                if(!map.ContainsKey(s[i])){
-                    map.Add(s[i],1);
-                }else{
-                    map[s[i]]+=1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!map.ContainsKey(s[i]))
+                {
+                    map.Add(s[i], 1);
+                }
+                else
+                {
+                    map[s[i]] += 1;
                 }
                 // if match the map match lookup table, try to shrink tail to find min len
-                while(lookup.All(kv => map.ContainsKey(kv.Key)) && lookup.All(kv => map[kv.Key] <= kv.Value)){
-                    if(i-backPtr +1 < len){
-                        len = i-backPtr+1;
+                while (lookup.All(kv => map.ContainsKey(kv.Key)) && lookup.All(kv => map[kv.Key] <= kv.Value))
+                {
+                    if (i - backPtr + 1 < len)
+                    {
+                        len = i - backPtr + 1;
                         idxSt = backPtr;
                     }
-                    if(map.ContainsKey(s[backPtr])){
-                        if(map[s[backPtr]]==1)
+                    if (map.ContainsKey(s[backPtr]))
+                    {
+                        if (map[s[backPtr]] == 1)
                             map.Remove(s[backPtr]);
                         else
-                            map[s[backPtr]]-=1;    
+                            map[s[backPtr]] -= 1;
                     }
                     backPtr--;
-                }            
+                }
             }
             return len == int.MaxValue ? "" : s.Substring(idxSt, len);
         }
 
         public string minWindow3(string s, string t)
         {
-            var map = t.GroupBy(c=>c).ToDictionary(g=>g.Key, g=>g.Count());
+            var map = t.GroupBy(c => c).ToDictionary(g => g.Key, g => g.Count());
             var map2 = new Dictionary<char, int>();
             int len = int.MaxValue;
             int stIdx = 0;
