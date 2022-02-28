@@ -6,7 +6,6 @@ using System.Text;
 namespace Interview
 {
     //34. Find First and Last Position of Element in Sorted Array
-
     public class BinarySearch
     {
         //295. Find Median from Data Stream
@@ -23,7 +22,7 @@ namespace Interview
                 //b-search find idx to insert to make it sorted list
                 int end = arr.Count - 1;
                 int st = 0;
-                // can use BinarySearch to find idx
+                //**  can use BinarySearch to find idx
                 //st = arr.BinarySearch(num); 
                 // if (st<0)
                 //     st = 0;
@@ -43,9 +42,9 @@ namespace Interview
                 int piv = arr.Count / 2;
                 if (arr.Count % 2 == 1)
                 {
-                    return (double)arr[piv];
+                    return arr[piv];
                 }
-                return (double)(arr[piv] + arr[piv - 1]) * 0.5;
+                return (arr[piv] + arr[piv - 1]) * 0.5;
             }
         }
 

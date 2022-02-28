@@ -7,6 +7,93 @@ namespace Interview
 {
     public class Graph
     {
+        //MS (1/25/22) (undirect graph, find the shortest path from st to dst)
+        // Y->C->A->S , Y->C->B, Y->C->A->S, A->S  ; find shortest path from Y-> A->S; not Y-> C-> A-> S 
+        public List<char> ShortestPath(Dictionary<char, List<char>> g)
+        {
+            var ret = new List<char>();
+            int len = g.Count;
+            var visit = new HashSet<char>();
+
+            // shortestHelper(ret, visit, g, 'Y', 'S', new List<char>());
+            var pathMap = shortestBFS(visit, g, 'Y', 'S');
+
+            ret.Add('S');
+            char vInPath = 'S';
+            while (pathMap[vInPath] != '#')
+            {
+                ret.Insert(0, pathMap[vInPath]);
+                vInPath = pathMap[vInPath];
+            }
+
+            return ret;
+        }
+
+        public Dictionary<char, char> shortestBFS(HashSet<char> visit, Dictionary<char, List<char>> g, char st, char end)
+        {
+            var ret = new Dictionary<char, char>();
+            var distance = new Dictionary<char, int>();
+            foreach (var k in g.Keys)
+                ret.Add(k, '#');
+            foreach (var k in g.Keys)
+                distance.Add(k, int.MaxValue);
+            distance[st] = 0;
+
+            var q = new Queue<char>();
+            q.Enqueue(st);
+            visit.Add(st);
+
+            while (q.Count > 0)
+            {
+                var curNode = q.Dequeue();
+                foreach (char c in g[curNode])
+                {
+                    if (!visit.Contains(c))
+                    {
+                        ret[c] = curNode;
+                        distance[c] = distance[curNode] + 1;
+                        if (c == end)
+                            return ret;
+                        visit.Add(c);
+                        q.Enqueue(c);
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public void shortestDFS(List<char> ret, HashSet<char> visit, Dictionary<char, List<char>> g, char st, char end, List<char> curPath)
+        {
+            if (visit.Contains(st))
+                return;
+
+            visit.Add(st);
+            curPath.Add(st);
+            Console.Write("curPath:");
+            foreach (var x in curPath)
+            {
+                Console.Write(x + ",");
+            }
+            if (curPath.Count > 0 && curPath[curPath.Count - 1] == end)
+            {
+                if (ret.Count == 0)
+                    ret = new List<char>(curPath);
+                else
+                {
+                    if (curPath.Count < ret.Count)
+                        ret = new List<char>(curPath);
+                }
+            }
+
+            foreach (var child in g[st])
+            {
+                shortestDFS(ret, visit, g, child, end, curPath);
+                //curPath.Remove(child);
+            }
+            curPath.Remove(st);
+            visit.Remove(st);
+        }
+
         //261. Graph Valid Tree (undirected graph)
         // Given n nodes labeled from 0 to n-1 and a list of undirected edges (each edge is a pair of nodes), write a function to check whether these edges make up a valid tree.
         // Example 1: Input: n = 5, and edges = [[0,1], [0,2], [0,3], [1,4]] Output: true
@@ -127,7 +214,7 @@ namespace Interview
         //You may assume that if a is a prefix of b, then a must appear before b in the given dictionary.
         //If the order is invalid, return an empty string.
         //There may be multiple valid order of letters, return any one of them is fine.
-        //space O(V+E), time: DFS which is O(V+E)
+        //space O(V+E), time: DFS which is O(V+E)    
         public string alienOrder(string[] words)
         {
             if (words == null)
@@ -308,7 +395,7 @@ namespace Interview
             }
             return ret.ToArray();
         }
-        
+
         bool IsCourseCycle(List<int>[] graph, List<int> ret, int[] visit, int idx)
         {
             if (visit[idx] == 1)  //if visiting node 
@@ -333,7 +420,7 @@ namespace Interview
         //323. Number of Connected Components in an Undirected Graph
         public int CountComponents(int n, int[][] edges)
         {
-            var ret = new int[1];
+            int ret = 0;
             var visited = new bool[n];
             var map = new Dictionary<int, List<int>>();
             for (int i = 0; i < edges.GetLength(0); i++)
@@ -344,17 +431,18 @@ namespace Interview
                 map[edges[i][1]].Add(edges[i][0]);
             }
 
-            foreach (var kv in map)
+            foreach (var k in map.Keys)
             {
-                if (!visited[kv.Key])
+                if (!visited[k])
                 {
-                    ret[0] += 1;
-                    DFSComponentHelper(visited, map, kv.Key);
+                    ret += 1;
+                    DFSComponentHelper(visited, map, k);
                 }
             }
-            ret[0] += visited.Count(c => c == false);
-            return ret[0];
+            ret += visited.Count(c => c == false);
+            return ret;
         }
+
         void DFSComponentHelper(bool[] visited, Dictionary<int, List<int>> map, int key)
         {
             if (visited[key])

@@ -8,6 +8,29 @@ namespace Interview
 {
     public class ArrayString
     {
+        // MS 1/25/22 find median in k machines and with large amount numbers in each machine
+        // cannot merge all machines, each mahcine can sort and provide some properties
+        // 
+        public int FindMedianInLargeMultiMachine(List<int> machines)
+        {
+            // each machine has N number N is over million , have k machins
+            // if each machine's number is sorted 
+            //e.g. 3 machines:
+            // 1,3,6
+            // 2,3,7
+            // 4,5,8    =>  median is 4
+            // we know the total number of all mahcine (9) , we know need to median is index 5
+            // each machine pop out min then compare all machines again and count to index 5
+            // ,3,6   => 1     ,3,6       1     ,6   =>3  (1,2,3)    ,6      (1,2,3,3)   ,6      (1,2,3,3,4)  found  
+            // 2,3,7           ,3,7    => 2     ,3,7                 ,7 => 3             ,7
+            // 4,5,8           4,5,8            4,5,8                4,5,8               ,5,8  =>4
+            // time:  sort k number in (KxN)/2 times :  KxNxklogK
+            return -1;
+
+
+
+        }
+
         //MS OA
         //1. 判断array里的数是否全都能配对成双，例如[1,2,2,1] 可以配对成[1,1], [2,2]。[1,2,2]则不行，因为没有额外的来跟1配对
         public bool IsPair(int[] A)
@@ -1900,39 +1923,6 @@ namespace Interview
             return 1;
         }
 
-        //253 meeting room2  (groupon phone)
-        //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
-        //(si<ei), find the minimum number of conference rooms required.
-        //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
-        int minMeetingRooms(Interval[] intervals)
-        {
-            if (intervals == null || intervals.Length == 0)
-                return 0;
-
-            int len = intervals.Length;
-            int[] starts = new int[len];
-            int[] ends = new int[len];
-            for (int i = 0; i < len; i++)
-            {
-                starts[i] = intervals[i].start;
-                ends[i] = intervals[i].end;
-            }
-            Array.Sort(starts);
-            Array.Sort(ends);
-
-
-            int ret = 0;
-            int endIdx = 0;
-            for (int i = 0; i < len; i++)
-            {
-                if (starts[i] < ends[endIdx])
-                    ret++;
-                else
-                    endIdx++;
-            }
-            return ret;
-        }
-
         //alternative way not verified
         int MeetingRoomsII(Interval[] intervals)
         {
@@ -1986,26 +1976,63 @@ namespace Interview
             return true;
         }
 
+        //253 meeting room2  (groupon phone)
+        //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
+        //(si<ei), find the minimum number of conference rooms required.
+        //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
+        int minMeetingRooms(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return 0;
+
+            int len = intervals.Length;
+            int[] starts = new int[len];
+            int[] ends = new int[len];
+            for (int i = 0; i < len; i++)
+            {
+                starts[i] = intervals[i].start;
+                ends[i] = intervals[i].end;
+            }
+            Array.Sort(starts);
+            Array.Sort(ends);
+
+
+            int ret = 0;
+            int endIdx = 0;
+            for (int i = 0; i < len; i++)
+            {
+                if (starts[i] < ends[endIdx])
+                    ret++;
+                else
+                    endIdx++;
+            }
+            return ret;
+        }
 
         //56. Merge Intervals
         //Given a collection of intervals, merge all overlapping intervals.
         //For example,  Given[1, 3],[2, 6],[8, 10],[15, 18],  return [1,6],[8,10],[15,18].
-        public int[][] Merge(int[][] intervals) {
-            intervals = intervals.OrderBy(x=>x[0]).ToArray();
+        public int[][] Merge(int[][] intervals)
+        {
+            intervals = intervals.OrderBy(x => x[0]).ToArray();
             List<int[]> ret = new List<int[]>();
             int st = intervals[0][0];
-                        int end = intervals[0][1];
-            for(int i=1; i<intervals.Length; i++){
-                if(intervals[i][0] <= end){
-                    end =Math.Max(end,intervals[i][1]);
-                }else{
-                    ret.Add(new int[2]{st, end});
+            int end = intervals[0][1];
+            for (int i = 1; i < intervals.Length; i++)
+            {
+                if (intervals[i][0] <= end)
+                {
+                    end = Math.Max(end, intervals[i][1]);
+                }
+                else
+                {
+                    ret.Add(new int[2] { st, end });
                     st = intervals[i][0];
                     end = intervals[i][1];
                 }
-            }    
-                ret.Add(new int[2]{st, end});
-            return ret.ToArray();           
+            }
+            ret.Add(new int[2] { st, end });
+            return ret.ToArray();
         }
 
         public IList<Interval> Merge(IList<Interval> intervals)
@@ -2078,6 +2105,35 @@ namespace Interview
             }
 
             return ret.Select(x => x.ToArray()).ToArray();
+        }
+
+        //435. Non-overlapping Intervals
+        public int EraseOverlapIntervals(int[][] intervals)
+        {
+            int len = intervals.Length;
+            if (len <= 1)
+                return 0;
+
+            //order by start point
+            intervals = intervals.OrderBy(x => x[0]).ToArray();
+            int ret = 0;
+            int st = intervals[0][0];
+            int end = intervals[0][1];
+            // skip the longer one when compare
+            for (int i = 1; i < len; i++)
+            {
+                if (end > intervals[i][0])
+                {
+                    ret += 1;
+                    if (end < intervals[i][1])
+                    {
+                        continue;
+                    }
+                }
+                st = intervals[i][0];
+                end = intervals[i][1];
+            }
+            return ret;
         }
 
         //Flexe onsite: merge 2 people's time schedule and filter out both available time by given time frame 
@@ -2518,7 +2574,7 @@ namespace Interview
                 while (i < k)
                 {
                     int piv = (i + k) / 2;
-                    if (binaryMatrix.Get(piv, j) == 1 &&binaryMatrix.Get(piv-1, j) == 0)
+                    if (binaryMatrix.Get(piv, j) == 1 && binaryMatrix.Get(piv - 1, j) == 0)
                     {
                         return j;
                     }
@@ -2804,6 +2860,7 @@ namespace Interview
             }
             return ret;
         }
+
         //244. Shortest Word Distance II
         //This is a follow up of Shortest Word Distance. The only difference is now you are given the list 
         //of words and your method will be called repeatedly many times with different parameters. How would you optimize it?
@@ -3599,6 +3656,29 @@ namespace Interview
         //Examples:  Given "abcabcbb", the answer is "abc", which the length is 3.
         //Given "bbbbb", the answer is "b", with the length of 1.
         //Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+        public int LengthOfLongestSubstring3(string s)
+        {
+            //slide window
+            var hs = new HashSet<char>();
+            int st = 0;
+            int ret = 0;
+            for (int i = 0; i < s.Length;)
+            {
+                if (!hs.Contains(s[i]))
+                {
+                    hs.Add(s[i]);
+                    i++;
+                }
+                else
+                {
+                    hs.Remove(s[st]);
+                    st++;
+                }
+                ret = Math.Max(ret, hs.Count);
+            }
+            return ret;
+        }
+
         public int LengthOfLongestSubstring(string s)
         {
             if (string.IsNullOrEmpty(s))
@@ -4038,7 +4118,45 @@ namespace Interview
             return ret;
         }
 
-        //leetcode 15. 3Sum
+        // 16. 3Sum Closest
+        public int ThreeSumClosest(int[] nums, int target)
+        {
+            if (nums.Length < 3)
+                return int.MaxValue;
+
+            nums = nums.OrderBy(x => x).ToArray();
+            int dist = int.MaxValue;
+            int ret = int.MinValue;
+
+            for (int i = 0; i < nums.Length - 2; i++)
+            {
+                int j = i + 1;
+                int k = nums.Length - 1;
+                while (j < k)
+                {
+                    int tot = nums[i] + nums[j] + nums[k];
+                    if (tot == target)
+                        return tot;
+
+                    if (Math.Abs(tot - target) < dist)
+                    {
+                        ret = tot;
+                        dist = Math.Abs(tot - target);
+                    }
+                    if (tot < target)
+                    {
+                        j++;
+                    }
+                    else
+                    {
+                        k--;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        // 15. 3Sum
         //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? 
         //Find all unique triplets in the array which gives the sum of zero.
         //For example, given array S = [-1, 0, 1, 2, -1, -4],  A solution set is:

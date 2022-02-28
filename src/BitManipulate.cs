@@ -7,7 +7,6 @@ namespace Interview
 {
     public class BitManipulate
     {
-
         //Find 4th bit of a given num. 秒杀
         //Given num = 32(10000)  4th是0  **1st是最后一位**
         public int FourthBit(int num)
@@ -21,9 +20,10 @@ namespace Interview
             //    num =num >> 1;
 
             //return num % 2;
-        } 
+        }
 
-        //add 2 numbers without + operator
+        //371. Sum of Two Integers, add 2 numbers without + operator
+        //https://www.cnblogs.com/grandyang/p/5631814.html
         public int add(int x, int y)
         {
             // Iterate till there is no carry 
@@ -31,6 +31,7 @@ namespace Interview
             {
                 // carry now contains common 
                 // set bits of x and y 
+                //e.g. 11(3) + 11(3) => carry = 11 , x^y = 00=x, 110 =y; carry = 000,  x=110, y=0000  
                 int carry = x & y;
                 // Sum of bits of x and y where at least one  
                 // of the bits is not set 
@@ -42,7 +43,6 @@ namespace Interview
             }
             return x;
         }
-
 
         //29. Divide Two Integers
         //Divide two integers without using multiplication, division and mod operator.
@@ -69,12 +69,12 @@ namespace Interview
             int i = 0;
             while ((dvs << i) <= dvd)
                 i++;
-            
+
             int ret = 0;
 
-            while(dvd >= dvs)
+            while (dvd >= dvs)
             {
-                if(dvd >= dvs << i)
+                if (dvd >= dvs << i)
                 {
                     dvd -= dvs << i;
                     ret += 1 << i;
@@ -83,15 +83,28 @@ namespace Interview
             }
             return sign ? ret : 0 - ret;
         }
-        
+
+        //338. Counting Bits
+        //Given an integer n, return an array ans of length n + 1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.
+        //Input: n = 5 Output: [0,1,1,2,1,2] =>  0, 1, 10, 11, 100, 101
+        public int[] CountBits(int n)
+        {
+            var ret = new int[n+1];
+
+            for(int i=1; i<=n; i++){
+                //int tail = (i&1) == 1 ? 1:0;
+                ret[i] = ret[i>>1] + (i%2);
+            }
+            return ret;
+        }
 
         //NVIDIA Given a 32 bit unsigned integer, write a function(in C) that returns a count of how many bits are "1".
         public int CountOneBit(uint num)
         {
             int ret = 0;
-            while(num!=0)
+            while (num != 0)
             {
-                if ((num & 1) ==1)
+                if ((num & 1) == 1)
                     ret++;
 
                 num >>= 1;
@@ -104,7 +117,7 @@ namespace Interview
         {
             //get all even bit
             uint even = x & 0xAAAAAAAA;
-            uint odd  = x & 0x55555555;
+            uint odd = x & 0x55555555;
 
             even >>= 1;
             odd <<= 1;

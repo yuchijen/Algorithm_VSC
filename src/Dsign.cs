@@ -965,6 +965,11 @@ namespace Interview
     //get(key) - Get the value(will always be positive) of the key if the key exists in the cache, otherwise return -1.
     //put(key, value) - Set or insert the value if the key is not already present.When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
     //** The functions get and put must each run in O(1) average time complexity.
+    public class LRUCache2
+    {
+
+    }
+    
     public class LRUCache
     {
         class DLinkedList
@@ -1026,11 +1031,11 @@ namespace Interview
         int removeTail()
         {
             DLinkedList node = tail.pre;
-            int key = map.FirstOrDefault(pair => pair.Value == node).Key;
+            // int key = map.FirstOrDefault(pair => pair.Value == node).Key;
             deleteNode(node);
-            return key;
+            return node.key;
         }
-
+        
         public void Put(int key, int value)
         {
             if (map.ContainsKey(key))
@@ -1055,7 +1060,6 @@ namespace Interview
             }
         }
     }
-
 
     //interview of Agoda in Hackerrank, practice of virtual , abstract, override 
     public abstract class CalculatorBase

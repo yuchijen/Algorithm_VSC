@@ -168,7 +168,6 @@ namespace Interview
             return curMin == int.MaxValue ? -1 : curMin;
         }
 
-
         //127. Word Ladder
         //Given two words(beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
         //Only one letter can be changed at a time.
@@ -1009,7 +1008,7 @@ namespace Interview
             dfsFindValidParentheses(s, 0, removeLeft, removeRight, ret);
             return ret;
         }
-        
+
         void dfsFindValidParentheses(string s, int startIdx, int left, int right, List<string> ret)
         {
             if (left == 0 && right == 0)
@@ -1124,7 +1123,7 @@ namespace Interview
         //]
         //Given word = "ABCCED", return true.
         //Given word = "SEE", return true.
-        //Given word = "ABCB", return false.
+        //Given word = "ABCB", return false.        
         public bool Exist2(char[][] board, string word)
         {
             int lenR = board.Length;
@@ -1578,6 +1577,50 @@ namespace Interview
             {
                 DFSFindCircleNum(n, visited, map);
             }
+        }
+
+        //417. Pacific Atlantic Water Flow
+        //优化代码，优化的方法跟之前那道 Surrounded Regions 很类似，既然从每个点向中间扩散会 TLE，
+        //那么我们就把所有边缘点当作起点开始遍历搜索，然后标记能到达的点为 true，
+        //分别标记出 pacific 和 atlantic 能到达的点，那么最终能返回的点就是二者均为 true 的点
+        public IList<IList<int>> PacificAtlantic(int[][] heights)
+        {
+            int lenR = heights.Length;
+            int lenC = heights[0].Length;
+            var pacificPassMap = new bool[lenR,lenC]; 
+            var atlanticPassMap = new bool[lenR,lenC]; 
+
+            // pacific most left and atlantic most right col
+            for(int i=0; i<lenR; i++){
+                PacificAtlanticDfs(heights, pacificPassMap, int.MinValue, i, 0);
+                PacificAtlanticDfs(heights, atlanticPassMap, int.MinValue, i, lenC-1);
+            }
+            // atlantic most top and atlantic most bottom row
+            for(int j=0; j<lenC; j++){
+                PacificAtlanticDfs(heights, pacificPassMap, int.MinValue, 0, j);
+                PacificAtlanticDfs(heights, atlanticPassMap, int.MinValue, lenR-1, j);
+            }
+            var ret = new List<IList<int>>();
+            for(int i=0; i<lenR; i++){
+                for(int j=0; j<lenC; j++){
+                    if(pacificPassMap[i,j]&&atlanticPassMap[i,j])
+                        ret.Add(new List<int>{i,j});
+                }
+            }
+            return ret;
+        }
+
+        void PacificAtlanticDfs(int[][] heights, bool[,] visit, int pre, int i, int j){
+            int lenR = heights.Length;
+            int lenC = heights[0].Length;
+            
+            if(i<0||i>=lenR||j<0||j>=lenC || visit[i,j]|| pre > heights[i][j])
+                return;
+            visit[i,j]= true;
+            PacificAtlanticDfs(heights, visit, heights[i][j], i+1, j);
+            PacificAtlanticDfs(heights, visit, heights[i][j], i, j+1);
+            PacificAtlanticDfs(heights, visit, heights[i][j], i-1, j);
+            PacificAtlanticDfs(heights, visit, heights[i][j], i, j-1);
         }
 
         //200. Number of Islands

@@ -537,6 +537,30 @@ namespace Interview
             }
         }
 
+        //424. Longest Repeating Character Replacement
+        //Input: s = "ABAB", k = 2 ;Output: 4
+        //Input: s = "AABABBA", k = 1 Output: 4
+        public int CharacterReplacement(string s, int k) {
+            //var map = new Dictionary<char, int>();
+            var map = new int[26];
+            // slide window
+            int st = 0; 
+            int ret = 0;
+            int maxLen = 0;
+            for(int i=0; i<s.Length; i++){
+                map[s[i]-'A']+=1;
+                
+                maxLen = Math.Max(maxLen, map[s[i]-'A']);
+
+                while(i-st+1 - maxLen > k){
+                    map[s[st]-'A']-=1;
+                    st++;
+                }    
+                ret = Math.Max(ret, i-st+1);
+            }
+            return ret;
+        }
+
         //340. Find the longest substring with k unique characters in a given string 
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
         //If there are more than one substring of longest possible length, then print any one of them.
@@ -553,42 +577,24 @@ namespace Interview
         //Max is "aabbcc" with length 6.
         //"aaabbb", k = 3
         //There are only two unique characters, thus show error message. 
-        public int lengthOfLongestSubstringKDistinct(string s, int k)
-        {
-            //slide window
-            var map = new Dictionary<char, int>();
-            int ret = 0, j = 0;
-
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (map.ContainsKey(s[i]))
-                {
-                    map[s[i]] += 1;
+        public int lengthOfLongestSubstringKDistinct4(string s, int k){
+            // assume input is all char only
+            var map = new int[26];
+            
+            int st = 0;
+            int ret = 0;
+            for(int i =0; i<s.Length; i++){
+                map[s[i]-'a']+=1;
+                
+                while(map.Count(x=>x>0) > k){
+                    map[s[st]-'a']-=1;
+                    st++;
                 }
-                else
-                {
-                    map.Add(s[i], 1);
-                }
-
-                while (map.Count > k && j <= i)
-                {
-                    if (--map[s[j]] == 0)
-                        map.Remove(s[j]);
-
-                    j++;
-                }
-                while (map.Count == k)
-                {
-                    ret = Math.Max(ret, map.Sum(kv => kv.Value));
-                    if (map.ContainsKey(s[j]))
-                    {
-                        map[s[j]]--;
-                    }
-                    j++;
-                }
+                ret = Math.Max(ret, i-st+1);
             }
             return ret;
         }
+        
         public int lengthOfLongestSubstringKDistinct3(string s, int k)
         {
             if (string.IsNullOrEmpty(s) || k == 0)
@@ -613,33 +619,6 @@ namespace Interview
                     b++;
                 }
                 ret = Math.Max(ret, i - b + 1);
-            }
-            return ret;
-        }
-
-        public int lengthOfLongestSubstringKDistinct2(string s, int k)
-        {
-            if (string.IsNullOrEmpty(s) || k == 0)
-                return 0;
-
-            var map = new Dictionary<char, int>();
-            int ret = 0;
-            int leftIdx = 0;
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (map.ContainsKey(s[i]))
-                    map[s[i]] += 1;
-                else
-                    map.Add(s[i], 1);
-
-                while (map.Count > k)
-                {
-                    if (--map[s[leftIdx]] == 0)
-                        map.Remove(s[leftIdx]);
-
-                    leftIdx++;
-                }
-                ret = Math.Max(ret, map.Sum(kv => kv.Value));
             }
             return ret;
         }
@@ -1327,9 +1306,7 @@ namespace Interview
                 int temp = nums[i] + nums[j];
                 if (temp == target)
                 {
-                    ret.Add(i);
-                    ret.Add(j);
-                    return ret.ToArray();
+                    return new int[2]{i,j};                    
                 }
                 else if (temp > target)
                 {

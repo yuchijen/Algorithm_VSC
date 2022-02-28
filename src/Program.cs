@@ -15,7 +15,7 @@ namespace Interview
         static void Main(string[] args)
         {
             //******* Test Deep Clone ************/
-            // var testClone = new SomeComxClass();
+            // var testClone = new SomeComxClass();f
             // testClone.Prop = 2;
             // testClone.ComxProp = new Codec();
             // var decMap = new Dictionary<string, string>();
@@ -35,7 +35,19 @@ namespace Interview
             // var logs = new string[] { "345366 89921 45", "029323 38239 23", "38239 345366 15", "029323 38239 77", "345366 38239 23", "029323 345366 13", "38239 38239 23" };
             //****************************************/
 
-            var asa = new ArrayString();
+            var g = new Graph();
+            var input = new Dictionary<char, List<char>>();
+            input.Add('Y', new List<char>(){'C','A'});            
+            input.Add('C', new List<char>(){'Y','B','A'});
+            input.Add('A', new List<char>(){'Y','S'});
+            input.Add('B', new List<char>(){'C','S'});
+            input.Add('S', new List<char>(){'A'});
+            
+            var shrtest = g.ShortestPath(input);
+                            Console.Write("answer:");
+            foreach(var x in shrtest)
+                Console.Write(x+",");
+            // var asa = new ArrayString();
             // Console.WriteLine(asa.UniqSub("aaa"));
 
             // var newInterval = new int[]{2,5};
