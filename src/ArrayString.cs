@@ -3656,25 +3656,20 @@ namespace Interview
         //Examples:  Given "abcabcbb", the answer is "abc", which the length is 3.
         //Given "bbbbb", the answer is "b", with the length of 1.
         //Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
-        public int LengthOfLongestSubstring3(string s)
+        public int LengthOfLongestSubstring4(string s)
         {
-            //slide window
             var hs = new HashSet<char>();
-            int st = 0;
             int ret = 0;
-            for (int i = 0; i < s.Length;)
-            {
-                if (!hs.Contains(s[i]))
-                {
+            int st = 0;
+            for(int i= 0; i< s.Length; ){
+                if(!hs.Contains(s[i])){
                     hs.Add(s[i]);
                     i++;
+                    ret = Math.Max(hs.Count,ret);
                 }
-                else
-                {
-                    hs.Remove(s[st]);
-                    st++;
+                else{
+                    hs.Remove(s[st++]);                    
                 }
-                ret = Math.Max(ret, hs.Count);
             }
             return ret;
         }
